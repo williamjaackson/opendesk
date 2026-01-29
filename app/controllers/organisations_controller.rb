@@ -4,6 +4,7 @@ class OrganisationsController < ApplicationController
 
     @organisations = Current.user.organisations
     @organisations = @organisations.where("name LIKE ?", "%#{params[:query]}%") if params[:query].present?
+    @pagy, @organisations = pagy(@organisations)
   end
 
   def show
