@@ -24,8 +24,31 @@
   </head>
 
   <body class="bg-gray-100">
-    <nav class="p-4 bg-white">
-      <span class="font-bold">OpenDesk</span>
+    <nav class="bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-8">
+            <%= link_to root_path, class: "flex items-center gap-1.5" do %>
+              <%= image_tag "logo.svg", class: "h-5 w-5" %>
+              <span class="font-semibold text-gray-900 tracking-tight">OpenDesk</span>
+            <% end %>
+            <div class="flex items-center gap-1 text-sm">
+              <%= link_to "Home", root_path, class: "px-3 py-2 rounded-md font-medium text-gray-900 bg-gray-100" %>
+              <%= link_to "About", "#", class: "px-3 py-2 rounded-md font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors" %>
+              <%= link_to "Pricing", "#", class: "px-3 py-2 rounded-md font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors" %>
+            </div>
+          </div>
+          <div>
+            <% if authenticated? %>
+              <button class="p-2 rounded-full hover:bg-gray-100 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-5 w-5 fill-gray-600"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"/></svg>
+              </button>
+            <% else %>
+              <%= link_to "Sign in", new_session_path, class: "bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors shadow-sm" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
     </nav>
     <%= yield %>
   </body>
