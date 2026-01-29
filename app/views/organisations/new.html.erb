@@ -1,0 +1,9 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/page_heading", title: "New organisation" %>
+
+  <%= form_with model: @organisation do |form| %>
+    <%= render "shared/form_input", form: form, field: :name, options: { required: true, autofocus: true } %>
+
+    <%= render "shared/button", label: "Create organisation", form: form %>
+  <% end %>
+</div>
