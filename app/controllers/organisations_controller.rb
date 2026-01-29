@@ -3,6 +3,10 @@ class OrganisationsController < ApplicationController
     @organisations = Current.user.organisations
   end
 
+  def show
+    @organisation = Current.user.organisations.find(params[:id])
+  end
+
   def new
     @organisation = Organisation.new
   end
