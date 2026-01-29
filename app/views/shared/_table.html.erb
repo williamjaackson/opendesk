@@ -2,6 +2,7 @@
 <% row_actions = actions - [:create] %>
 <% model_class = rows.respond_to?(:klass) ? rows.klass : rows.first&.class %>
 <% search_url = local_assigns[:search_url] %>
+<% pagy = local_assigns[:pagy] %>
 
 <% if actions.include?(:create) || search_url %>
   <div class="flex items-center justify-between mb-2">
@@ -80,4 +81,8 @@
       </div>
     <% end %>
   </div>
+
+  <% if pagy && pagy.pages > 1 %>
+    <%= render "shared/pagination", pagy: pagy %>
+  <% end %>
 <% end %>
