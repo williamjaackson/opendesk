@@ -1,6 +1,7 @@
 class OrganisationsController < ApplicationController
   def index
     @organisations = Current.user.organisations
+    @organisations = @organisations.where("name LIKE ?", "%#{params[:query]}%") if params[:query].present?
   end
 
   def show
