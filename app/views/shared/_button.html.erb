@@ -1,0 +1,19 @@
+<% button_classes = "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer" %>
+
+<% if local_assigns[:href] %>
+  <%= link_to href, class: button_classes do %>
+    <% if local_assigns[:icon] %>
+      <%= lucide_icon(icon, class: "h-4 w-4") %>
+    <% end %>
+    <%= label %>
+  <% end %>
+<% elsif local_assigns[:form] %>
+  <%= form.submit label, class: button_classes %>
+<% else %>
+  <button class="<%= button_classes %>">
+    <% if local_assigns[:icon] %>
+      <%= lucide_icon(icon, class: "h-4 w-4") %>
+    <% end %>
+    <%= label %>
+  </button>
+<% end %>
