@@ -2,7 +2,7 @@
   <%= render "shared/page_heading", title: "Organisations" %>
 
   <%= render "shared/table", columns: [
-    { header: "Name", accessor: :name },
+    { header: "Name", accessor: :name, link: ->(org) { organisation_path(org) } },
     { header: "Created", accessor: ->(org) { org.created_at.strftime("%B %d, %Y") } }
-  ], rows: @organisations %>
+  ], rows: @organisations, actions: [:view, :create] %>
 </div>
