@@ -44,7 +44,7 @@
                 <%= lucide_icon("circle-user-round", class: "h-5 w-5 text-gray-600") %>
               <% end %>
             <% else %>
-              <%= link_to "Sign in", new_session_path, class: "bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors shadow-sm" %>
+              <%= link_to "Sign in", new_session_path, class: button_classes(:primary) %>
             <% end %>
           </div>
         </div>
