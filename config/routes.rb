@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resources :passwords, param: :token
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resources :organisations, only: [ :index ]
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
@@ -11,5 +11,10 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
-  root "dashboard#show"
+  authenticated = ->(req) { req.cookie_jar.signed[:session_id].present? && Session.exists?(req.cookie_jar.signed[:session_id]) }
+
+  constraints(authenticated) do
+    root "organisations#index", as: :authenticated_root
+  end
+  root "pages#landing"
 end
