@@ -1,0 +1,10 @@
+<nav class="flex items-center gap-1.5 text-sm text-gray-500 mb-2">
+  <% crumbs.each do |label, path| %>
+    <% if path %>
+      <%= link_to label, path, class: "hover:text-gray-900 transition-colors" %>
+    <% else %>
+      <span class="text-gray-900 font-medium"><%= label %></span>
+    <% end %>
+    <span class="text-gray-300">/</span>
+  <% end %>
+</nav>
