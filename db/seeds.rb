@@ -7,7 +7,7 @@ admin = User.find_or_create_by!(email_address: "admin@example.com") do |user|
   user.password_confirmation = "password"
 end
 
-20.times do |i|
+5.times do |i|
   org = Organisation.find_or_create_by!(name: "Organisation #{i + 1}")
   org.users << admin unless org.users.include?(admin)
 end
