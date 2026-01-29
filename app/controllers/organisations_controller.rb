@@ -1,5 +1,7 @@
 class OrganisationsController < ApplicationController
   def index
+    redirect_to dashboard_path if Current.organisation.present?
+
     @organisations = Current.user.organisations
     @organisations = @organisations.where("name LIKE ?", "%#{params[:query]}%") if params[:query].present?
   end

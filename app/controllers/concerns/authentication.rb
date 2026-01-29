@@ -4,6 +4,7 @@ module Authentication
   included do
     before_action :require_authentication
     helper_method :authenticated?
+    helper_method :managing_organisation?
   end
 
   class_methods do
@@ -23,6 +24,19 @@ module Authentication
 
     def resume_session
       Current.session ||= find_session_by_cookie
+      resume_organisation_session if Current.session
+      Current.session
+    end
+
+    def resume_organisation_session
+      if session[:organisation_id].present?
+        Current.organisation = Current.user.organisations.find_by(id: session[:organisation_id])
+        session.delete(:organisation_id) unless Current.organisation
+      end
+    end
+
+    def managing_organisation?
+      Current.organisation.present?
     end
 
     def find_session_by_cookie
@@ -48,5 +62,6 @@ module Authentication
     def terminate_session
       Current.session.destroy
       cookies.delete(:session_id)
+      session.delete(:organisation_id)
     end
 end
