@@ -24,6 +24,17 @@
   </head>
 
   <body class="bg-gray-100">
+    <% if authenticated? && managing_organisation? %>
+      <div class="bg-gray-900 text-white text-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3 h-10">
+          <span>Managing <strong><%= Current.organisation.name %></strong></span>
+          <%= button_to organisation_session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 transition-colors cursor-pointer" do %>
+            <%= lucide_icon("log-out", class: "h-3.5 w-3.5") %>
+            Stop Managing
+          <% end %>
+        </div>
+      </div>
+    <% end %>
     <nav class="bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">

@@ -1,7 +1,9 @@
 Rails.application.routes.draw do
   resource :session
+  resource :organisation_session, only: [ :create, :destroy ]
   resources :passwords, param: :token
   resources :organisations, only: [ :index, :new, :create, :show ]
+  get "dashboard", to: "dashboard#show", as: :dashboard
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
