@@ -4,5 +4,5 @@
   <%= render "shared/table", columns: [
     { header: "Name", accessor: :name, link: ->(org) { organisation_path(org) } },
     { header: "Created", accessor: ->(org) { org.created_at.strftime("%B %d, %Y") } }
-  ], rows: @organisations, actions: [:view, :create], search_url: organisations_path %>
+  ], rows: @organisations, actions: [:view, :create], search_url: organisations_path, pagy: @pagy %>
 </div>
