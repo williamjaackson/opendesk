@@ -4,7 +4,14 @@ Rails.application.routes.draw do
   resources :passwords, param: :token
   resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   resources :custom_tables, only: [ :new, :create, :show, :edit, :update, :destroy ] do
-    resources :custom_fields, only: [ :new, :create, :edit, :update, :destroy ], shallow: true
+    collection do
+      patch :reorder
+    end
+    resources :custom_fields, only: [ :new, :create, :edit, :update, :destroy ], shallow: true do
+      collection do
+        patch :reorder
+      end
+    end
     resources :custom_records, only: [ :new, :create, :show, :edit, :update, :destroy ], shallow: true
     resources :custom_relationships, only: [ :new, :create ], shallow: true
   end

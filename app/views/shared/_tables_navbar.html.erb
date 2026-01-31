@@ -1,14 +1,21 @@
-<% tables = Current.organisation.custom_tables.order(:name) %>
+<% tables = Current.organisation.custom_tables.order(:position) %>
 
 <nav class="bg-gray-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center h-10">
       <div class="flex-1 min-w-0 overflow-x-auto scrollbar-hide">
-        <div class="flex items-center gap-1">
+        <div class="flex items-center gap-1"
+             data-controller="sortable"
+             data-sortable-url-value="<%= reorder_custom_tables_path %>"
+             data-sortable-direction-value="horizontal">
           <% tables.each do |table| %>
             <% active = (controller_name == "custom_tables" && params[:id] == table.id.to_s) || @custom_table&.id == table.id %>
-            <%= link_to table.name, custom_table_path(table),
-              class: "px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors #{active ? 'text-gray-900 bg-gray-200' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}" %>
+            <%= link_to custom_table_path(table),
+              data: { sortable_id: table.id },
+              class: "inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors cursor-grab active:cursor-grabbing #{active ? 'text-gray-900 bg-gray-200' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}" do %>
+              <%= lucide_icon("grip-vertical", class: "h-3 w-3 text-gray-400 flex-shrink-0") %>
+              <%= table.name %>
+            <% end %>
           <% end %>
         </div>
       </div>

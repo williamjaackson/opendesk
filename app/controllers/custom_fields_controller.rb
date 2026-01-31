@@ -1,7 +1,21 @@
 class CustomFieldsController < ApplicationController
   before_action :require_organisation
-  before_action :set_custom_table, only: [ :new, :create ]
+  before_action :set_custom_table, only: [ :new, :create, :reorder ]
   before_action :set_custom_field, only: [ :edit, :update, :destroy ]
+
+  def reorder
+    ids = params[:ids].map(&:to_i)
+    fields = @custom_table.custom_fields.where(id: ids)
+    return head :unprocessable_entity unless fields.count == ids.size
+
+    ActiveRecord::Base.transaction do
+      ids.each_with_index do |id, index|
+        fields.find { |f| f.id == id }&.update_columns(position: index)
+      end
+    end
+
+    head :no_content
+  end
 
   def new
     @custom_field = @custom_table.custom_fields.new
@@ -9,7 +23,8 @@ class CustomFieldsController < ApplicationController
 
   def create
     @custom_field = @custom_table.custom_fields.new(custom_field_params)
-    @custom_field.position = @custom_table.custom_fields.maximum(:position).to_i + 1
+    max = @custom_table.custom_fields.maximum(:position)
+    @custom_field.position = max ? max + 1 : 0
 
     if @custom_field.save
       redirect_to edit_custom_table_path(@custom_table)

@@ -10,7 +10,15 @@
 
       <%= render "shared/table",
         columns: [
-          { header: "Name", accessor: :name },
+          { header: "Name", accessor: ->(f) {
+            tag.span(data: { field_name: true }) do
+              concat f.name
+              if @pagy_fields.page == 1 && f == @fields.first
+                concat " ".html_safe
+                concat tag.span("Primary", data: { primary_badge: true }, class: "ml-2 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600")
+              end
+            end
+          } },
           { header: "Type", accessor: :field_type },
           { header: "Required", accessor: ->(f) { f.required? ? "Yes" : "No" } },
           { header: "Preview", accessor: ->(f) { f.show_on_preview? ? "Yes" : "No" } }
@@ -21,6 +29,7 @@
         search_url: edit_custom_table_path(@custom_table),
         create_url: new_custom_table_custom_field_path(@custom_table),
         create_label: "Add field",
+        sortable_url: reorder_custom_table_custom_fields_path(@custom_table),
         pagy: @pagy_fields,
         page_param: :fields_page %>
     </section>

@@ -56,6 +56,25 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to dashboard_path
   end
 
+  test "should reorder custom tables" do
+    contacts = custom_tables(:contacts)
+    deals = custom_tables(:deals)
+    projects = custom_tables(:projects)
+
+    patch reorder_custom_tables_path, params: { ids: [ projects.id, contacts.id, deals.id ] }, as: :json
+    assert_response :no_content
+
+    assert_equal 0, projects.reload.position
+    assert_equal 1, contacts.reload.position
+    assert_equal 2, deals.reload.position
+  end
+
+  test "should assign position on create" do
+    post custom_tables_path, params: { custom_table: { name: "Tickets" } }
+    table = CustomTable.last
+    assert_equal 3, table.position
+  end
+
   test "should redirect to organisations when not managing" do
     stop_managing_organisation
     get edit_custom_table_path(custom_tables(:contacts))
