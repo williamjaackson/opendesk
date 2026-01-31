@@ -16,6 +16,6 @@
       create_url: new_custom_table_custom_record_path(@custom_table),
       create_label: "Add record" %>
   <% else %>
-    <%= render "shared/alert", message: "This table has no fields yet. Add fields from the #{link_to("edit page", edit_custom_table_path(@custom_table), class: "underline font-medium")} before creating records.".html_safe, type: :info %>
+    <%= render "shared/alert", message: safe_join(["This table has no fields yet. Add fields from the ", link_to("edit page", edit_custom_table_path(@custom_table), class: "underline font-medium"), " before creating records."]), type: :info %>
   <% end %>
 </div>
