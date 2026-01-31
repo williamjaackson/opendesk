@@ -6,13 +6,13 @@
       <div class="flex-1 min-w-0 overflow-x-auto scrollbar-hide">
         <div class="flex items-center gap-1">
           <% tables.each do |table| %>
-            <%= link_to table.name, "#",
+            <%= link_to table.name, custom_table_path(table),
               class: "px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors" %>
           <% end %>
         </div>
       </div>
       <div class="flex-shrink-0 pl-3 ml-3">
-        <%= link_to "#", class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+        <%= link_to new_custom_table_path, class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
           <%= lucide_icon("plus", class: "h-4 w-4") %>
         <% end %>
       </div>
