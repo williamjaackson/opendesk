@@ -61,14 +61,16 @@
 
                 <div data-dropdown-target="menu" class="hidden absolute right-0 z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white shadow-lg">
                   <div class="py-1">
-                    <label class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
-                      <span>Edit mode</span>
-                      <span class="relative inline-block w-9 h-5">
-                        <input type="checkbox" class="peer sr-only">
-                        <span class="block w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-gray-900 transition-colors"></span>
-                        <span class="absolute left-0.5 top-0.5 h-4 w-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></span>
-                      </span>
-                    </label>
+                    <%= form_with url: edit_mode_path, method: :patch do %>
+                      <label class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                        <span>Edit mode</span>
+                        <span class="relative inline-block w-9 h-5">
+                          <input type="checkbox" class="peer sr-only" <%= "checked" if edit_mode? %> onchange="this.form.requestSubmit()">
+                          <span class="block w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-gray-900 transition-colors"></span>
+                          <span class="absolute left-0.5 top-0.5 h-4 w-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></span>
+                        </span>
+                      </label>
+                    <% end %>
                     <div class="border-t border-gray-200"></div>
                     <%= button_to session_path, method: :delete, class: "flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" do %>
                       <%= lucide_icon("log-out", class: "h-4 w-4") %>
