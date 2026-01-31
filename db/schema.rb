@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_31_025246) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_31_050149) do
   create_table "custom_fields", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "custom_table_id", null: false
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_025246) do
     t.string "name", null: false
     t.integer "position", default: 0, null: false
     t.boolean "required", default: false, null: false
+    t.boolean "show_on_preview", default: true
     t.datetime "updated_at", null: false
     t.index ["custom_table_id", "position"], name: "index_custom_fields_on_custom_table_id_and_position"
     t.index ["custom_table_id"], name: "index_custom_fields_on_custom_table_id"
