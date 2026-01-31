@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resource :organisation_session, only: [ :create, :destroy ]
+  resource :edit_mode, only: [ :update ]
   resources :passwords, param: :token
   resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   resources :custom_tables, only: [ :new, :create, :show, :edit, :update, :destroy ] do
