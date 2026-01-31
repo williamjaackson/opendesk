@@ -62,10 +62,11 @@
             data-controller="sortable"
             data-sortable-url-value="<%= sortable_url %>"
             data-sortable-handle-value=".drag-handle"
+            data-sortable-fallback-value="true"
           <% end %>
         >
-          <% rows.each_with_index do |row, i| %>
-            <tr class="<%= 'bg-gray-50' if i.odd? %>" <%= "data-sortable-id=#{row.id}" if sortable_url %>>
+          <% rows.each do |row| %>
+            <tr class="even:bg-gray-50" <% if sortable_url %>data-sortable-id="<%= row.id %>"<% end %>>
               <% if sortable_url %>
                 <td class="w-10 px-3 py-2.5 cursor-grab active:cursor-grabbing drag-handle">
                   <%= lucide_icon("grip-vertical", class: "h-4 w-4 text-gray-400") %>

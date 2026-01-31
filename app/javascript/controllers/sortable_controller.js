@@ -5,14 +5,17 @@ export default class extends Controller {
   static values = {
     url: String,
     direction: { type: String, default: "vertical" },
-    handle: String
+    handle: String,
+    fallback: { type: Boolean, default: false }
   }
 
   connect() {
     this.sortable = Sortable.create(this.element, {
       animation: 150,
       direction: this.directionValue,
+      draggable: "[data-sortable-id]",
       handle: this.hasHandleValue ? this.handleValue : undefined,
+      forceFallback: this.fallbackValue,
       onEnd: this.onEnd.bind(this)
     })
   }
