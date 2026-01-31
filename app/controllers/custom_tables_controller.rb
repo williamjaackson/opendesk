@@ -33,8 +33,23 @@ class CustomTablesController < ApplicationController
     @pagy_relationships, @relationships = pagy(@relationships, page_param: :relationships_page)
   end
 
+  def reorder
+    ids = params[:ids].map(&:to_i)
+    tables = Current.organisation.custom_tables.where(id: ids)
+    return head :unprocessable_entity unless tables.count == ids.size
+
+    ActiveRecord::Base.transaction do
+      ids.each_with_index do |id, index|
+        tables.find { |t| t.id == id }&.update_columns(position: index)
+      end
+    end
+
+    head :no_content
+  end
+
   def create
     @custom_table = Current.organisation.custom_tables.new(custom_table_params)
+    @custom_table.position = Current.organisation.custom_tables.maximum(:position).to_i + 1
 
     if @custom_table.save
       redirect_to edit_custom_table_path(@custom_table)

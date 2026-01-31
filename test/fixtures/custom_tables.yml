@@ -1,11 +1,14 @@
 contacts:
   organisation: one
   name: Contacts
+  position: 0
 
 deals:
   organisation: one
   name: Deals
+  position: 1
 
 projects:
   organisation: one
   name: Projects
+  position: 2

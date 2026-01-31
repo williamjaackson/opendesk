@@ -52,6 +52,18 @@ class CustomFieldsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_custom_table_path(@custom_table)
   end
 
+  test "should reorder custom fields" do
+    name_field = custom_fields(:name)
+    email_field = custom_fields(:email)
+
+    patch reorder_custom_table_custom_fields_path(@custom_table),
+      params: { ids: [ email_field.id, name_field.id ] }, as: :json
+    assert_response :no_content
+
+    assert_equal 0, email_field.reload.position
+    assert_equal 1, name_field.reload.position
+  end
+
   test "should auto-increment position" do
     post custom_table_custom_fields_path(@custom_table), params: {
       custom_field: { name: "Phone", field_type: "text" }
