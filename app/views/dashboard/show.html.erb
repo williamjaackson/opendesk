@@ -1,3 +1,9 @@
-<div class="max-w-4xl mx-auto py-8 px-4">
-  <%= render "shared/page_heading", title: "Dashboard" %>
+<div class="max-w-md mx-auto py-24 px-4 text-center">
+  <h1 class="text-xl font-semibold text-gray-900 mb-2">No tables yet</h1>
+  <p class="text-sm text-gray-500 mb-6">Create your first table to get started.</p>
+  <% if edit_mode? %>
+    <%= render "shared/button", label: "Create table", href: new_custom_table_path, icon: "plus" %>
+  <% else %>
+    <p class="text-sm text-gray-500">Enable edit mode to create a table.</p>
+  <% end %>
 </div>
