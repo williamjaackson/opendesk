@@ -9,6 +9,10 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
+body:not([data-edit-mode]) [data-edit-only] {
+  display: none !important;
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;

@@ -15,21 +15,19 @@
             <%= link_to custom_table_path(table),
               data: edit_mode? ? { sortable_id: table.id } : {},
               class: "inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors #{edit_mode? ? 'cursor-grab active:cursor-grabbing' : ''} #{active ? 'text-gray-900 bg-gray-200' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}" do %>
-              <% if edit_mode? %>
+              <span data-edit-only>
                 <%= lucide_icon("grip-vertical", class: "h-3 w-3 text-gray-400 flex-shrink-0") %>
-              <% end %>
+              </span>
               <%= table.name %>
             <% end %>
           <% end %>
         </div>
       </div>
-      <% if edit_mode? %>
-        <div class="flex-shrink-0 pl-3 ml-3">
-          <%= link_to new_custom_table_path, class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
-            <%= lucide_icon("plus", class: "h-4 w-4") %>
-          <% end %>
-        </div>
-      <% end %>
+      <div data-edit-only class="flex-shrink-0 pl-3 ml-3">
+        <%= link_to new_custom_table_path, class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+          <%= lucide_icon("plus", class: "h-4 w-4") %>
+        <% end %>
+      </div>
     </div>
   </div>
 </nav>
