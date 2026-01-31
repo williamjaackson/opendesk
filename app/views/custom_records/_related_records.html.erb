@@ -7,18 +7,14 @@
 
   <% linked_record_for = ->(link) { section.is_source ? link.target_record : link.source_record } %>
 
-  <% columns = section.display_fields.each_with_index.map do |field, idx|
-    col = {
+  <% columns = section.display_fields.map do |field|
+    {
       header: field.name,
       accessor: ->(link) {
         rec = section.is_source ? link.target_record : link.source_record
         rec.custom_values.detect { |v| v.custom_field_id == field.id }&.value.presence || "—"
       }
     }
-    if idx == 0
-      col[:link] = ->(link) { custom_record_path(linked_record_for.call(link)) }
-    end
-    col
   end %>
 
   <%= turbo_frame_tag frame_id do %>
@@ -29,7 +25,9 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <%= lucide_icon("search", class: "h-4 w-4 text-gray-400") %>
             </div>
-            <%= form.search_field search_param, value: params[search_param], placeholder: "Search records...", class: "w-full rounded-md border border-gray-300 bg-white pl-9 pr-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500", oninput: "this.form.requestSubmit()" %>
+            <%= form.search_field search_param, value: params[search_param], placeholder: "Search records...",
+              data: params[search_param].present? ? { controller: "autofocus" } : {},
+              class: "w-full rounded-md border border-gray-300 bg-white pl-9 pr-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500", oninput: "this.form.requestSubmit()" %>
           </div>
         <% end %>
       </div>
@@ -82,7 +80,8 @@
     <%= render "shared/table",
       columns: columns,
       rows: section.record_links,
-      actions: [ :destroy ],
+      actions: [ :view, :destroy ],
+      view_path: ->(link) { custom_record_path(linked_record_for.call(link)) },
       destroy_label: "Unlink",
       destroy_confirm: "Unlink this record?",
       frame_id: nil,
