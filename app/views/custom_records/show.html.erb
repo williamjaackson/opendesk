@@ -10,4 +10,11 @@
       </div>
     <% end %>
   </dl>
+
+  <div class="pt-8">
+    <%= button_to "Delete record", custom_record_path(@custom_record),
+      method: :delete,
+      class: "inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer",
+      data: { turbo_confirm: "Are you sure you want to delete this record?" } %>
+  </div>
 </div>

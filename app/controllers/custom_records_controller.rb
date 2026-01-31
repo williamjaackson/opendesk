@@ -1,11 +1,17 @@
 class CustomRecordsController < ApplicationController
   before_action :require_organisation
   before_action :set_custom_table, only: [ :new, :create ]
-  before_action :set_custom_record, only: [ :show ]
+  before_action :set_custom_record, only: [ :show, :destroy ]
 
   def show
     @custom_table = @custom_record.custom_table
     @fields = @custom_table.custom_fields.order(:position)
+  end
+
+  def destroy
+    custom_table = @custom_record.custom_table
+    @custom_record.destroy
+    redirect_to custom_table_path(custom_table)
   end
 
   def new
