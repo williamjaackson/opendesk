@@ -1,5 +1,5 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
-  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)]] %>
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)], ["Record", custom_record_path(@custom_record)]] %>
   <%= render "shared/page_heading", title: "Edit record" %>
 
   <div class="space-y-8">
