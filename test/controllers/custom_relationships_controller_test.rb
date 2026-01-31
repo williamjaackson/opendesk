@@ -21,7 +21,7 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
         custom_relationship: {
           name: "Deals",
           inverse_name: "Contact",
-          kind: "has_many",
+          kind: "one_to_many",
           target_table_id: custom_tables(:deals).id
         }
       }
@@ -36,7 +36,7 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
         custom_relationship: {
           name: "",
           inverse_name: "Contact",
-          kind: "has_many",
+          kind: "one_to_many",
           target_table_id: custom_tables(:deals).id
         }
       }
@@ -81,7 +81,7 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
       custom_relationship: { name: "Deals", inverse_name: "Contact", kind: "many_to_many" }
     }
 
-    assert_equal "has_many", @relationship.reload.kind
+    assert_equal "one_to_many", @relationship.reload.kind
   end
 
   test "should destroy relationship and its links" do

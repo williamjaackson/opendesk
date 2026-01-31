@@ -1,5 +1,5 @@
 class CustomRelationship < ApplicationRecord
-  KINDS = %w[has_one has_many many_to_many].freeze
+  KINDS = %w[one_to_one one_to_many many_to_one many_to_many].freeze
 
   belongs_to :source_table, class_name: "CustomTable"
   belongs_to :target_table, class_name: "CustomTable"

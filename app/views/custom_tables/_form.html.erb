@@ -37,8 +37,9 @@
               r.kind.humanize
             else
               case r.kind
-              when "has_many" then "Belongs to"
-              when "has_one" then "Has one"
+              when "one_to_one" then "One to one"
+              when "one_to_many" then "Many to one"
+              when "many_to_one" then "One to many"
               when "many_to_many" then "Many to many"
               end
             end

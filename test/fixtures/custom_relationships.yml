@@ -3,7 +3,7 @@ contacts_deals:
   target_table: deals
   name: Deals
   inverse_name: Contact
-  kind: has_many
+  kind: one_to_many
 
 contacts_projects:
   source_table: contacts
@@ -17,4 +17,11 @@ deals_projects:
   target_table: projects
   name: Project
   inverse_name: Deal
-  kind: has_one
+  kind: one_to_one
+
+projects_contacts:
+  source_table: projects
+  target_table: contacts
+  name: Contact
+  inverse_name: Projects
+  kind: many_to_one
