@@ -6,6 +6,7 @@
 <% create_label = local_assigns.fetch(:create_label, "Create Record") %>
 <% destroy_confirm = local_assigns.fetch(:destroy_confirm, "Are you sure?") %>
 <% destroy_label = local_assigns.fetch(:destroy_label, "Delete") %>
+<% view_path = local_assigns[:view_path] %>
 <% pagy = local_assigns[:pagy] %>
 <% frame_id = local_assigns.fetch(:frame_id, "table_frame") %>
 <% search_param = local_assigns.fetch(:search_param, :query) %>
@@ -71,7 +72,7 @@
                     <% row_actions.each do |action| %>
                       <% case action
                          when :view %>
-                        <%= link_to "View", polymorphic_path(row), class: "inline-block px-3 py-1 text-xs font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors", data: { turbo_frame: "_top" } %>
+                        <%= link_to "View", view_path ? view_path.call(row) : polymorphic_path(row), class: "inline-block px-3 py-1 text-xs font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors", data: { turbo_frame: "_top" } %>
                       <% when :edit %>
                         <%= link_to "Edit", edit_polymorphic_path(row), class: "inline-block px-3 py-1 text-xs font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors", data: { turbo_frame: "_top" } %>
                       <% when :destroy %>

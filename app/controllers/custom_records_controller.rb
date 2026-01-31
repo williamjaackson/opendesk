@@ -111,7 +111,7 @@ class CustomRecordsController < ApplicationController
       end
 
       linked_record_ids = all_links.map { |l| is_source ? l.target_record_id : l.source_record_id }
-      display_fields = target_table.custom_fields.order(:position).limit(3)
+      display_fields = target_table.custom_fields.where(show_on_preview: true).order(:position)
 
       taken_ids = if rel.kind == "one_to_one"
         is_source ? rel.custom_record_links.pluck(:target_record_id) : rel.custom_record_links.pluck(:source_record_id)
