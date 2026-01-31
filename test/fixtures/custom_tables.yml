@@ -5,3 +5,7 @@ contacts:
 deals:
   organisation: one
   name: Deals
+
+projects:
+  organisation: one
+  name: Projects

@@ -1,0 +1,20 @@
+contacts_deals:
+  source_table: contacts
+  target_table: deals
+  name: Deals
+  inverse_name: Contact
+  kind: has_many
+
+contacts_projects:
+  source_table: contacts
+  target_table: projects
+  name: Projects
+  inverse_name: Contacts
+  kind: many_to_many
+
+deals_projects:
+  source_table: deals
+  target_table: projects
+  name: Project
+  inverse_name: Deal
+  kind: has_one

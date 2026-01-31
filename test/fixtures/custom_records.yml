@@ -3,3 +3,15 @@ alice:
 
 bob:
   custom_table: contacts
+
+deal_one:
+  custom_table: deals
+
+deal_two:
+  custom_table: deals
+
+project_one:
+  custom_table: projects
+
+project_two:
+  custom_table: projects

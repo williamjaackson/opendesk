@@ -1,0 +1,53 @@
+require "test_helper"
+
+class CustomRecordLinksControllerTest < ActionDispatch::IntegrationTest
+  setup do
+    sign_in_as users(:one)
+    manage_organisation organisations(:one)
+    @relationship = custom_relationships(:contacts_deals)
+  end
+
+  test "should create record link" do
+    assert_difference "CustomRecordLink.count", 1 do
+      post custom_record_links_path, params: {
+        custom_record_link: {
+          custom_relationship_id: @relationship.id,
+          source_record_id: custom_records(:bob).id,
+          target_record_id: custom_records(:deal_two).id
+        }
+      }
+    end
+  end
+
+  test "should not create duplicate link" do
+    assert_no_difference "CustomRecordLink.count" do
+      post custom_record_links_path, params: {
+        custom_record_link: {
+          custom_relationship_id: @relationship.id,
+          source_record_id: custom_records(:alice).id,
+          target_record_id: custom_records(:deal_one).id
+        }
+      }
+    end
+  end
+
+  test "should not link target to multiple sources in has_many" do
+    assert_no_difference "CustomRecordLink.count" do
+      post custom_record_links_path, params: {
+        custom_record_link: {
+          custom_relationship_id: @relationship.id,
+          source_record_id: custom_records(:bob).id,
+          target_record_id: custom_records(:deal_one).id
+        }
+      }
+    end
+  end
+
+  test "should destroy record link" do
+    link = custom_record_links(:alice_deal_one)
+
+    assert_difference "CustomRecordLink.count", -1 do
+      delete custom_record_link_path(link)
+    end
+  end
+end

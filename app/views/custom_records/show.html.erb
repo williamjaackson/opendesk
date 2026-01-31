@@ -11,6 +11,14 @@
     <% end %>
   </dl>
 
+  <% if @relationship_sections.any? %>
+    <div class="pt-8 space-y-8">
+      <% @relationship_sections.each do |section| %>
+        <%= render "related_records", section: section, record: @custom_record %>
+      <% end %>
+    </div>
+  <% end %>
+
   <div class="pt-8">
     <%= button_to "Delete record", custom_record_path(@custom_record),
       method: :delete,
