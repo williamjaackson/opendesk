@@ -1,0 +1,21 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)]] %>
+  <%= render "shared/page_heading", title: "New field" %>
+
+  <%= form_with model: [@custom_table, @custom_field] do |form| %>
+    <%= render "shared/form_input", form: form, field: :name, label: "Field name", options: { required: true, autofocus: true, placeholder: "e.g. Email, Phone, Status" } %>
+
+    <%= render "shared/dropdown", form: form, field: :field_type, label: "Type",
+      selected: @custom_field.field_type,
+      options: [["Text", "text"], ["Number", "number"], ["Date", "date"], ["Boolean", "boolean"], ["Select", "select"]] %>
+
+    <div class="mb-4">
+      <%= form.label :required, class: "inline-flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer" do %>
+        <%= form.check_box :required, class: "rounded border-gray-300 text-gray-900 focus:ring-gray-500" %>
+        Required field
+      <% end %>
+    </div>
+
+    <%= render "shared/button", label: "Add field", form: form %>
+  <% end %>
+</div>
