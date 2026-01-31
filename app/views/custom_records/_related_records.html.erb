@@ -17,66 +17,65 @@
     }
   end %>
 
-  <%= turbo_frame_tag frame_id do %>
-    <div class="flex items-center justify-between mb-2">
-      <div class="w-full max-w-sm">
-        <%= form_with url: custom_record_path(record), method: :get, data: { turbo_frame: frame_id, turbo_action: "advance" } do |form| %>
-          <div class="relative">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <%= lucide_icon("search", class: "h-4 w-4 text-gray-400") %>
+  <div class="flex items-center justify-between mb-2">
+    <div class="w-full max-w-sm">
+      <%= form_with url: custom_record_path(record), method: :get, data: { turbo_frame: frame_id, turbo_action: "advance" } do |form| %>
+        <div class="relative">
+          <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+            <%= lucide_icon("search", class: "h-4 w-4 text-gray-400") %>
+          </div>
+          <%= form.search_field search_param, value: params[search_param], placeholder: "Search records...",
+            class: "w-full rounded-md border border-gray-300 bg-white pl-9 pr-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500", oninput: "this.form.requestSubmit()" %>
+        </div>
+      <% end %>
+    </div>
+    <div>
+      <% if section.accepts_more %>
+        <%= form_with model: CustomRecordLink.new, url: custom_record_links_path do |form| %>
+          <%= form.hidden_field :custom_relationship_id, value: section.relationship.id %>
+          <% if section.is_source %>
+            <%= form.hidden_field :source_record_id, value: record.id %>
+          <% else %>
+            <%= form.hidden_field :target_record_id, value: record.id %>
+          <% end %>
+          <% link_field = section.is_source ? :target_record_id : :source_record_id %>
+
+          <div data-controller="dropdown" data-dropdown-autosubmit-value="true" class="relative">
+            <%= form.hidden_field link_field, data: { dropdown_target: "input" } %>
+
+            <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
+              class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer">
+              <%= lucide_icon("plus", class: "h-4 w-4") %>
+              Link record
+            </button>
+
+            <div data-dropdown-target="menu" class="hidden absolute right-0 z-10 mt-1 w-64 rounded-md border border-gray-200 bg-white shadow-lg max-h-60 overflow-y-auto">
+              <% if section.available_records.any? %>
+                <div class="sticky top-0 bg-white border-b border-gray-200 p-1.5">
+                  <input type="text" data-dropdown-target="search" data-action="input->dropdown#filter"
+                    placeholder="Search..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" />
+                </div>
+                <div class="py-1">
+                  <% section.available_records.each do |r| %>
+                    <button type="button" data-action="dropdown#select" data-value="<%= r.id %>" data-label="<%= r.display_name %>"
+                      class="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                      <span><%= r.display_name %></span>
+                    </button>
+                  <% end %>
+                </div>
+              <% else %>
+                <div class="px-3 py-4 text-sm text-gray-500 text-center">
+                  No records available to link.
+                </div>
+              <% end %>
             </div>
-            <%= form.search_field search_param, value: params[search_param], placeholder: "Search records...",
-              data: params[search_param].present? ? { controller: "autofocus" } : {},
-              class: "w-full rounded-md border border-gray-300 bg-white pl-9 pr-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500", oninput: "this.form.requestSubmit()" %>
           </div>
         <% end %>
-      </div>
-      <div>
-        <% if section.accepts_more %>
-          <%= form_with model: CustomRecordLink.new, url: custom_record_links_path do |form| %>
-            <%= form.hidden_field :custom_relationship_id, value: section.relationship.id %>
-            <% if section.is_source %>
-              <%= form.hidden_field :source_record_id, value: record.id %>
-            <% else %>
-              <%= form.hidden_field :target_record_id, value: record.id %>
-            <% end %>
-            <% link_field = section.is_source ? :target_record_id : :source_record_id %>
-
-            <div data-controller="dropdown" data-dropdown-autosubmit-value="true" class="relative">
-              <%= form.hidden_field link_field, data: { dropdown_target: "input" } %>
-
-              <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
-                class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer">
-                <%= lucide_icon("plus", class: "h-4 w-4") %>
-                Link record
-              </button>
-
-              <div data-dropdown-target="menu" class="hidden absolute right-0 z-10 mt-1 w-64 rounded-md border border-gray-200 bg-white shadow-lg max-h-60 overflow-y-auto">
-                <% if section.available_records.any? %>
-                  <div class="sticky top-0 bg-white border-b border-gray-200 p-1.5">
-                    <input type="text" data-dropdown-target="search" data-action="input->dropdown#filter"
-                      placeholder="Search..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" />
-                  </div>
-                  <div class="py-1">
-                    <% section.available_records.each do |r| %>
-                      <button type="button" data-action="dropdown#select" data-value="<%= r.id %>" data-label="<%= r.display_name %>"
-                        class="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
-                        <span><%= r.display_name %></span>
-                      </button>
-                    <% end %>
-                  </div>
-                <% else %>
-                  <div class="px-3 py-4 text-sm text-gray-500 text-center">
-                    No records available to link.
-                  </div>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-        <% end %>
-      </div>
+      <% end %>
     </div>
+  </div>
 
+  <%= turbo_frame_tag frame_id do %>
     <%= render "shared/table",
       columns: columns,
       rows: section.record_links,

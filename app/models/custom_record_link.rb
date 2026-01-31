@@ -25,16 +25,20 @@ class CustomRecordLink < ApplicationRecord
     return unless custom_relationship
 
     case custom_relationship.kind
-    when "has_one"
+    when "one_to_one"
       if CustomRecordLink.where(custom_relationship: custom_relationship, source_record: source_record).where.not(id: id).exists?
         errors.add(:source_record, "already has a linked record in this relationship")
       end
       if CustomRecordLink.where(custom_relationship: custom_relationship, target_record: target_record).where.not(id: id).exists?
         errors.add(:target_record, "already has a linked record in this relationship")
       end
-    when "has_many"
+    when "one_to_many"
       if CustomRecordLink.where(custom_relationship: custom_relationship, target_record: target_record).where.not(id: id).exists?
         errors.add(:target_record, "is already linked to another record in this relationship")
+      end
+    when "many_to_one"
+      if CustomRecordLink.where(custom_relationship: custom_relationship, source_record: source_record).where.not(id: id).exists?
+        errors.add(:source_record, "already has a linked record in this relationship")
       end
     end
   end

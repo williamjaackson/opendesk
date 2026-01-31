@@ -113,19 +113,23 @@ class CustomRecordsController < ApplicationController
       linked_record_ids = all_links.map { |l| is_source ? l.target_record_id : l.source_record_id }
       display_fields = target_table.custom_fields.where(show_on_preview: true).order(:position)
 
-      taken_ids = if rel.kind == "has_one"
+      taken_ids = if rel.kind == "one_to_one"
         is_source ? rel.custom_record_links.pluck(:target_record_id) : rel.custom_record_links.pluck(:source_record_id)
-      elsif rel.kind == "has_many" && is_source
+      elsif rel.kind == "one_to_many" && is_source
         rel.custom_record_links.pluck(:target_record_id)
+      elsif rel.kind == "many_to_one" && !is_source
+        rel.custom_record_links.pluck(:source_record_id)
       else
         []
       end
 
       available_records = target_table.custom_records.where.not(id: (linked_record_ids + taken_ids).uniq).includes(custom_values: :custom_field)
 
-      accepts_more = if rel.kind == "has_one"
+      accepts_more = if rel.kind == "one_to_one"
         all_links.empty?
-      elsif rel.kind == "has_many" && !is_source
+      elsif rel.kind == "one_to_many" && !is_source
+        all_links.empty?
+      elsif rel.kind == "many_to_one" && is_source
         all_links.empty?
       else
         true
