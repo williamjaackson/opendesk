@@ -13,7 +13,7 @@ class CustomTableTest < ActiveSupport::TestCase
   end
 
   test "plural name is valid" do
-    table = CustomTable.new(name: "Contacts", organisation: organisations(:one))
+    table = CustomTable.new(name: "Invoices", organisation: organisations(:one))
     assert table.valid?
   end
 end

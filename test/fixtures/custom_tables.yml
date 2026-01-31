@@ -1,14 +1,17 @@
 contacts:
   organisation: one
   name: Contacts
+  slug: contacts
   position: 0
 
 deals:
   organisation: one
   name: Deals
+  slug: deals
   position: 1
 
 projects:
   organisation: one
   name: Projects
+  slug: projects
   position: 2

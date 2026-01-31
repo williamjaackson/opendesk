@@ -1,6 +1,6 @@
 class CustomFieldsController < ApplicationController
   before_action :require_organisation
-  before_action :set_custom_table, only: [ :new, :create, :reorder ]
+  before_action :set_custom_table
   before_action :set_custom_field, only: [ :edit, :update, :destroy ]
 
   def reorder
@@ -27,30 +27,26 @@ class CustomFieldsController < ApplicationController
     @custom_field.position = max ? max + 1 : 0
 
     if @custom_field.save
-      redirect_to edit_custom_table_path(@custom_table)
+      redirect_to edit_table_path(@custom_table)
     else
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
-    @custom_table = @custom_field.custom_table
   end
 
   def update
-    @custom_table = @custom_field.custom_table
-
     if @custom_field.update(custom_field_params.except(:field_type))
-      redirect_to edit_custom_table_path(@custom_table)
+      redirect_to edit_table_path(@custom_table)
     else
       render :edit, status: :unprocessable_entity
     end
   end
 
   def destroy
-    custom_table = @custom_field.custom_table
     @custom_field.destroy
-    redirect_to edit_custom_table_path(custom_table)
+    redirect_to edit_table_path(@custom_table)
   end
 
   private
@@ -60,13 +56,11 @@ class CustomFieldsController < ApplicationController
   end
 
   def set_custom_table
-    @custom_table = Current.organisation.custom_tables.find(params[:custom_table_id])
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:table_slug])
   end
 
   def set_custom_field
-    @custom_field = CustomField.joins(:custom_table)
-      .where(custom_tables: { organisation_id: Current.organisation.id })
-      .find(params[:id])
+    @custom_field = @custom_table.custom_fields.find(params[:id])
   end
 
   def custom_field_params

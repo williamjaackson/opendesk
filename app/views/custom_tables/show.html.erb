@@ -2,7 +2,7 @@
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold text-gray-900"><%= @custom_table.name %></h1>
     <div data-edit-only>
-      <%= link_to edit_custom_table_path(@custom_table), class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+      <%= link_to edit_table_path(@custom_table), class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
         <%= lucide_icon("pencil", class: "h-4 w-4") %>
       <% end %>
     </div>
@@ -15,13 +15,14 @@
       },
       rows: @records,
       actions: [ :view ],
-      search_url: custom_table_path(@custom_table),
-      create_url: new_custom_table_custom_record_path(@custom_table),
+      view_path: ->(record) { table_record_path(@custom_table, record) },
+      search_url: table_path(@custom_table),
+      create_url: new_table_record_path(@custom_table),
       create_label: "Add record",
       pagy: @pagy %>
   <% else %>
     <% if edit_mode? %>
-      <%= render "shared/alert", message: safe_join(["This table has no fields yet. Add fields from the ", link_to("edit page", edit_custom_table_path(@custom_table), class: "underline font-medium"), " before creating records."]), type: :warning %>
+      <%= render "shared/alert", message: safe_join(["This table has no fields yet. Add fields from the ", link_to("edit page", edit_table_path(@custom_table), class: "underline font-medium"), " before creating records."]), type: :warning %>
     <% else %>
       <%= render "shared/alert", message: "This table has no fields yet. Enable edit mode to configure fields.", type: :warning %>
     <% end %>

@@ -7,12 +7,12 @@
         <div class="flex items-center gap-1"
              <% if edit_mode? %>
              data-controller="sortable"
-             data-sortable-url-value="<%= reorder_custom_tables_path %>"
+             data-sortable-url-value="<%= reorder_tables_path %>"
              data-sortable-direction-value="horizontal"
              <% end %>>
           <% tables.each do |table| %>
-            <% active = (controller_name == "custom_tables" && params[:id] == table.id.to_s) || @custom_table&.id == table.id %>
-            <%= link_to custom_table_path(table),
+            <% active = (controller_name == "custom_tables" && params[:slug] == table.slug) || @custom_table&.id == table.id %>
+            <%= link_to table_path(table),
               data: edit_mode? ? { sortable_id: table.id } : {},
               class: "inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors #{edit_mode? ? 'cursor-grab active:cursor-grabbing' : ''} #{active ? 'text-gray-900 bg-gray-200' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}" do %>
               <span data-edit-only>
@@ -25,7 +25,7 @@
       </div>
       <div data-edit-only class="flex-shrink-0 pl-3 ml-3">
         <div class="relative flex justify-center w-7">
-          <%= link_to new_custom_table_path, class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+          <%= link_to new_table_path, class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
             <%= lucide_icon("plus", class: "h-4 w-4") %>
           <% end %>
           <% if tables.empty? && controller_name == "dashboard" %>

@@ -2,7 +2,7 @@ class CustomTablesController < ApplicationController
   before_action :require_organisation
 
   def show
-    @custom_table = Current.organisation.custom_tables.find(params[:id])
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
     @fields = @custom_table.custom_fields.where(show_on_preview: true).order(:position)
     @records = @custom_table.custom_records.includes(custom_values: :custom_field)
 
@@ -21,7 +21,7 @@ class CustomTablesController < ApplicationController
   end
 
   def edit
-    @custom_table = Current.organisation.custom_tables.find(params[:id])
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
     @fields = @custom_table.custom_fields.order(:position)
     @fields = @fields.where("name LIKE ?", "%#{CustomField.sanitize_sql_like(params[:query])}%") if params[:query].present?
     @pagy_fields, @fields = pagy(@fields, page_param: :fields_page)
@@ -52,17 +52,17 @@ class CustomTablesController < ApplicationController
     @custom_table.position = Current.organisation.custom_tables.maximum(:position).to_i + 1
 
     if @custom_table.save
-      redirect_to edit_custom_table_path(@custom_table)
+      redirect_to edit_table_path(@custom_table)
     else
       render :new, status: :unprocessable_entity
     end
   end
 
   def update
-    @custom_table = Current.organisation.custom_tables.find(params[:id])
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
 
     if @custom_table.update(custom_table_params)
-      redirect_to custom_table_path(@custom_table)
+      redirect_to table_path(@custom_table)
     else
       @fields = @custom_table.custom_fields.order(:position)
       @pagy_fields, @fields = pagy(@fields, page_param: :fields_page)
@@ -73,7 +73,7 @@ class CustomTablesController < ApplicationController
   end
 
   def destroy
-    @custom_table = Current.organisation.custom_tables.find(params[:id])
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
     @custom_table.destroy
     redirect_to root_path
   end

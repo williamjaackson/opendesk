@@ -5,9 +5,9 @@ class CustomRecordLinksController < ApplicationController
     @link = CustomRecordLink.new(custom_record_link_params)
 
     if @link.save
-      redirect_back fallback_location: custom_record_path(@link.source_record)
+      redirect_back fallback_location: table_record_path(@link.source_record.custom_table, @link.source_record)
     else
-      redirect_back fallback_location: custom_record_path(@link.source_record), alert: @link.errors.full_messages.join(", ")
+      redirect_back fallback_location: table_record_path(@link.source_record.custom_table, @link.source_record), alert: @link.errors.full_messages.join(", ")
     end
   end
 
@@ -17,7 +17,7 @@ class CustomRecordLinksController < ApplicationController
       .find(params[:id])
     record = @link.source_record
     @link.destroy
-    redirect_back fallback_location: custom_record_path(record)
+    redirect_back fallback_location: table_record_path(record.custom_table, record)
   end
 
   private

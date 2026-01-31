@@ -1,8 +1,8 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
-  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)]] %>
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)]] %>
   <%= render "shared/page_heading", title: "New record" %>
 
-  <%= form_with url: custom_table_custom_records_path(@custom_table) do |form| %>
+  <%= form_with url: table_records_path(@custom_table) do |form| %>
     <% @fields.each do |field| %>
       <div class="mb-4">
         <%= label_tag "values_#{field.id}", class: "block text-sm font-medium text-gray-700 mb-1" do %>
