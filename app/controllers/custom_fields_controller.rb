@@ -49,7 +49,9 @@ class CustomFieldsController < ApplicationController
   end
 
   def set_custom_field
-    @custom_field = CustomField.find(params[:id])
+    @custom_field = CustomField.joins(:custom_table)
+      .where(custom_tables: { organisation_id: Current.organisation.id })
+      .find(params[:id])
   end
 
   def custom_field_params
