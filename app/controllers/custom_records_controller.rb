@@ -10,7 +10,7 @@ class CustomRecordsController < ApplicationController
   def create
     @custom_record = @custom_table.custom_records.new
     @fields = @custom_table.custom_fields.order(:position)
-    values = params.dig(:custom_record, :values) || {}
+    values = params[:values] || {}
 
     missing = @fields.where(required: true).reject { |f| values[f.id.to_s].present? }
     if missing.any?
