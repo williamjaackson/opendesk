@@ -3,7 +3,10 @@ Rails.application.routes.draw do
   resource :organisation_session, only: [ :create, :destroy ]
   resources :passwords, param: :token
   resources :organisations, only: [ :index, :new, :create, :show ]
-  resources :custom_tables, only: [ :new, :create, :show ]
+  resources :custom_tables, only: [ :new, :create, :show, :edit, :update, :destroy ] do
+    resources :custom_fields, only: [ :new, :create, :edit, :update, :destroy ], shallow: true
+    resources :custom_records, only: [ :new, :create ]
+  end
   get "dashboard", to: "dashboard#show", as: :dashboard
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

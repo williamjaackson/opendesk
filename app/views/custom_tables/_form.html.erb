@@ -1,0 +1,35 @@
+<div class="space-y-8">
+  <%= form_with model: @custom_table do |form| %>
+    <%= render "shared/form_input", form: form, field: :name, label: "Table name", options: { required: true, autofocus: true, placeholder: "e.g. Contacts, Deals, Projects" } %>
+    <%= render "shared/button", label: @custom_table.persisted? ? "Save changes" : "Create table", form: form %>
+  <% end %>
+
+  <% if @custom_table.persisted? %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Fields</h2>
+
+      <%= render "shared/table",
+        columns: [
+          { header: "Name", accessor: :name },
+          { header: "Type", accessor: :field_type },
+          { header: "Required", accessor: ->(f) { f.required? ? "Yes" : "No" } }
+        ],
+        rows: @fields,
+        actions: [ :edit, :destroy ],
+        destroy_confirm: "This will delete all values for this field and any records left empty. Continue?",
+        search_url: edit_custom_table_path(@custom_table),
+        create_url: new_custom_table_custom_field_path(@custom_table),
+        create_label: "Add field" %>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-1">Danger zone</h2>
+      <p class="text-sm text-gray-500 mb-4">Deleting this table will permanently remove all its fields and records.</p>
+
+      <%= button_to "Delete table", custom_table_path(@custom_table),
+        method: :delete,
+        class: "inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer",
+        data: { turbo_confirm: "Are you sure you want to delete this table? This cannot be undone." } %>
+    </section>
+  <% end %>
+</div>

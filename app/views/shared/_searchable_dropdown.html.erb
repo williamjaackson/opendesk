@@ -1,0 +1,40 @@
+<%# locals: (form:, field:, options:, label: nil, selected: nil, placeholder: "Select...", search_placeholder: "Search...", required: false) %>
+<% selected_option = options.find { |o| o[1].to_s == selected.to_s } %>
+
+<div class="mb-4">
+  <%= form.label field, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+    <%= label || field.to_s.humanize %><% if required %><span class="text-red-500 ml-0.5">*</span><% end %>
+  <% end %>
+
+  <div data-controller="searchable-dropdown" class="relative">
+    <%= form.hidden_field field, data: { searchable_dropdown_target: "input" } %>
+
+    <button type="button" data-action="searchable-dropdown#toggle" data-searchable-dropdown-target="button"
+      class="flex items-center justify-between w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer">
+      <span data-searchable-dropdown-target="label" class="<%= 'text-gray-400' unless selected_option %>">
+        <%= selected_option ? selected_option[0] : placeholder %>
+      </span>
+      <%= lucide_icon("chevron-down", class: "h-4 w-4 text-gray-400") %>
+    </button>
+
+    <div data-searchable-dropdown-target="menu" class="hidden absolute z-10 mt-1 w-full rounded-md border border-gray-200 bg-white shadow-lg">
+      <div class="p-2 border-b border-gray-100">
+        <input type="text" data-searchable-dropdown-target="search" data-action="input->searchable-dropdown#filter"
+          placeholder="<%= search_placeholder %>"
+          class="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500">
+      </div>
+      <div class="py-1 max-h-60 overflow-y-auto">
+        <% options.each do |option_label, option_value| %>
+          <button type="button" data-action="searchable-dropdown#select" data-value="<%= option_value %>" data-label="<%= option_label %>"
+            data-searchable-dropdown-target="option"
+            class="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+            <span><%= option_label %></span>
+            <span data-check class="<%= 'invisible' unless option_value.to_s == selected.to_s %>">
+              <%= lucide_icon("check", class: "h-4 w-4 text-gray-900") %>
+            </span>
+          </button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
