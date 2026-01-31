@@ -3,12 +3,8 @@
 <% required = options[:required] %>
 
 <div class="mb-4">
-  <% if local_assigns[:label] %>
-    <%= form.label field, class: "block text-sm font-medium text-gray-700 mb-1" do %>
-      <%= label %><% if required %><span class="text-red-500 ml-0.5">*</span><% end %>
-    <% end %>
-  <% else %>
-    <%= form.label field, class: "block text-sm font-medium text-gray-700 mb-1" %>
+  <%= form.label field, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+    <%= local_assigns[:label] || field.to_s.humanize %><% if required %><span class="text-red-500 ml-0.5">*</span><% end %>
   <% end %>
   <%= form.send(type, field, **{ class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" }.merge(options)) %>
 </div>
