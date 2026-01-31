@@ -13,7 +13,7 @@
 
     <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
       class="flex items-center justify-between w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 cursor-pointer">
-      <span data-dropdown-target="label" class="<%= 'text-gray-400' unless selected_option %>">
+      <span data-dropdown-target="label" class="<%= selected_option ? 'text-gray-900' : 'text-gray-400' %>">
         <%= selected_option ? selected_option[0] : placeholder %>
       </span>
       <%= lucide_icon("chevron-down", class: "h-4 w-4 text-gray-400") %>

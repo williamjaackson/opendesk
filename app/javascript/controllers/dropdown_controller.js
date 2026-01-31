@@ -29,6 +29,8 @@ export default class extends Controller {
 
     this.inputTarget.value = value
     this.labelTarget.textContent = label
+    this.labelTarget.classList.remove("text-gray-400")
+    this.labelTarget.classList.add("text-gray-900")
     this.close()
 
     this.menuTarget.querySelectorAll("[data-value]").forEach((option) => {
