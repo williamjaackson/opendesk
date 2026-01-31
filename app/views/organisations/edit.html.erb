@@ -1,0 +1,17 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [["Organisations", organisations_path], [@organisation.name, organisation_path(@organisation)]] %>
+  <%= render "shared/page_heading", title: "Edit organisation" %>
+
+  <div class="space-y-8">
+    <%= form_with model: @organisation do |form| %>
+      <%= render "shared/form_input", form: form, field: :name, options: { required: true, autofocus: true } %>
+      <%= render "shared/button", label: "Save changes", form: form %>
+    <% end %>
+
+    <%= render "shared/danger_zone",
+      description: "Deleting this organisation will permanently remove all its tables, fields, and records.",
+      path: organisation_path(@organisation),
+      button_label: "Delete organisation",
+      confirm: "Are you sure you want to delete this organisation? This cannot be undone." %>
+  </div>
+</div>

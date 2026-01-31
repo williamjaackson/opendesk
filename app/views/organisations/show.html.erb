@@ -2,9 +2,14 @@
   <%= render "shared/breadcrumbs", crumbs: [["Organisations", organisations_path]] %>
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold text-gray-900"><%= @organisation.name %></h1>
-    <%= button_to organisation_session_path(organisation_id: @organisation.id), method: :post, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer" do %>
-      <%= lucide_icon("log-in", class: "h-4 w-4") %>
-      Start Managing
+    <%= link_to edit_organisation_path(@organisation), class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+      <%= lucide_icon("pencil", class: "h-4 w-4") %>
     <% end %>
   </div>
+
+  <%= button_to organisation_session_path(organisation_id: @organisation.id), method: :post, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer" do %>
+    <%= lucide_icon("log-in", class: "h-4 w-4") %>
+    Start Managing
+  <% end %>
+
 </div>

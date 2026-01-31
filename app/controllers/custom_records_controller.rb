@@ -1,12 +1,33 @@
 class CustomRecordsController < ApplicationController
   before_action :require_organisation
   before_action :set_custom_table, only: [ :new, :create ]
-  before_action :set_custom_record, only: [ :show, :destroy ]
+  before_action :set_custom_record, only: [ :show, :edit, :update, :destroy ]
 
   def show
     @custom_table = @custom_record.custom_table
     @fields = @custom_table.custom_fields.order(:position)
     @relationship_sections = build_relationship_sections
+  end
+
+  def edit
+    @custom_table = @custom_record.custom_table
+    @fields = @custom_table.custom_fields.order(:position)
+  end
+
+  def update
+    @custom_table = @custom_record.custom_table
+    @fields = @custom_table.custom_fields.order(:position)
+    values = params[:values] || {}
+
+    missing = @fields.where(required: true).reject { |f| values[f.id.to_s].present? }
+    if missing.any?
+      @custom_record.errors.add(:base, "Required fields missing: #{missing.map(&:name).join(', ')}")
+      render :edit, status: :unprocessable_entity
+      return
+    end
+
+    update_values(values)
+    redirect_to custom_record_path(@custom_record)
   end
 
   def destroy
@@ -60,6 +81,19 @@ class CustomRecordsController < ApplicationController
     values.each do |field_id, value|
       next if value.blank?
       @custom_record.custom_values.create!(custom_field_id: field_id, value: value)
+    end
+  end
+
+  def update_values(values)
+    @fields.each do |field|
+      cv = @custom_record.custom_values.find_or_initialize_by(custom_field_id: field.id)
+      value = values[field.id.to_s]
+
+      if value.present?
+        cv.update!(value: value)
+      elsif cv.persisted?
+        cv.destroy!
+      end
     end
   end
 
