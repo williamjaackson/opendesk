@@ -3,6 +3,8 @@ class CustomTablesController < ApplicationController
 
   def show
     @custom_table = Current.organisation.custom_tables.find(params[:id])
+    @fields = @custom_table.custom_fields.order(:position)
+    @records = @custom_table.custom_records.includes(custom_values: :custom_field)
   end
 
   def new
