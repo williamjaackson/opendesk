@@ -55,6 +55,6 @@ class CustomFieldsController < ApplicationController
   end
 
   def custom_field_params
-    params.require(:custom_field).permit(:name, :field_type, :required)
+    params.require(:custom_field).permit(:name, :field_type, :required, :show_on_preview)
   end
 end

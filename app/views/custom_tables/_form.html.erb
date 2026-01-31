@@ -12,7 +12,8 @@
         columns: [
           { header: "Name", accessor: :name },
           { header: "Type", accessor: :field_type },
-          { header: "Required", accessor: ->(f) { f.required? ? "Yes" : "No" } }
+          { header: "Required", accessor: ->(f) { f.required? ? "Yes" : "No" } },
+          { header: "Preview", accessor: ->(f) { f.show_on_preview? ? "Yes" : "No" } }
         ],
         rows: @fields,
         actions: [ :edit, :destroy ],

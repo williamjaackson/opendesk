@@ -17,6 +17,13 @@
       <% end %>
     </div>
 
+    <div class="mb-4">
+      <%= form.label :show_on_preview, class: "inline-flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer" do %>
+        <%= form.check_box :show_on_preview, class: "rounded border-gray-300 text-gray-900 focus:ring-gray-500" %>
+        Show on preview
+      <% end %>
+    </div>
+
     <%= render "shared/button", label: "Save changes", form: form %>
   <% end %>
 </div>
