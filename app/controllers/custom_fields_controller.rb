@@ -1,6 +1,7 @@
 class CustomFieldsController < ApplicationController
   before_action :require_organisation
   before_action :set_custom_table, only: [ :new, :create ]
+  before_action :set_custom_field, only: [ :edit, :update, :destroy ]
 
   def new
     @custom_field = @custom_table.custom_fields.new
@@ -17,11 +18,24 @@ class CustomFieldsController < ApplicationController
     end
   end
 
-  def destroy
-    @custom_field = CustomField.find(params[:id])
-    custom_table = @custom_field.custom_table
+  def edit
+    @custom_table = @custom_field.custom_table
+  end
 
-    redirect_to edit_custom_table_path(custom_table) if @custom_field.destroy
+  def update
+    @custom_table = @custom_field.custom_table
+
+    if @custom_field.update(custom_field_params.except(:field_type))
+      redirect_to edit_custom_table_path(@custom_table)
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    custom_table = @custom_field.custom_table
+    @custom_field.destroy
+    redirect_to edit_custom_table_path(custom_table)
   end
 
   private
@@ -32,6 +46,10 @@ class CustomFieldsController < ApplicationController
 
   def set_custom_table
     @custom_table = Current.organisation.custom_tables.find(params[:custom_table_id])
+  end
+
+  def set_custom_field
+    @custom_field = CustomField.find(params[:id])
   end
 
   def custom_field_params

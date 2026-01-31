@@ -22,6 +22,26 @@ class CustomFieldsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_custom_table_path(@custom_table)
   end
 
+  test "should get edit" do
+    get edit_custom_field_path(custom_fields(:name))
+    assert_response :success
+  end
+
+  test "should update custom field name" do
+    field = custom_fields(:name)
+    patch custom_field_path(field), params: { custom_field: { name: "Full name" } }
+
+    assert_redirected_to edit_custom_table_path(@custom_table)
+    assert_equal "Full name", field.reload.name
+  end
+
+  test "should not change field type on update" do
+    field = custom_fields(:name)
+    patch custom_field_path(field), params: { custom_field: { name: "Full name", field_type: "number" } }
+
+    assert_equal "text", field.reload.field_type
+  end
+
   test "should destroy custom field" do
     field = custom_fields(:email)
 

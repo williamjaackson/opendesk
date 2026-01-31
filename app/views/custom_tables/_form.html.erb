@@ -15,7 +15,7 @@
           { header: "Required", accessor: ->(f) { f.required? ? "Yes" : "No" } }
         ],
         rows: @fields,
-        actions: [ :destroy ],
+        actions: [ :edit, :destroy ],
         destroy_confirm: "This will delete all values for this field and any records left empty. Continue?",
         search_url: edit_custom_table_path(@custom_table),
         create_url: new_custom_table_custom_field_path(@custom_table),
