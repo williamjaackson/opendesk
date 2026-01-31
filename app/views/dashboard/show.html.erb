@@ -1,4 +1,4 @@
-<div class="flex items-center justify-center" style="min-height: calc(100vh - 7rem);">
+<div class="relative flex items-center justify-center" style="min-height: calc(100vh - 7rem);">
   <div class="text-center px-4">
     <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-200 mb-5">
       <%= lucide_icon("table", class: "h-5 w-5 text-gray-500") %>
@@ -15,4 +15,14 @@
       <%= render "shared/button", label: "New table", href: new_custom_table_path, icon: "plus" %>
     </div>
   </div>
+
+  <% unless edit_mode? %>
+    <div class="absolute top-6 right-12 flex items-start gap-2 text-gray-300">
+      <span class="text-xs font-medium mt-2.5">click here</span>
+      <svg width="36" height="40" viewBox="0 0 36 40" fill="none" class="flex-shrink-0">
+        <path d="M2 38C8 20 20 8 34 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <path d="M28 2L34 4L30 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  <% end %>
 </div>
