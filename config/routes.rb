@@ -18,8 +18,6 @@ Rails.application.routes.draw do
   end
   resources :custom_relationships, only: [ :edit, :update, :destroy ]
   resources :custom_record_links, only: [ :create, :destroy ]
-  get "dashboard", to: "dashboard#show", as: :dashboard
-
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
@@ -31,7 +29,7 @@ Rails.application.routes.draw do
   authenticated = ->(req) { req.cookie_jar.signed[:session_id].present? && Session.exists?(req.cookie_jar.signed[:session_id]) }
 
   constraints(authenticated) do
-    root "organisations#index", as: :authenticated_root
+    root "dashboard#show", as: :authenticated_root
   end
   root "pages#landing"
 end

@@ -1,3 +1,19 @@
-<div class="max-w-4xl mx-auto py-8 px-4">
-  <%= render "shared/page_heading", title: "Dashboard" %>
+<div class="flex items-center justify-center" style="min-height: calc(100vh - 7rem);">
+  <div class="text-center px-4">
+    <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-200 mb-5">
+      <%= lucide_icon("table", class: "h-5 w-5 text-gray-500") %>
+    </div>
+    <h1 class="text-base font-medium text-gray-900 mb-1">Create your first table</h1>
+    <p class="text-sm text-gray-400 max-w-xs mx-auto mb-6">Tables hold your data. Add one to get started.</p>
+
+    <label data-controller="edit-mode" data-edit-mode-url-value="<%= edit_mode_path %>"
+      class="inline-flex items-center gap-2.5 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors">
+      <span>Edit mode</span>
+      <span class="relative inline-block w-9 h-5">
+        <input type="checkbox" class="peer sr-only" <%= "checked" if edit_mode? %> data-action="change->edit-mode#toggle">
+        <span class="block w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-gray-900 transition-colors"></span>
+        <span class="absolute left-0.5 top-0.5 h-4 w-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></span>
+      </span>
+    </label>
+  </div>
 </div>

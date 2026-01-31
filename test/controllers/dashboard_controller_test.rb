@@ -1,10 +1,10 @@
 require "test_helper"
 
 class RootRoutingTest < ActionDispatch::IntegrationTest
-  test "authenticated users see organisations index" do
+  test "authenticated users are redirected to organisations" do
     sign_in_as users(:one)
     get root_path
-    assert_response :success
+    assert_redirected_to organisations_path
   end
 
   test "unauthenticated users see landing page" do

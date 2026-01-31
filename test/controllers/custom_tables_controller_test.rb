@@ -53,7 +53,7 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
       delete custom_table_path(table)
     end
 
-    assert_redirected_to dashboard_path
+    assert_redirected_to root_path
   end
 
   test "should reorder custom tables" do

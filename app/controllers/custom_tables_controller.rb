@@ -75,7 +75,7 @@ class CustomTablesController < ApplicationController
   def destroy
     @custom_table = Current.organisation.custom_tables.find(params[:id])
     @custom_table.destroy
-    redirect_to dashboard_path
+    redirect_to root_path
   end
 
   private

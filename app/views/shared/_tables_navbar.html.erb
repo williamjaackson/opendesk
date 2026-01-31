@@ -24,9 +24,20 @@
         </div>
       </div>
       <div data-edit-only class="flex-shrink-0 pl-3 ml-3">
-        <%= link_to new_custom_table_path, class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
-          <%= lucide_icon("plus", class: "h-4 w-4") %>
-        <% end %>
+        <div class="relative flex justify-center w-7">
+          <%= link_to new_custom_table_path, class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+            <%= lucide_icon("plus", class: "h-4 w-4") %>
+          <% end %>
+          <% if tables.empty? && controller_name == "dashboard" %>
+            <div class="absolute top-full mt-6 left-0 w-7 flex flex-col items-center pointer-events-none">
+              <svg width="14" height="32" viewBox="0 0 14 32" fill="none">
+                <path d="M7 32 L7 6" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+                <path d="M2 11 L7 4 L12 11" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+              </svg>
+              <span class="text-xs font-medium text-gray-400 mt-1.5 whitespace-nowrap">click here</span>
+            </div>
+          <% end %>
+        </div>
       </div>
     </div>
   </div>
