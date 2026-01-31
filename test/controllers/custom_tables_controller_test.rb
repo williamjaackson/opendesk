@@ -18,6 +18,7 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
 
     table = CustomTable.last
     assert_equal "Projects", table.name
+    assert_equal organisations(:one), table.organisation
     assert_redirected_to edit_custom_table_path(table)
   end
 
