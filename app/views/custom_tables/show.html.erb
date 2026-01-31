@@ -1,15 +1,17 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
-  <h1 class="text-2xl font-bold text-gray-900 mb-4"><%= @custom_table.name %></h1>
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-900"><%= @custom_table.name %></h1>
+    <%= link_to edit_custom_table_path(@custom_table), class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+      <%= lucide_icon("pencil", class: "h-4 w-4") %>
+    <% end %>
+  </div>
 
-  <% if @fields.any? %>
-    <%= render "shared/table",
-      columns: @fields.map { |field|
-        { header: field.name, accessor: ->(record) { record.custom_values.detect { |v| v.custom_field_id == field.id }&.value } }
-      },
-      rows: @records %>
-  <% else %>
-    <div class="rounded-lg border border-gray-200 bg-white px-6 py-12 text-center text-sm text-gray-500">
-      No fields defined yet. Add fields to start using this table.
-    </div>
-  <% end %>
+  <%= render "shared/table",
+    columns: @fields.map { |field|
+      { header: field.name, accessor: ->(record) { record.custom_values.detect { |v| v.custom_field_id == field.id }&.value } }
+    },
+    rows: @records,
+    search_url: custom_table_path(@custom_table),
+    create_url: new_custom_table_custom_record_path(@custom_table),
+    create_label: "Add record" %>
 </div>

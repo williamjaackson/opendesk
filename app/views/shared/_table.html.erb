@@ -2,9 +2,13 @@
 <% row_actions = actions - [:create] %>
 <% model_class = rows.respond_to?(:klass) ? rows.klass : rows.first&.class %>
 <% search_url = local_assigns[:search_url] %>
+<% create_url = local_assigns[:create_url] %>
+<% create_label = local_assigns.fetch(:create_label, "Create Record") %>
 <% pagy = local_assigns[:pagy] %>
 
-<% if actions.include?(:create) || search_url %>
+<% create_href = create_url || (actions.include?(:create) && model_class ? new_polymorphic_path(model_class) : nil) %>
+
+<% if create_href || search_url %>
   <div class="flex items-center justify-between mb-2">
     <div class="w-full max-w-sm">
       <% if search_url %>
@@ -19,8 +23,8 @@
       <% end %>
     </div>
     <div>
-      <% if actions.include?(:create) && model_class %>
-        <%= render "shared/button", label: "Create Record", href: new_polymorphic_path(model_class), icon: "plus" %>
+      <% if create_href %>
+        <%= render "shared/button", label: create_label, href: create_href, icon: "plus" %>
       <% end %>
     </div>
   </div>
