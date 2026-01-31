@@ -14,8 +14,7 @@ export default class extends Controller {
 
   updateDefaults() {
     const tableId = this.targetTableIdTarget.value
-    const kind = this.kindTarget.value
-    if (!tableId || !kind) return
+    if (!tableId) return
 
     const option = this.element.querySelector(`[data-action="dropdown#select"][data-value="${tableId}"]`)
     if (!option) return
@@ -23,14 +22,22 @@ export default class extends Controller {
     const tablePlural = option.dataset.label
     const tableSingular = option.dataset.singular ?? tablePlural
 
+    this.updateKindLabels(tablePlural, tableSingular)
+
+    const kind = this.kindTarget.value
+    if (!kind) return
+
     let autoName, autoInverse
 
-    if (kind === "has_one") {
+    if (kind === "one_to_one") {
       autoName = tableSingular
       autoInverse = this.sourceTableSingularValue
-    } else if (kind === "has_many") {
+    } else if (kind === "one_to_many") {
       autoName = tablePlural
       autoInverse = this.sourceTableSingularValue
+    } else if (kind === "many_to_one") {
+      autoName = tableSingular
+      autoInverse = this.sourceTableValue
     } else {
       autoName = tablePlural
       autoInverse = this.sourceTableValue
@@ -47,5 +54,33 @@ export default class extends Controller {
       inverseField.value = autoInverse
     }
     this.lastAutoInverse = autoInverse
+  }
+
+  updateKindLabels(targetPlural, targetSingular) {
+    const sourcePlural = this.sourceTableValue
+    const sourceSingular = this.sourceTableSingularValue
+
+    const labels = {
+      one_to_one: `One ${sourceSingular} to one ${targetSingular}`,
+      one_to_many: `One ${sourceSingular} to many ${targetPlural}`,
+      many_to_one: `Many ${sourcePlural} to one ${targetSingular}`,
+      many_to_many: `Many ${sourcePlural} to many ${targetPlural}`
+    }
+
+    const dropdown = this.kindTarget.closest("[data-controller='dropdown']")
+    if (!dropdown) return
+
+    Object.entries(labels).forEach(([value, label]) => {
+      const btn = dropdown.querySelector(`[data-value="${value}"]`)
+      if (btn) {
+        btn.dataset.label = label
+        btn.querySelector("span").textContent = label
+      }
+    })
+
+    if (this.kindTarget.value && labels[this.kindTarget.value]) {
+      const button = dropdown.querySelector("[data-dropdown-target='button']")
+      if (button) button.value = labels[this.kindTarget.value]
+    }
   }
 }
