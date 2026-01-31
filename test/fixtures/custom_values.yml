@@ -1,11 +1,9 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+alice_name:
+  custom_record: alice
+  custom_field: name
+  value: Alice Smith
 
-one:
-  custom_record: one
-  custom_field: one
-  value: MyText
-
-two:
-  custom_record: two
-  custom_field: two
-  value: MyText
+bob_name:
+  custom_record: bob
+  custom_field: name
+  value: Bob Jones

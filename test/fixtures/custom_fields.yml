@@ -1,15 +1,13 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+name:
+  custom_table: contacts
+  name: Name
+  field_type: text
+  required: true
+  position: 0
 
-one:
-  custom_table: one
-  name: MyString
-  field_type: MyString
-  required: false
-  position: 1
-
-two:
-  custom_table: two
-  name: MyString
-  field_type: MyString
+email:
+  custom_table: contacts
+  name: Email
+  field_type: text
   required: false
   position: 1
