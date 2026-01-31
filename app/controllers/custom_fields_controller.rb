@@ -23,7 +23,8 @@ class CustomFieldsController < ApplicationController
 
   def create
     @custom_field = @custom_table.custom_fields.new(custom_field_params)
-    @custom_field.position = @custom_table.custom_fields.maximum(:position).to_i + 1
+    max = @custom_table.custom_fields.maximum(:position)
+    @custom_field.position = max ? max + 1 : 0
 
     if @custom_field.save
       redirect_to edit_custom_table_path(@custom_table)

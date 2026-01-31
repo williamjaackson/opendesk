@@ -13,7 +13,7 @@
           { header: "Name", accessor: ->(f) {
             tag.span(data: { field_name: true }) do
               concat f.name
-              if f.position == 0
+              if @pagy_fields.page == 1 && f == @fields.first
                 concat " ".html_safe
                 concat tag.span("Primary", data: { primary_badge: true }, class: "ml-2 inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600")
               end
