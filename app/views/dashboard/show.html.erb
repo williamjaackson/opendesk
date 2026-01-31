@@ -1,12 +1,28 @@
-<div class="max-w-sm mx-auto py-32 px-4 text-center">
-  <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-    <%= lucide_icon("table", class: "h-6 w-6 text-gray-400") %>
+<div class="max-w-lg mx-auto py-20 px-4">
+  <h1 class="text-lg font-semibold text-gray-900 text-center mb-8">Get started</h1>
+
+  <div class="space-y-4">
+    <% steps = [
+      { icon: "toggle-right", title: "Enable edit mode", description: "Click your avatar in the top right and turn on edit mode." },
+      { icon: "table", title: "Create a table", description: "Hit the + button in the tab bar to add your first table." },
+      { icon: "columns-3", title: "Add fields", description: "Open the table's edit page to define columns like Name, Email, or Status." },
+      { icon: "rows-3", title: "Add records", description: "Start adding data. Each row is a record in your table." }
+    ] %>
+
+    <% steps.each_with_index do |step, i| %>
+      <div class="flex items-start gap-4 rounded-lg border border-gray-200 bg-white p-4">
+        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-white text-sm font-medium">
+          <%= i + 1 %>
+        </div>
+        <div>
+          <p class="text-sm font-medium text-gray-900"><%= step[:title] %></p>
+          <p class="text-sm text-gray-500 mt-0.5"><%= step[:description] %></p>
+        </div>
+      </div>
+    <% end %>
   </div>
-  <h1 class="text-lg font-semibold text-gray-900 mb-1">No tables yet</h1>
-  <p class="text-sm text-gray-500 mb-6">Tables organize your data into rows and columns. Create your first one to get started.</p>
-  <% if edit_mode? %>
+
+  <div class="mt-8 text-center" data-edit-only>
     <%= render "shared/button", label: "Create table", href: new_custom_table_path, icon: "plus" %>
-  <% else %>
-    <p class="text-xs text-gray-400">Enable edit mode to create a table.</p>
-  <% end %>
+  </div>
 </div>
