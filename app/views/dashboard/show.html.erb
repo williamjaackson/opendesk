@@ -1,28 +1,18 @@
-<div class="max-w-lg mx-auto py-20 px-4">
-  <h1 class="text-lg font-semibold text-gray-900 text-center mb-8">Get started</h1>
-
-  <div class="space-y-4">
-    <% steps = [
-      { icon: "toggle-right", title: "Enable edit mode", description: "Click your avatar in the top right and turn on edit mode." },
-      { icon: "table", title: "Create a table", description: "Hit the + button in the tab bar to add your first table." },
-      { icon: "columns-3", title: "Add fields", description: "Open the table's edit page to define columns like Name, Email, or Status." },
-      { icon: "rows-3", title: "Add records", description: "Start adding data. Each row is a record in your table." }
-    ] %>
-
-    <% steps.each_with_index do |step, i| %>
-      <div class="flex items-start gap-4 rounded-lg border border-gray-200 bg-white p-4">
-        <div class="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-white text-sm font-medium">
-          <%= i + 1 %>
-        </div>
-        <div>
-          <p class="text-sm font-medium text-gray-900"><%= step[:title] %></p>
-          <p class="text-sm text-gray-500 mt-0.5"><%= step[:description] %></p>
-        </div>
-      </div>
-    <% end %>
-  </div>
-
-  <div class="mt-8 text-center" data-edit-only>
-    <%= render "shared/button", label: "Create table", href: new_custom_table_path, icon: "plus" %>
+<div class="flex items-center justify-center" style="min-height: calc(100vh - 7rem);">
+  <div class="text-center px-4">
+    <div class="inline-flex items-center justify-center w-10 h-10 rounded-lg bg-gray-200 mb-5">
+      <%= lucide_icon("table", class: "h-5 w-5 text-gray-500") %>
+    </div>
+    <h1 class="text-base font-medium text-gray-900 mb-1">Create your first table</h1>
+    <p class="text-sm text-gray-400 max-w-xs mx-auto">
+      <% if edit_mode? %>
+        Tables hold your data. Add one to get started.
+      <% else %>
+        Turn on <span class="font-medium text-gray-500">edit mode</span> from your account menu to begin.
+      <% end %>
+    </p>
+    <div class="mt-5" data-edit-only>
+      <%= render "shared/button", label: "New table", href: new_custom_table_path, icon: "plus" %>
+    </div>
   </div>
 </div>
