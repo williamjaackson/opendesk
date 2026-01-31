@@ -8,7 +8,7 @@ class CustomTablesController < ApplicationController
 
     if params[:query].present?
       matching_ids = CustomValue.where(custom_field: @fields)
-        .where("value LIKE ?", "%#{params[:query]}%")
+        .where("value LIKE ?", "%#{CustomValue.sanitize_sql_like(params[:query])}%")
         .select(:custom_record_id)
       @records = @records.where(id: matching_ids)
     end
@@ -21,7 +21,7 @@ class CustomTablesController < ApplicationController
   def edit
     @custom_table = Current.organisation.custom_tables.find(params[:id])
     @fields = @custom_table.custom_fields.order(:position)
-    @fields = @fields.where("name LIKE ?", "%#{params[:query]}%") if params[:query].present?
+    @fields = @fields.where("name LIKE ?", "%#{CustomField.sanitize_sql_like(params[:query])}%") if params[:query].present?
   end
 
   def create
