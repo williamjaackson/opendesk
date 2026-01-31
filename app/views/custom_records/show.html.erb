@@ -1,0 +1,13 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)]] %>
+  <%= render "shared/page_heading", title: "Record" %>
+
+  <dl class="space-y-4">
+    <% @fields.each do |field| %>
+      <div>
+        <dt class="text-sm font-medium text-gray-500"><%= field.name %></dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @custom_record.custom_values.detect { |v| v.custom_field_id == field.id }&.value.presence || "—" %></dd>
+      </div>
+    <% end %>
+  </dl>
+</div>

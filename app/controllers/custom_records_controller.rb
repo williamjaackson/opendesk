@@ -1,6 +1,12 @@
 class CustomRecordsController < ApplicationController
   before_action :require_organisation
-  before_action :set_custom_table
+  before_action :set_custom_table, only: [ :new, :create ]
+  before_action :set_custom_record, only: [ :show ]
+
+  def show
+    @custom_table = @custom_record.custom_table
+    @fields = @custom_table.custom_fields.order(:position)
+  end
 
   def new
     @custom_record = @custom_table.custom_records.new
@@ -27,6 +33,10 @@ class CustomRecordsController < ApplicationController
 
   def set_custom_table
     @custom_table = Current.organisation.custom_tables.find(params[:custom_table_id])
+  end
+
+  def set_custom_record
+    @custom_record = CustomRecord.find(params[:id])
   end
 
   def save_values
