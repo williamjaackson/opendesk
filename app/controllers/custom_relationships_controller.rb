@@ -50,7 +50,9 @@ class CustomRelationshipsController < ApplicationController
   end
 
   def set_custom_relationship
-    @custom_relationship = CustomRelationship.find(params[:id])
+    @custom_relationship = CustomRelationship.joins(:source_table)
+      .where(custom_tables: { organisation_id: Current.organisation.id })
+      .find(params[:id])
   end
 
   def custom_relationship_params

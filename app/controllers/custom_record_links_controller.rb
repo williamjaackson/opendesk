@@ -12,7 +12,9 @@ class CustomRecordLinksController < ApplicationController
   end
 
   def destroy
-    @link = CustomRecordLink.find(params[:id])
+    @link = CustomRecordLink.joins(custom_relationship: :source_table)
+      .where(custom_tables: { organisation_id: Current.organisation.id })
+      .find(params[:id])
     record = @link.source_record
     @link.destroy
     redirect_back fallback_location: custom_record_path(record)

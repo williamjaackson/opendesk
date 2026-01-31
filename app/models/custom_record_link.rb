@@ -5,8 +5,21 @@ class CustomRecordLink < ApplicationRecord
 
   validates :target_record_id, uniqueness: { scope: [ :custom_relationship_id, :source_record_id ] }
   validate :enforce_cardinality, on: :create
+  validate :prevent_self_link
+  validate :records_match_relationship_tables
 
   private
+
+  def prevent_self_link
+    return if source_record_id.blank? || target_record_id.blank?
+    errors.add(:base, "cannot link a record to itself") if source_record_id == target_record_id
+  end
+
+  def records_match_relationship_tables
+    return unless custom_relationship && source_record && target_record
+    errors.add(:source_record, "does not belong to the source table") unless source_record.custom_table_id == custom_relationship.source_table_id
+    errors.add(:target_record, "does not belong to the target table") unless target_record.custom_table_id == custom_relationship.target_table_id
+  end
 
   def enforce_cardinality
     return unless custom_relationship

@@ -21,7 +21,7 @@ export default class extends Controller {
     if (!option) return
 
     const tablePlural = option.dataset.label
-    const tableSingular = option.dataset.singular || tablePlural
+    const tableSingular = option.dataset.singular ?? tablePlural
 
     let autoName, autoInverse
 
