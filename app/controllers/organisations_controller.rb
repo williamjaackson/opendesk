@@ -26,6 +26,26 @@ class OrganisationsController < ApplicationController
     end
   end
 
+  def edit
+    @organisation = Current.user.organisations.find(params[:id])
+  end
+
+  def update
+    @organisation = Current.user.organisations.find(params[:id])
+
+    if @organisation.update(organisation_params)
+      redirect_to organisation_path(@organisation)
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  def destroy
+    @organisation = Current.user.organisations.find(params[:id])
+    @organisation.destroy
+    redirect_to organisations_path
+  end
+
   private
 
   def organisation_params

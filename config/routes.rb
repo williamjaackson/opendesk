@@ -2,10 +2,10 @@ Rails.application.routes.draw do
   resource :session
   resource :organisation_session, only: [ :create, :destroy ]
   resources :passwords, param: :token
-  resources :organisations, only: [ :index, :new, :create, :show ]
+  resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   resources :custom_tables, only: [ :new, :create, :show, :edit, :update, :destroy ] do
     resources :custom_fields, only: [ :new, :create, :edit, :update, :destroy ], shallow: true
-    resources :custom_records, only: [ :new, :create, :show, :destroy ], shallow: true
+    resources :custom_records, only: [ :new, :create, :show, :edit, :update, :destroy ], shallow: true
     resources :custom_relationships, only: [ :new, :create ], shallow: true
   end
   resources :custom_relationships, only: [ :edit, :update, :destroy ]

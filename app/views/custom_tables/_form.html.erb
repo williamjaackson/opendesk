@@ -56,14 +56,10 @@
         page_param: :relationships_page %>
     </section>
 
-    <section>
-      <h2 class="text-lg font-semibold text-gray-900 mb-1">Danger zone</h2>
-      <p class="text-sm text-gray-500 mb-4">Deleting this table will permanently remove all its fields and records.</p>
-
-      <%= button_to "Delete table", custom_table_path(@custom_table),
-        method: :delete,
-        class: "inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer",
-        data: { turbo_confirm: "Are you sure you want to delete this table? This cannot be undone." } %>
-    </section>
+    <%= render "shared/danger_zone",
+      description: "Deleting this table will permanently remove all its fields and records.",
+      path: custom_table_path(@custom_table),
+      button_label: "Delete table",
+      confirm: "Are you sure you want to delete this table? This cannot be undone." %>
   <% end %>
 </div>

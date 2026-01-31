@@ -1,6 +1,11 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
   <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)]] %>
-  <%= render "shared/page_heading", title: "Record" %>
+  <div class="flex items-center justify-between mb-4">
+    <h1 class="text-2xl font-bold text-gray-900">Record</h1>
+    <%= link_to edit_custom_record_path(@custom_record), class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+      <%= lucide_icon("pencil", class: "h-4 w-4") %>
+    <% end %>
+  </div>
 
   <dl class="space-y-4">
     <% @fields.each do |field| %>
@@ -19,10 +24,4 @@
     </div>
   <% end %>
 
-  <div class="pt-8">
-    <%= button_to "Delete record", custom_record_path(@custom_record),
-      method: :delete,
-      class: "inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer",
-      data: { turbo_confirm: "Are you sure you want to delete this record?" } %>
-  </div>
 </div>
