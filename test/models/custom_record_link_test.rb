@@ -15,7 +15,7 @@ class CustomRecordLinkTest < ActiveSupport::TestCase
     assert_not link.valid?
   end
 
-  test "has_many prevents target linking to multiple sources" do
+  test "one_to_many prevents target linking to multiple sources" do
     link = CustomRecordLink.new(
       custom_relationship: custom_relationships(:contacts_deals),
       source_record: custom_records(:bob),
@@ -33,7 +33,7 @@ class CustomRecordLinkTest < ActiveSupport::TestCase
     assert link.valid?
   end
 
-  test "has_one prevents source from linking to multiple targets" do
+  test "one_to_one prevents source from linking to multiple targets" do
     CustomRecordLink.create!(
       custom_relationship: custom_relationships(:deals_projects),
       source_record: custom_records(:deal_one),
@@ -47,7 +47,7 @@ class CustomRecordLinkTest < ActiveSupport::TestCase
     assert_not link.valid?
   end
 
-  test "has_one prevents target from linking to multiple sources" do
+  test "one_to_one prevents target from linking to multiple sources" do
     CustomRecordLink.create!(
       custom_relationship: custom_relationships(:deals_projects),
       source_record: custom_records(:deal_one),
@@ -59,5 +59,33 @@ class CustomRecordLinkTest < ActiveSupport::TestCase
       target_record: custom_records(:project_one)
     )
     assert_not link.valid?
+  end
+
+  test "many_to_one prevents source from linking to multiple targets" do
+    CustomRecordLink.create!(
+      custom_relationship: custom_relationships(:projects_contacts),
+      source_record: custom_records(:project_one),
+      target_record: custom_records(:alice)
+    )
+    link = CustomRecordLink.new(
+      custom_relationship: custom_relationships(:projects_contacts),
+      source_record: custom_records(:project_one),
+      target_record: custom_records(:bob)
+    )
+    assert_not link.valid?
+  end
+
+  test "many_to_one allows target to be linked from multiple sources" do
+    CustomRecordLink.create!(
+      custom_relationship: custom_relationships(:projects_contacts),
+      source_record: custom_records(:project_one),
+      target_record: custom_records(:alice)
+    )
+    link = CustomRecordLink.new(
+      custom_relationship: custom_relationships(:projects_contacts),
+      source_record: custom_records(:project_two),
+      target_record: custom_records(:alice)
+    )
+    assert link.valid?
   end
 end

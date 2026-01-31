@@ -16,7 +16,7 @@
 
     <%= render "shared/dropdown", form: form, field: :kind, label: "Kind", required: true,
       selected: @custom_relationship.kind,
-      options: [["Has one", "has_one"], ["Has many", "has_many"], ["Many to many", "many_to_many"]],
+      options: [["One to one", "one_to_one"], ["One to many", "one_to_many"], ["Many to one", "many_to_one"], ["Many to many", "many_to_many"]],
       input_data: { relationship_form_target: "kind", action: "change->relationship-form#updateDefaults" } %>
 
     <div class="mb-4">

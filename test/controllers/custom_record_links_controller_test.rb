@@ -31,7 +31,7 @@ class CustomRecordLinksControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "should not link target to multiple sources in has_many" do
+  test "should not link target to multiple sources in one_to_many" do
     assert_no_difference "CustomRecordLink.count" do
       post custom_record_links_path, params: {
         custom_record_link: {

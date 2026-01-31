@@ -35,7 +35,7 @@ class CustomRelationshipTest < ActiveSupport::TestCase
       target_table: custom_tables(:contacts),
       name: "Parent",
       inverse_name: "Children",
-      kind: "has_many"
+      kind: "one_to_many"
     )
     assert rel.valid?
   end
