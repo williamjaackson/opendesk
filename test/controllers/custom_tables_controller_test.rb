@@ -17,6 +17,15 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to custom_table_path(CustomTable.last)
+    assert_equal organisations(:one), CustomTable.last.organisation
+  end
+
+  test "should not create custom table with blank name" do
+    assert_no_difference "CustomTable.count" do
+      post custom_tables_path, params: { custom_table: { name: "" } }
+    end
+
+    assert_response :unprocessable_entity
   end
 
   test "should show custom table" do
