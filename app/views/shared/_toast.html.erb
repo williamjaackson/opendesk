@@ -1,0 +1,11 @@
+<% colors = type.to_s == "alert" ? "bg-red-50 text-red-800 border-red-200" : "bg-green-50 text-green-800 border-green-200" %>
+<% icon_color = type.to_s == "alert" ? "text-red-400 hover:text-red-600" : "text-green-400 hover:text-green-600" %>
+
+<div data-controller="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-md">
+  <div class="flex items-center justify-between gap-3 px-4 py-3 rounded-lg border shadow-lg <%= colors %>">
+    <p class="text-sm font-medium"><%= message %></p>
+    <button type="button" data-action="toast#dismiss" class="shrink-0 <%= icon_color %> transition-colors cursor-pointer">
+      <%= lucide_icon("x", class: "h-4 w-4") %>
+    </button>
+  </div>
+</div>

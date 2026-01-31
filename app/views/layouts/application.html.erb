@@ -64,6 +64,9 @@
     <% if authenticated? && managing_organisation? %>
       <%= render "shared/tables_navbar" %>
     <% end %>
+    <% flash.each do |type, message| %>
+      <%= render "shared/toast", type: type, message: message %>
+    <% end %>
     <%= yield %>
   </body>
 </html>

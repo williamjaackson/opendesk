@@ -1,10 +1,16 @@
 <% type = local_assigns.fetch(:type, :text_field) %>
 <% options = local_assigns.fetch(:options, {}) %>
 <% required = options[:required] %>
+<% errors = form.object&.errors&.[](field) || [] %>
 
 <div class="mb-4">
   <%= form.label field, class: "block text-sm font-medium text-gray-700 mb-1" do %>
     <%= local_assigns[:label] || field.to_s.humanize %><% if required %><span class="text-red-500 ml-0.5">*</span><% end %>
   <% end %>
-  <%= form.send(type, field, **{ class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" }.merge(options)) %>
+  <% input_classes = "block w-full rounded-md border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
+  <% input_classes += errors.any? ? " border-red-300 focus:border-red-500 focus:ring-red-500" : " border-gray-300 focus:border-gray-500 focus:ring-gray-500" %>
+  <%= form.send(type, field, **{ class: input_classes }.merge(options)) %>
+  <% errors.each do |error| %>
+    <p class="mt-1 text-sm text-red-600"><%= error %></p>
+  <% end %>
 </div>
