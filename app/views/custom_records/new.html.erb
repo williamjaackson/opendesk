@@ -2,13 +2,13 @@
   <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)]] %>
   <%= render "shared/page_heading", title: "New record" %>
 
-  <%= form_with model: [@custom_table, @custom_record] do |form| %>
+  <%= form_with url: custom_table_custom_records_path(@custom_table) do |form| %>
     <% @fields.each do |field| %>
       <div class="mb-4">
-        <%= form.label "values[#{field.id}]", class: "block text-sm font-medium text-gray-700 mb-1" do %>
+        <%= label_tag "values_#{field.id}", class: "block text-sm font-medium text-gray-700 mb-1" do %>
           <%= field.name %><% if field.required? %><span class="text-red-500 ml-0.5">*</span><% end %>
         <% end %>
-        <%= form.text_field "values[#{field.id}]", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500", required: field.required? %>
+        <%= text_field_tag "values[#{field.id}]", nil, id: "values_#{field.id}", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500", required: field.required? %>
       </div>
     <% end %>
 

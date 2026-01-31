@@ -30,7 +30,7 @@ class CustomRecordsController < ApplicationController
   end
 
   def save_values
-    values = params.dig(:custom_record, :values) || {}
+    values = params[:values] || {}
     values.each do |field_id, value|
       @custom_record.custom_values.create!(custom_field_id: field_id, value: value)
     end
