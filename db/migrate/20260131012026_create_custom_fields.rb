@@ -10,6 +10,6 @@ class CreateCustomFields < ActiveRecord::Migration[8.1]
       t.timestamps
     end
 
-    add_index :custom_fields, [:custom_table_id, :position]
+    add_index :custom_fields, [ :custom_table_id, :position ]
   end
 end
