@@ -1,9 +1,12 @@
-<div class="max-w-md mx-auto py-24 px-4 text-center">
-  <h1 class="text-xl font-semibold text-gray-900 mb-2">No tables yet</h1>
-  <p class="text-sm text-gray-500 mb-6">Create your first table to get started.</p>
+<div class="max-w-sm mx-auto py-32 px-4 text-center">
+  <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
+    <%= lucide_icon("table", class: "h-6 w-6 text-gray-400") %>
+  </div>
+  <h1 class="text-lg font-semibold text-gray-900 mb-1">No tables yet</h1>
+  <p class="text-sm text-gray-500 mb-6">Tables organize your data into rows and columns. Create your first one to get started.</p>
   <% if edit_mode? %>
     <%= render "shared/button", label: "Create table", href: new_custom_table_path, icon: "plus" %>
   <% else %>
-    <p class="text-sm text-gray-500">Enable edit mode to create a table.</p>
+    <p class="text-xs text-gray-400">Enable edit mode to create a table.</p>
   <% end %>
 </div>
