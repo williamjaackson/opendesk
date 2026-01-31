@@ -1,0 +1,22 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)], ["Edit", edit_custom_table_path(@custom_table)]] %>
+  <%= render "shared/page_heading", title: "Edit relationship" %>
+
+  <%= form_with model: @custom_relationship, url: custom_relationship_path(@custom_relationship) do |form| %>
+    <%= render "shared/form_input", form: form, field: :name, label: "Name", options: { required: true, autofocus: true } %>
+
+    <div class="mb-4">
+      <span class="block text-sm font-medium text-gray-700 mb-1">Related table</span>
+      <span class="block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"><%= @custom_relationship.target_table.name %></span>
+    </div>
+
+    <div class="mb-4">
+      <span class="block text-sm font-medium text-gray-700 mb-1">Kind</span>
+      <span class="block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"><%= @custom_relationship.kind.humanize %></span>
+    </div>
+
+    <%= render "shared/form_input", form: form, field: :inverse_name, label: "Inverse name", options: { required: true } %>
+
+    <%= render "shared/button", label: "Save changes", form: form %>
+  <% end %>
+</div>

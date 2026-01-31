@@ -6,7 +6,10 @@ Rails.application.routes.draw do
   resources :custom_tables, only: [ :new, :create, :show, :edit, :update, :destroy ] do
     resources :custom_fields, only: [ :new, :create, :edit, :update, :destroy ], shallow: true
     resources :custom_records, only: [ :new, :create, :show, :destroy ], shallow: true
+    resources :custom_relationships, only: [ :new, :create ], shallow: true
   end
+  resources :custom_relationships, only: [ :edit, :update, :destroy ]
+  resources :custom_record_links, only: [ :create, :destroy ]
   get "dashboard", to: "dashboard#show", as: :dashboard
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

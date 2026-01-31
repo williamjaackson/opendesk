@@ -1,0 +1,4 @@
+alice_deal_one:
+  custom_relationship: contacts_deals
+  source_record: alice
+  target_record: deal_one

@@ -19,7 +19,40 @@
         destroy_confirm: "This will delete all values for this field and any records left empty. Continue?",
         search_url: edit_custom_table_path(@custom_table),
         create_url: new_custom_table_custom_field_path(@custom_table),
-        create_label: "Add field" %>
+        create_label: "Add field",
+        pagy: @pagy_fields,
+        page_param: :fields_page %>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-4">Relationships</h2>
+
+      <%= render "shared/table",
+        columns: [
+          { header: "Name", accessor: ->(r) { r.source_table_id == @custom_table.id ? r.name : r.inverse_name } },
+          { header: "Related table", accessor: ->(r) { r.source_table_id == @custom_table.id ? r.target_table.name : r.source_table.name } },
+          { header: "Kind", accessor: ->(r) {
+            if r.source_table_id == @custom_table.id
+              r.kind.humanize
+            else
+              case r.kind
+              when "has_many" then "Belongs to"
+              when "has_one" then "Has one"
+              when "many_to_many" then "Many to many"
+              end
+            end
+          } }
+        ],
+        rows: @relationships,
+        actions: [ :edit, :destroy ],
+        destroy_confirm: "This will remove the relationship and all record links. Continue?",
+        search_url: edit_custom_table_path(@custom_table),
+        search_param: :relationship_query,
+        frame_id: "relationships_table_frame",
+        create_url: new_custom_table_custom_relationship_path(@custom_table),
+        create_label: "Add relationship",
+        pagy: @pagy_relationships,
+        page_param: :relationships_page %>
     </section>
 
     <section>

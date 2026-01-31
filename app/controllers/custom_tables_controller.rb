@@ -12,6 +12,8 @@ class CustomTablesController < ApplicationController
         .select(:custom_record_id)
       @records = @records.where(id: matching_ids)
     end
+
+    @pagy, @records = pagy(@records)
   end
 
   def new
@@ -22,6 +24,13 @@ class CustomTablesController < ApplicationController
     @custom_table = Current.organisation.custom_tables.find(params[:id])
     @fields = @custom_table.custom_fields.order(:position)
     @fields = @fields.where("name LIKE ?", "%#{params[:query]}%") if params[:query].present?
+    @pagy_fields, @fields = pagy(@fields, page_param: :fields_page)
+    @relationships = @custom_table.all_relationships.includes(:source_table, :target_table)
+    if params[:relationship_query].present?
+      q = "%#{params[:relationship_query]}%"
+      @relationships = @relationships.where("name LIKE ? OR inverse_name LIKE ?", q, q)
+    end
+    @pagy_relationships, @relationships = pagy(@relationships, page_param: :relationships_page)
   end
 
   def create
@@ -41,6 +50,9 @@ class CustomTablesController < ApplicationController
       redirect_to custom_table_path(@custom_table)
     else
       @fields = @custom_table.custom_fields.order(:position)
+      @pagy_fields, @fields = pagy(@fields, page_param: :fields_page)
+      @relationships = @custom_table.all_relationships.includes(:source_table, :target_table)
+      @pagy_relationships, @relationships = pagy(@relationships, page_param: :relationships_page)
       render :edit, status: :unprocessable_entity
     end
   end
