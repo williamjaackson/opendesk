@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_31_012033) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_31_025246) do
   create_table "custom_fields", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "custom_table_id", null: false
@@ -23,11 +23,37 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_012033) do
     t.index ["custom_table_id"], name: "index_custom_fields_on_custom_table_id"
   end
 
+  create_table "custom_record_links", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "custom_relationship_id", null: false
+    t.integer "source_record_id", null: false
+    t.integer "target_record_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["custom_relationship_id", "source_record_id", "target_record_id"], name: "idx_record_links_uniqueness", unique: true
+    t.index ["custom_relationship_id"], name: "index_custom_record_links_on_custom_relationship_id"
+    t.index ["source_record_id"], name: "index_custom_record_links_on_source_record_id"
+    t.index ["target_record_id"], name: "index_custom_record_links_on_target_record_id"
+  end
+
   create_table "custom_records", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "custom_table_id", null: false
     t.datetime "updated_at", null: false
     t.index ["custom_table_id"], name: "index_custom_records_on_custom_table_id"
+  end
+
+  create_table "custom_relationships", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "inverse_name", null: false
+    t.string "kind", null: false
+    t.string "name", null: false
+    t.integer "source_table_id", null: false
+    t.integer "target_table_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["source_table_id", "name"], name: "index_custom_relationships_on_source_table_id_and_name", unique: true
+    t.index ["source_table_id"], name: "index_custom_relationships_on_source_table_id"
+    t.index ["target_table_id", "inverse_name"], name: "index_custom_relationships_on_target_table_id_and_inverse_name", unique: true
+    t.index ["target_table_id"], name: "index_custom_relationships_on_target_table_id"
   end
 
   create_table "custom_tables", force: :cascade do |t|
@@ -83,7 +109,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_012033) do
   end
 
   add_foreign_key "custom_fields", "custom_tables"
+  add_foreign_key "custom_record_links", "custom_records", column: "source_record_id"
+  add_foreign_key "custom_record_links", "custom_records", column: "target_record_id"
+  add_foreign_key "custom_record_links", "custom_relationships"
   add_foreign_key "custom_records", "custom_tables"
+  add_foreign_key "custom_relationships", "custom_tables", column: "source_table_id"
+  add_foreign_key "custom_relationships", "custom_tables", column: "target_table_id"
   add_foreign_key "custom_tables", "organisations"
   add_foreign_key "custom_values", "custom_fields"
   add_foreign_key "custom_values", "custom_records"

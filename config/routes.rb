@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   resources :organisations, only: [ :index, :new, :create, :show ]
   resources :custom_tables, only: [ :new, :create, :show, :edit, :update, :destroy ] do
     resources :custom_fields, only: [ :new, :create, :edit, :update, :destroy ], shallow: true
-    resources :custom_records, only: [ :new, :create ]
+    resources :custom_records, only: [ :new, :create, :show, :destroy ], shallow: true
   end
   get "dashboard", to: "dashboard#show", as: :dashboard
 

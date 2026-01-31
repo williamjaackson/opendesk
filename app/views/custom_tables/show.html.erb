@@ -12,6 +12,7 @@
         { header: field.name, accessor: ->(record) { record.custom_values.detect { |v| v.custom_field_id == field.id }&.value } }
       },
       rows: @records,
+      actions: [ :view ],
       search_url: custom_table_path(@custom_table),
       create_url: new_custom_table_custom_record_path(@custom_table),
       create_label: "Add record" %>
