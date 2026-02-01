@@ -408,6 +408,104 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "should coerce datetime to date when backfilling from column" do
+    datetime_column = custom_columns(:datetime)
+    custom_records(:alice).custom_values.create!(custom_column: datetime_column, value: "2025-06-15T14:30")
+    custom_records(:bob).custom_values.create!(custom_column: datetime_column, value: "2025-01-01T09:00")
+
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Date Only", column_type: "date", backfill_mode: "column", backfill_column_id: datetime_column.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal "2025-06-15", column.custom_values.find_by(custom_record: custom_records(:alice)).value
+    assert_equal "2025-01-01", column.custom_values.find_by(custom_record: custom_records(:bob)).value
+  end
+
+  test "should coerce datetime to time when backfilling from column" do
+    datetime_column = custom_columns(:datetime)
+    custom_records(:alice).custom_values.create!(custom_column: datetime_column, value: "2025-06-15T14:30")
+
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Time Only", column_type: "time", backfill_mode: "column", backfill_column_id: datetime_column.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal "14:30", column.custom_values.find_by(custom_record: custom_records(:alice)).value
+  end
+
+  test "should coerce date to datetime when backfilling from column" do
+    date_column = custom_columns(:date)
+    custom_records(:alice).custom_values.create!(custom_column: date_column, value: "2025-06-15")
+
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Full Datetime", column_type: "datetime", backfill_mode: "column", backfill_column_id: date_column.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal "2025-06-15T00:00", column.custom_values.find_by(custom_record: custom_records(:alice)).value
+  end
+
+  test "should coerce time to datetime when backfilling from column" do
+    time_column = custom_columns(:time)
+    custom_records(:alice).custom_values.create!(custom_column: time_column, value: "14:30")
+
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Full Datetime", column_type: "datetime", backfill_mode: "column", backfill_column_id: time_column.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    expected = "#{Time.now.utc.strftime('%Y-%m-%d')}T14:30"
+    assert_equal expected, column.custom_values.find_by(custom_record: custom_records(:alice)).value
+  end
+
+  test "should coerce text containing datetime to date when backfilling" do
+    name_column = custom_columns(:name)
+    custom_records(:charlie).custom_values.create!(custom_column: name_column, value: "2025-06-15T14:30")
+
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Date From Text", column_type: "date", backfill_mode: "column", backfill_column_id: name_column.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    # charlie's datetime text is coerced to date
+    assert_equal "2025-06-15", column.custom_values.find_by(custom_record: custom_records(:charlie)).value
+    # alice ("Alice Smith") and bob ("Bob Jones") are not datetime-formatted, so they're skipped
+    assert_nil column.custom_values.find_by(custom_record: custom_records(:alice))
+    assert_nil column.custom_values.find_by(custom_record: custom_records(:bob))
+  end
+
+  test "should coerce text containing time to datetime when backfilling" do
+    name_column = custom_columns(:name)
+    custom_records(:charlie).custom_values.create!(custom_column: name_column, value: "14:30")
+
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Datetime From Text", column_type: "datetime", backfill_mode: "column", backfill_column_id: name_column.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    expected = "#{Time.now.utc.strftime('%Y-%m-%d')}T14:30"
+    assert_equal expected, column.custom_values.find_by(custom_record: custom_records(:charlie)).value
+  end
+
   test "should reject fixed backfill value that fails regex validation" do
     assert_no_difference "CustomColumn.count" do
       post table_columns_path(@custom_table), params: {

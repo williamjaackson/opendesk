@@ -89,6 +89,7 @@ class CustomColumnsController < ApplicationController
           value_to_use = source_value&.value.presence
 
           if value_to_use
+            value_to_use = coerce_backfill_value(value_to_use, source_column.column_type, @custom_column.column_type)
             new_value = record.custom_values.build(custom_column: @custom_column, value: value_to_use)
             unless new_value.valid?
               if backfill_fallback.present?
@@ -160,6 +161,37 @@ class CustomColumnsController < ApplicationController
   def load_backfill_data
     @existing_columns = @custom_table.custom_columns
     @has_records = @custom_table.custom_records.exists?
+  end
+
+  DATETIME_PATTERN = /\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T([01]\d|2[0-3]):[0-5]\d\z/
+  DATE_PATTERN = /\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])\z/
+  TIME_PATTERN = /\A([01]\d|2[0-3]):[0-5]\d\z/
+
+  def coerce_backfill_value(value, source_type, target_type)
+    effective_source = source_type
+
+    if source_type == "text"
+      if value.match?(DATETIME_PATTERN)
+        effective_source = "datetime"
+      elsif value.match?(DATE_PATTERN)
+        effective_source = "date"
+      elsif value.match?(TIME_PATTERN)
+        effective_source = "time"
+      end
+    end
+
+    case [effective_source, target_type]
+    when ["datetime", "date"]
+      value.split("T").first
+    when ["datetime", "time"]
+      value.split("T").last
+    when ["date", "datetime"]
+      "#{value}T00:00"
+    when ["time", "datetime"]
+      "#{Time.now.utc.strftime('%Y-%m-%d')}T#{value}"
+    else
+      value
+    end
   end
 
   def custom_column_params
