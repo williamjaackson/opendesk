@@ -14,4 +14,9 @@ class ApplicationController < ActionController::Base
   def edit_mode?
     session[:edit_mode] == true
   end
+
+  def require_edit_mode
+    @requires_edit_mode = true
+    redirect_to root_path unless edit_mode?
+  end
 end
