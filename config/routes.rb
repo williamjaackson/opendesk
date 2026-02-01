@@ -6,23 +6,24 @@ Rails.application.routes.draw do
   resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   resources :custom_record_links, path: "record-links", as: :record_links, only: [ :create, :destroy ]
 
-  # Table creation/reorder (before catch-all)
-  get "/new", to: "custom_tables#new", as: :new_table
-  post "/", to: "custom_tables#create", as: :tables
-  patch "/reorder-tables", to: "custom_tables#reorder", as: :reorder_tables
+  # Table routes under /t/
+  scope "/t" do
+    get "/new", to: "custom_tables#new", as: :new_table
+    post "/", to: "custom_tables#create", as: :tables
+    patch "/reorder-tables", to: "custom_tables#reorder", as: :reorder_tables
 
-  # Catch-all table routes (MUST be last)
-  resources :custom_tables, path: "/", param: :slug, as: :table, only: [ :show, :edit, :update, :destroy ] do
-    resources :custom_fields, path: "fields", as: :fields, only: [ :new, :create, :edit, :update, :destroy ] do
-      collection do
-        patch :reorder
+    resources :custom_tables, path: "/", param: :slug, as: :table, only: [ :show, :edit, :update, :destroy ] do
+      resources :custom_fields, path: "fields", as: :fields, only: [ :new, :create, :edit, :update, :destroy ] do
+        collection do
+          patch :reorder
+        end
       end
-    end
-    resources :custom_relationships, path: "relationships", as: :relationships, only: [ :new, :create, :edit, :update, :destroy ]
+      resources :custom_relationships, path: "relationships", as: :relationships, only: [ :new, :create, :edit, :update, :destroy ]
 
-    # Records at table root, numeric IDs only
-    resources :custom_records, path: "/", as: :records, only: [ :new, :create, :show, :edit, :update, :destroy ],
-      constraints: { id: /\d+/ }
+      # Records at table root, numeric IDs only
+      resources :custom_records, path: "/", as: :records, only: [ :new, :create, :show, :edit, :update, :destroy ],
+        constraints: { id: /\d+/ }
+    end
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

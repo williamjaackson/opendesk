@@ -47,12 +47,4 @@ class CustomTableTest < ActiveSupport::TestCase
     assert_includes table.errors[:slug], "has already been taken"
   end
 
-  test "reserved slugs are rejected" do
-    CustomTable::RESERVED_SLUGS.each do |reserved|
-      table = CustomTable.new(organisation: organisations(:one))
-      table.slug = reserved
-      table.valid?
-      assert_includes table.errors[:slug], "is reserved", "Expected '#{reserved}' to be reserved"
-    end
-  end
 end
