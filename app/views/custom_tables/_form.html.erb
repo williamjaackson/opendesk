@@ -67,6 +67,7 @@
         frame_id: "relationships_table_frame",
         create_url: edit_mode? ? new_table_relationship_path(@custom_table) : nil,
         create_label: "Add relationship",
+        sortable_url: edit_mode? ? reorder_table_relationships_path(@custom_table) : nil,
         pagy: @pagy_relationships,
         page_param: :relationships_page %>
     </section>

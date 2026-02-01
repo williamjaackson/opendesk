@@ -28,7 +28,11 @@ Rails.application.routes.draw do
           patch :reorder
         end
       end
-      resources :custom_relationships, path: "relationships", as: :relationships, only: [ :new, :create, :edit, :update, :destroy ]
+      resources :custom_relationships, path: "relationships", as: :relationships, only: [ :new, :create, :edit, :update, :destroy ] do
+        collection do
+          patch :reorder
+        end
+      end
 
       # Records at table root, numeric IDs only
       resources :custom_records, path: "/", as: :records, only: [ :new, :create, :show, :edit, :update, :destroy ],

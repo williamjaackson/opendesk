@@ -18,7 +18,7 @@ class CustomTable < ApplicationRecord
   end
 
   def all_relationships
-    CustomRelationship.where(source_table_id: id).or(CustomRelationship.where(target_table_id: id))
+    CustomRelationship.where(source_table_id: id).or(CustomRelationship.where(target_table_id: id)).order(:position)
   end
 
   private

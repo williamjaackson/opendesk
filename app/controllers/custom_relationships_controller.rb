@@ -4,6 +4,20 @@ class CustomRelationshipsController < ApplicationController
   before_action :set_custom_table
   before_action :set_custom_relationship, only: [ :edit, :update, :destroy ]
 
+  def reorder
+    ids = params[:ids].map(&:to_i)
+    relationships = @custom_table.all_relationships.where(id: ids)
+    return head :unprocessable_entity unless relationships.count == ids.size
+
+    ActiveRecord::Base.transaction do
+      ids.each_with_index do |id, index|
+        relationships.find { |r| r.id == id }&.update_columns(position: index)
+      end
+    end
+
+    head :no_content
+  end
+
   def new
     @custom_relationship = @custom_table.source_relationships.new
     @available_tables = Current.organisation.custom_tables
@@ -11,6 +25,8 @@ class CustomRelationshipsController < ApplicationController
 
   def create
     @custom_relationship = @custom_table.source_relationships.new(custom_relationship_params)
+    max = @custom_table.all_relationships.maximum(:position)
+    @custom_relationship.position = max ? max + 1 : 0
 
     if @custom_relationship.save
       redirect_to edit_table_path(@custom_table)
