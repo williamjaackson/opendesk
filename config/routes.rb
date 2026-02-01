@@ -4,20 +4,27 @@ Rails.application.routes.draw do
   resource :edit_mode, only: [ :update ]
   resources :passwords, param: :token
   resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
-  resources :custom_tables, only: [ :new, :create, :show, :edit, :update, :destroy ] do
-    collection do
-      patch :reorder
-    end
-    resources :custom_fields, only: [ :new, :create, :edit, :update, :destroy ], shallow: true do
+  resources :custom_record_links, path: "record-links", as: :record_links, only: [ :create, :destroy ]
+
+  # Table creation/reorder (before catch-all)
+  get "/new", to: "custom_tables#new", as: :new_table
+  post "/", to: "custom_tables#create", as: :tables
+  patch "/reorder-tables", to: "custom_tables#reorder", as: :reorder_tables
+
+  # Catch-all table routes (MUST be last)
+  resources :custom_tables, path: "/", param: :slug, as: :table, only: [ :show, :edit, :update, :destroy ] do
+    resources :custom_fields, path: "fields", as: :fields, only: [ :new, :create, :edit, :update, :destroy ] do
       collection do
         patch :reorder
       end
     end
-    resources :custom_records, only: [ :new, :create, :show, :edit, :update, :destroy ], shallow: true
-    resources :custom_relationships, only: [ :new, :create ], shallow: true
+    resources :custom_relationships, path: "relationships", as: :relationships, only: [ :new, :create, :edit, :update, :destroy ]
+
+    # Records at table root, numeric IDs only
+    resources :custom_records, path: "/", as: :records, only: [ :new, :create, :show, :edit, :update, :destroy ],
+      constraints: { id: /\d+/ }
   end
-  resources :custom_relationships, only: [ :edit, :update, :destroy ]
-  resources :custom_record_links, only: [ :create, :destroy ]
+
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check

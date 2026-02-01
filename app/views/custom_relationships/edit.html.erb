@@ -1,8 +1,8 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
-  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, custom_table_path(@custom_table)], ["Edit", edit_custom_table_path(@custom_table)]] %>
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)]] %>
   <%= render "shared/page_heading", title: "Edit relationship" %>
 
-  <%= form_with model: @custom_relationship, url: custom_relationship_path(@custom_relationship) do |form| %>
+  <%= form_with model: @custom_relationship, url: table_relationship_path(@custom_table, @custom_relationship) do |form| %>
     <div class="mb-4">
       <span class="block text-sm font-medium text-gray-700 mb-1">Related table</span>
       <span class="block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"><%= @custom_relationship.target_table.name %></span>

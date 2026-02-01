@@ -1,5 +1,5 @@
 <div class="space-y-8">
-  <%= form_with model: @custom_table do |form| %>
+  <%= form_with model: @custom_table, url: @custom_table.persisted? ? table_path(@custom_table) : tables_path do |form| %>
     <%= render "shared/form_input", form: form, field: :name, label: "Table name", options: { required: true, autofocus: true, placeholder: "e.g. Contacts, Deals, Projects" } %>
     <%= render "shared/button", label: @custom_table.persisted? ? "Save changes" : "Create table", form: form %>
   <% end %>
@@ -25,11 +25,13 @@
         ],
         rows: @fields,
         actions: edit_mode? ? [ :edit, :destroy ] : [],
+        edit_path: ->(f) { edit_table_field_path(@custom_table, f) },
+        destroy_path: ->(f) { table_field_path(@custom_table, f) },
         destroy_confirm: "This will delete all values for this field and any records left empty. Continue?",
-        search_url: edit_custom_table_path(@custom_table),
-        create_url: edit_mode? ? new_custom_table_custom_field_path(@custom_table) : nil,
+        search_url: edit_table_path(@custom_table),
+        create_url: edit_mode? ? new_table_field_path(@custom_table) : nil,
         create_label: "Add field",
-        sortable_url: edit_mode? ? reorder_custom_table_custom_fields_path(@custom_table) : nil,
+        sortable_url: edit_mode? ? reorder_table_fields_path(@custom_table) : nil,
         pagy: @pagy_fields,
         page_param: :fields_page %>
     </section>
@@ -56,11 +58,13 @@
         ],
         rows: @relationships,
         actions: edit_mode? ? [ :edit, :destroy ] : [],
+        edit_path: ->(r) { edit_table_relationship_path(@custom_table, r) },
+        destroy_path: ->(r) { table_relationship_path(@custom_table, r) },
         destroy_confirm: "This will remove the relationship and all record links. Continue?",
-        search_url: edit_custom_table_path(@custom_table),
+        search_url: edit_table_path(@custom_table),
         search_param: :relationship_query,
         frame_id: "relationships_table_frame",
-        create_url: edit_mode? ? new_custom_table_custom_relationship_path(@custom_table) : nil,
+        create_url: edit_mode? ? new_table_relationship_path(@custom_table) : nil,
         create_label: "Add relationship",
         pagy: @pagy_relationships,
         page_param: :relationships_page %>
@@ -69,7 +73,7 @@
     <% if edit_mode? %>
       <%= render "shared/danger_zone",
         description: "Deleting this table will permanently remove all its fields and records.",
-        path: custom_table_path(@custom_table),
+        path: table_path(@custom_table),
         button_label: "Delete table",
         confirm: "Are you sure you want to delete this table? This cannot be undone." %>
     <% end %>

@@ -1,21 +1,18 @@
 class CustomRecordsController < ApplicationController
   before_action :require_organisation
-  before_action :set_custom_table, only: [ :new, :create ]
+  before_action :set_custom_table
   before_action :set_custom_record, only: [ :show, :edit, :update, :destroy ]
 
   def show
-    @custom_table = @custom_record.custom_table
     @fields = @custom_table.custom_fields.order(:position)
     @relationship_sections = build_relationship_sections
   end
 
   def edit
-    @custom_table = @custom_record.custom_table
     @fields = @custom_table.custom_fields.order(:position)
   end
 
   def update
-    @custom_table = @custom_record.custom_table
     @fields = @custom_table.custom_fields.order(:position)
     values = params[:values] || {}
 
@@ -27,13 +24,12 @@ class CustomRecordsController < ApplicationController
     end
 
     update_values(values)
-    redirect_to custom_record_path(@custom_record)
+    redirect_to table_record_path(@custom_table, @custom_record)
   end
 
   def destroy
-    custom_table = @custom_record.custom_table
     @custom_record.destroy
-    redirect_to custom_table_path(custom_table)
+    redirect_to table_path(@custom_table)
   end
 
   def new
@@ -55,7 +51,7 @@ class CustomRecordsController < ApplicationController
 
     if @custom_record.save
       save_values(values)
-      redirect_to custom_table_path(@custom_table)
+      redirect_to table_path(@custom_table)
     else
       render :new, status: :unprocessable_entity
     end
@@ -68,13 +64,11 @@ class CustomRecordsController < ApplicationController
   end
 
   def set_custom_table
-    @custom_table = Current.organisation.custom_tables.find(params[:custom_table_id])
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:table_slug])
   end
 
   def set_custom_record
-    @custom_record = CustomRecord.joins(:custom_table)
-      .where(custom_tables: { organisation_id: Current.organisation.id })
-      .find(params[:id])
+    @custom_record = @custom_table.custom_records.find(params[:id])
   end
 
   def save_values(values)

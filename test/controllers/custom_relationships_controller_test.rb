@@ -9,7 +9,7 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get new" do
-    get new_custom_table_custom_relationship_path(@custom_table)
+    get new_table_relationship_path(@custom_table)
     assert_response :success
   end
 
@@ -17,7 +17,7 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
     @relationship.destroy
 
     assert_difference "CustomRelationship.count", 1 do
-      post custom_table_custom_relationships_path(@custom_table), params: {
+      post table_relationships_path(@custom_table), params: {
         custom_relationship: {
           name: "Deals",
           inverse_name: "Contact",
@@ -27,12 +27,12 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
       }
     end
 
-    assert_redirected_to edit_custom_table_path(@custom_table)
+    assert_redirected_to edit_table_path(@custom_table)
   end
 
   test "should not create relationship with blank name" do
     assert_no_difference "CustomRelationship.count" do
-      post custom_table_custom_relationships_path(@custom_table), params: {
+      post table_relationships_path(@custom_table), params: {
         custom_relationship: {
           name: "",
           inverse_name: "Contact",
@@ -47,7 +47,7 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create relationship with invalid kind" do
     assert_no_difference "CustomRelationship.count" do
-      post custom_table_custom_relationships_path(@custom_table), params: {
+      post table_relationships_path(@custom_table), params: {
         custom_relationship: {
           name: "Projects",
           inverse_name: "Contact",
@@ -61,23 +61,23 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should get edit" do
-    get edit_custom_relationship_path(@relationship)
+    get edit_table_relationship_path(@custom_table, @relationship)
     assert_response :success
   end
 
   test "should update relationship name and inverse name" do
-    patch custom_relationship_path(@relationship), params: {
+    patch table_relationship_path(@custom_table, @relationship), params: {
       custom_relationship: { name: "Active Deals", inverse_name: "Primary Contact" }
     }
 
-    assert_redirected_to edit_custom_table_path(@custom_table)
+    assert_redirected_to edit_table_path(@custom_table)
     @relationship.reload
     assert_equal "Active Deals", @relationship.name
     assert_equal "Primary Contact", @relationship.inverse_name
   end
 
   test "should not change kind on update" do
-    patch custom_relationship_path(@relationship), params: {
+    patch table_relationship_path(@custom_table, @relationship), params: {
       custom_relationship: { name: "Deals", inverse_name: "Contact", kind: "many_to_many" }
     }
 
@@ -87,10 +87,10 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
   test "should destroy relationship and its links" do
     assert_difference "CustomRelationship.count", -1 do
       assert_difference "CustomRecordLink.count", -1 do
-        delete custom_relationship_path(@relationship)
+        delete table_relationship_path(@custom_table, @relationship)
       end
     end
 
-    assert_redirected_to edit_custom_table_path(@custom_table)
+    assert_redirected_to edit_table_path(@custom_table)
   end
 end

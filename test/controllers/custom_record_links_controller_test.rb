@@ -9,7 +9,7 @@ class CustomRecordLinksControllerTest < ActionDispatch::IntegrationTest
 
   test "should create record link" do
     assert_difference "CustomRecordLink.count", 1 do
-      post custom_record_links_path, params: {
+      post record_links_path, params: {
         custom_record_link: {
           custom_relationship_id: @relationship.id,
           source_record_id: custom_records(:bob).id,
@@ -21,7 +21,7 @@ class CustomRecordLinksControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create duplicate link" do
     assert_no_difference "CustomRecordLink.count" do
-      post custom_record_links_path, params: {
+      post record_links_path, params: {
         custom_record_link: {
           custom_relationship_id: @relationship.id,
           source_record_id: custom_records(:alice).id,
@@ -33,7 +33,7 @@ class CustomRecordLinksControllerTest < ActionDispatch::IntegrationTest
 
   test "should not link target to multiple sources in one_to_many" do
     assert_no_difference "CustomRecordLink.count" do
-      post custom_record_links_path, params: {
+      post record_links_path, params: {
         custom_record_link: {
           custom_relationship_id: @relationship.id,
           source_record_id: custom_records(:bob).id,
@@ -47,7 +47,7 @@ class CustomRecordLinksControllerTest < ActionDispatch::IntegrationTest
     link = custom_record_links(:alice_deal_one)
 
     assert_difference "CustomRecordLink.count", -1 do
-      delete custom_record_link_path(link)
+      delete record_link_path(link)
     end
   end
 end
