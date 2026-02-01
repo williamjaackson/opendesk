@@ -467,7 +467,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
 
     column = CustomColumn.last
     assert_redirected_to edit_table_path(@custom_table)
-    expected = "#{Time.now.utc.strftime('%Y-%m-%d')}T14:30"
+    expected = "1970-01-01T14:30"
     assert_equal expected, column.custom_values.find_by(custom_record: custom_records(:alice)).value
   end
 
@@ -502,7 +502,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
 
     column = CustomColumn.last
     assert_redirected_to edit_table_path(@custom_table)
-    expected = "#{Time.now.utc.strftime('%Y-%m-%d')}T14:30"
+    expected = "1970-01-01T14:30"
     assert_equal expected, column.custom_values.find_by(custom_record: custom_records(:charlie)).value
   end
 

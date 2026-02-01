@@ -188,7 +188,7 @@ class CustomColumnsController < ApplicationController
     when ["date", "datetime"]
       "#{value}T00:00"
     when ["time", "datetime"]
-      "#{Time.now.utc.strftime('%Y-%m-%d')}T#{value}"
+      "1970-01-01T#{value}"
     else
       value
     end
