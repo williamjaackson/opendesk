@@ -39,3 +39,10 @@ time:
   column_type: time
   required: false
   position: 5
+
+datetime:
+  custom_table: contacts
+  name: Appointment
+  column_type: datetime
+  required: false
+  position: 6
