@@ -202,4 +202,20 @@ class CustomValueTest < ActiveSupport::TestCase
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:select), value: "")
     assert cv.valid?
   end
+
+  test "linked select accepts valid linked value" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:linked_select), value: "Deal Alpha")
+    assert cv.valid?
+  end
+
+  test "linked select rejects invalid linked value" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:linked_select), value: "Nonexistent Deal")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "is not a valid option"
+  end
+
+  test "linked select allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:linked_select), value: "")
+    assert cv.valid?
+  end
 end

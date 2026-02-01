@@ -20,6 +20,7 @@ class CustomColumnsController < ApplicationController
 
   def new
     @custom_column = @custom_table.custom_columns.new
+    load_tables_json
   end
 
   def create
@@ -30,17 +31,20 @@ class CustomColumnsController < ApplicationController
     if @custom_column.save
       redirect_to edit_table_path(@custom_table)
     else
+      load_tables_json
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
+    load_tables_json
   end
 
   def update
     if @custom_column.update(custom_column_params.except(:column_type))
       redirect_to edit_table_path(@custom_table)
     else
+      load_tables_json
       render :edit, status: :unprocessable_entity
     end
   end
@@ -64,7 +68,13 @@ class CustomColumnsController < ApplicationController
     @custom_column = @custom_table.custom_columns.find(params[:id])
   end
 
+  def load_tables_json
+    @tables_json = Current.organisation.custom_tables.includes(:custom_columns).map { |t|
+      { id: t.id, name: t.name, columns: t.custom_columns.map { |c| { id: c.id, name: c.name } } }
+    }.to_json
+  end
+
   def custom_column_params
-    params.require(:custom_column).permit(:name, :column_type, :required, :show_on_preview, :options_text)
+    params.require(:custom_column).permit(:name, :column_type, :required, :show_on_preview, :options_text, :linked_column_id, :select_source)
   end
 end

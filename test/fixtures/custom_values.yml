@@ -7,3 +7,13 @@ bob_name:
   custom_record: bob
   custom_column: name
   value: Bob Jones
+
+deal_one_name:
+  custom_record: deal_one
+  custom_column: deal_name
+  value: Deal Alpha
+
+deal_two_name:
+  custom_record: deal_two
+  custom_column: deal_name
+  value: Deal Beta

@@ -2,14 +2,38 @@ class CustomColumn < ApplicationRecord
   COLUMN_TYPES = %w[text number email boolean date time datetime select].freeze
 
   belongs_to :custom_table
+  belongs_to :linked_column, class_name: "CustomColumn", optional: true
 
+  has_many :linking_columns, class_name: "CustomColumn", foreign_key: :linked_column_id, dependent: :nullify
   has_many :custom_values, dependent: :destroy
 
   validates :name, presence: true
   validates :column_type, presence: true, inclusion: { in: COLUMN_TYPES, allow_blank: true }
   validate :validate_select_options
 
+  before_validation :clear_options_for_linked_select
+
   after_destroy :cleanup_empty_records
+
+  def effective_options
+    if linked_column_id.present?
+      CustomValue.where(custom_column: linked_column).where.not(value: [nil, ""]).distinct.pluck(:value).sort
+    else
+      options || []
+    end
+  end
+
+  def select_source
+    @select_source || (linked_column_id.present? ? "linked" : "manual")
+  end
+
+  def select_source=(value)
+    @select_source = value
+  end
+
+  def linked_table_id
+    linked_column&.custom_table_id
+  end
 
   def options_text
     (options || []).join("\n")
@@ -21,11 +45,31 @@ class CustomColumn < ApplicationRecord
 
   private
 
+  def clear_options_for_linked_select
+    return unless column_type == "select"
+
+    if select_source == "linked"
+      self.options = nil
+    else
+      self.linked_column_id = nil
+    end
+  end
+
   def validate_select_options
     return unless column_type == "select"
 
-    if options.blank? || !options.is_a?(Array) || options.empty?
-      errors.add(:options, "must have at least one option")
+    if select_source == "linked"
+      if linked_column_id.blank?
+        errors.add(:linked_column_id, "must be selected")
+      elsif linked_column.nil?
+        errors.add(:linked_column_id, "is invalid")
+      elsif linked_column.custom_table.organisation_id != custom_table.organisation_id
+        errors.add(:linked_column_id, "must belong to the same organisation")
+      end
+    else
+      if options.blank? || !options.is_a?(Array) || options.empty?
+        errors.add(:options_text, "must have at least one option")
+      end
     end
   end
 

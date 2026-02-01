@@ -156,13 +156,13 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
       custom_column: { name: "Phone", column_type: "text" }
     }
 
-    assert_equal 8, CustomColumn.last.position
+    assert_equal 9, CustomColumn.last.position
   end
 
   test "should create select column" do
     assert_difference "CustomColumn.count", 1 do
       post table_columns_path(@custom_table), params: {
-        custom_column: { name: "Priority", column_type: "select", options_text: "High\nMedium\nLow" }
+        custom_column: { name: "Priority", column_type: "select", select_source: "manual", options_text: "High\nMedium\nLow" }
       }
     end
 
@@ -175,7 +175,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
   test "should not create select column without options" do
     assert_no_difference "CustomColumn.count" do
       post table_columns_path(@custom_table), params: {
-        custom_column: { name: "Priority", column_type: "select", options_text: "" }
+        custom_column: { name: "Priority", column_type: "select", select_source: "manual", options_text: "" }
       }
     end
 
@@ -185,10 +185,63 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
   test "should update select column options" do
     column = custom_columns(:select)
     patch table_column_path(@custom_table, column), params: {
-      custom_column: { options_text: "Open\nClosed" }
+      custom_column: { select_source: "manual", options_text: "Open\nClosed" }
     }
 
     assert_redirected_to edit_table_path(@custom_table)
     assert_equal ["Open", "Closed"], column.reload.options
+  end
+
+  test "should update manual select column with linked_column_id empty" do
+    column = custom_columns(:select)
+    patch table_column_path(@custom_table, column), params: {
+      custom_column: { name: "Status Updated", select_source: "manual", options_text: "Active\nInactive\nPending", linked_column_id: "" }
+    }
+
+    assert_redirected_to edit_table_path(@custom_table)
+    column.reload
+    assert_equal "Status Updated", column.name
+    assert_nil column.linked_column_id
+    assert_equal ["Active", "Inactive", "Pending"], column.options
+  end
+
+  test "should create linked select column" do
+    deal_name = custom_columns(:deal_name)
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Deal Link", column_type: "select", select_source: "linked", linked_column_id: deal_name.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_equal "select", column.column_type
+    assert_equal deal_name.id, column.linked_column_id
+    assert_nil column.options
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
+  test "should update column to use linked column" do
+    column = custom_columns(:select)
+    deal_name = custom_columns(:deal_name)
+    patch table_column_path(@custom_table, column), params: {
+      custom_column: { select_source: "linked", linked_column_id: deal_name.id }
+    }
+
+    assert_redirected_to edit_table_path(@custom_table)
+    column.reload
+    assert_equal deal_name.id, column.linked_column_id
+    assert_nil column.options
+  end
+
+  test "should switch linked column back to manual" do
+    column = custom_columns(:linked_select)
+    patch table_column_path(@custom_table, column), params: {
+      custom_column: { select_source: "manual", options_text: "X\nY\nZ", linked_column_id: "" }
+    }
+
+    assert_redirected_to edit_table_path(@custom_table)
+    column.reload
+    assert_nil column.linked_column_id
+    assert_equal ["X", "Y", "Z"], column.options
   end
 end

@@ -23,7 +23,7 @@ class CustomValue < ApplicationRecord
     when "datetime"
       errors.add(:value, "must be a valid date and time") unless value.match?(/\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T([01]\d|2[0-3]):[0-5]\d\z/)
     when "select"
-      errors.add(:value, "is not a valid option") unless custom_column.options&.include?(value)
+      errors.add(:value, "is not a valid option") unless custom_column.effective_options.include?(value)
     end
   end
 end

@@ -33,7 +33,7 @@ module CustomRecordsHelper
     when "datetime"
       datetime_local_field_tag name, value, id: id, class: classes, required: required
     when "select"
-      select_dropdown_tag(name, id, value, column.options || [], border)
+      select_dropdown_tag(name, id, value, column.effective_options, border)
     else
       text_field_tag name, value, id: id, class: classes, required: required
     end
