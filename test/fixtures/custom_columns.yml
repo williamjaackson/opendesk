@@ -25,3 +25,10 @@ boolean:
   column_type: boolean
   required: false
   position: 3
+
+date:
+  custom_table: contacts
+  name: Birthday
+  column_type: date
+  required: false
+  position: 4

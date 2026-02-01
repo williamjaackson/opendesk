@@ -80,4 +80,38 @@ class CustomValueTest < ActiveSupport::TestCase
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:boolean), value: "")
     assert cv.valid?
   end
+
+  test "date value accepts valid ISO date" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:date), value: "2026-01-15")
+    assert cv.valid?
+  end
+
+  test "date value rejects non-date string" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:date), value: "not-a-date")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid date"
+  end
+
+  test "date value rejects invalid month" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:date), value: "2026-13-01")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid date"
+  end
+
+  test "date value rejects invalid day" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:date), value: "2026-01-32")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid date"
+  end
+
+  test "date value rejects wrong format" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:date), value: "15/01/2026")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid date"
+  end
+
+  test "date value allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:date), value: "")
+    assert cv.valid?
+  end
 end

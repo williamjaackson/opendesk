@@ -12,7 +12,7 @@
               <%= column.name %><% if column.required? %><span class="text-red-500 ml-0.5">*</span><% end %>
             <% end %>
           <% end %>
-          <%= column_value_tag(column, params.dig(:values, column.id.to_s) || existing_value, required: column.required?) %>
+          <%= column_value_tag(column, params.dig(:values, column.id.to_s) || existing_value, required: column.required?, errors: @custom_record.errors[:"column_#{column.id}"].any?) %>
           <% @custom_record.errors[:"column_#{column.id}"].each do |message| %>
             <p class="mt-1 text-sm text-red-600"><%= message %></p>
           <% end %>

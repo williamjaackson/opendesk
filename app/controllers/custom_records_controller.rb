@@ -18,7 +18,7 @@ class CustomRecordsController < ApplicationController
 
     missing = @columns.where(required: true).reject { |c| values[c.id.to_s].present? }
     if missing.any?
-      @custom_record.errors.add(:base, "Required columns missing: #{missing.map(&:name).join(', ')}")
+      missing.each { |c| @custom_record.errors.add(:"column_#{c.id}", "can't be blank") }
       render :edit, status: :unprocessable_entity
       return
     end
@@ -56,7 +56,7 @@ class CustomRecordsController < ApplicationController
 
     missing = @columns.where(required: true).reject { |c| values[c.id.to_s].present? }
     if missing.any?
-      @custom_record.errors.add(:base, "Required columns missing: #{missing.map(&:name).join(', ')}")
+      missing.each { |c| @custom_record.errors.add(:"column_#{c.id}", "can't be blank") }
       render :new, status: :unprocessable_entity
       return
     end

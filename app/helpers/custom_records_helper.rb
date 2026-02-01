@@ -1,8 +1,9 @@
 module CustomRecordsHelper
-  def column_value_tag(column, value, required:)
+  def column_value_tag(column, value, required:, errors: false)
     name = "values[#{column.id}]"
     id = "values_#{column.id}"
-    classes = "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+    border = errors ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+    classes = "block w-full rounded-md border #{border} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
 
     case column.column_type
     when "number"
@@ -25,6 +26,23 @@ module CustomRecordsHelper
           tag.span(column.name, class: "text-sm font-medium text-gray-700")
         }
       end
+    when "date"
+      display_value = value.present? ? (Date.parse(value).strftime("%-d %b %Y") rescue value) : ""
+      tag.div class: "relative", data: { controller: "datepicker" } do
+        hidden_field_tag(name, value, id: id, data: { datepicker_target: "input" }) +
+        tag.input(type: "text", readonly: true, value: display_value, placeholder: "Select a date",
+          tabindex: 0,
+          data: { datepicker_target: "display", action: "click->datepicker#toggle keydown->datepicker#keydown" },
+          class: "#{classes} cursor-pointer pr-10") +
+        tag.div(class: "pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3") {
+          tag.svg(class: "h-4 w-4 text-gray-400", fill: "none", viewBox: "0 0 24 24", stroke: "currentColor") {
+            tag.path("stroke-linecap": "round", "stroke-linejoin": "round", "stroke-width": "2",
+              d: "M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z")
+          }
+        } +
+        tag.div(class: "hidden absolute z-10 mt-1 w-72 bg-white rounded-lg border border-gray-200 shadow-lg",
+          data: { datepicker_target: "calendar" })
+      end
     else
       text_field_tag name, value, id: id, class: classes, required: required
     end
@@ -35,6 +53,9 @@ module CustomRecordsHelper
     when "boolean"
       return "—" if raw_value.nil?
       raw_value == "1" ? "Yes" : "No"
+    when "date"
+      return raw_value if raw_value.blank?
+      Date.parse(raw_value).strftime("%-d %b %Y")
     else
       raw_value
     end

@@ -158,6 +158,39 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "should create record with valid date value" do
+    date_column = custom_columns(:date)
+    assert_difference "CustomRecord.count", 1 do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", date_column.id.to_s => "2026-01-15" } }
+    end
+
+    assert_redirected_to table_path(@table)
+  end
+
+  test "should not create record with invalid date value" do
+    date_column = custom_columns(:date)
+    assert_no_difference "CustomRecord.count" do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", date_column.id.to_s => "not-a-date" } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should update record with valid date value" do
+    date_column = custom_columns(:date)
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice", date_column.id.to_s => "2026-06-20" } }
+
+    assert_redirected_to table_record_path(@table, @record)
+    assert_equal "2026-06-20", @record.custom_values.find_by(custom_column: date_column).reload.value
+  end
+
+  test "should not update record with invalid date value" do
+    date_column = custom_columns(:date)
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice", date_column.id.to_s => "bad-date" } }
+
+    assert_response :unprocessable_entity
+  end
+
   test "should redirect when not managing" do
     stop_managing_organisation
     get edit_table_record_path(@table, @record)

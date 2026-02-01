@@ -7,7 +7,7 @@
 
     <%= render "shared/dropdown", form: form, field: :column_type, label: "Type", required: true,
       selected: @custom_column.column_type,
-      options: [["Text", "text"], ["Number", "number"], ["Email", "email"], ["Boolean", "boolean"]],
+      options: [["Text", "text"], ["Number", "number"], ["Email", "email"], ["Boolean", "boolean"], ["Date", "date"]],
       input_data: { action: "change->column-options#typeChanged" } %>
 
     <div data-column-options-target="container" class="hidden">
