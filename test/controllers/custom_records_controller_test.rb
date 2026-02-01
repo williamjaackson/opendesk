@@ -261,6 +261,76 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "should create record with valid select value" do
+    select_column = custom_columns(:select)
+    assert_difference "CustomRecord.count", 1 do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", select_column.id.to_s => "Active" } }
+    end
+
+    assert_redirected_to table_path(@table)
+  end
+
+  test "should not create record with invalid select value" do
+    select_column = custom_columns(:select)
+    assert_no_difference "CustomRecord.count" do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", select_column.id.to_s => "InvalidOption" } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should update record with valid select value" do
+    select_column = custom_columns(:select)
+    post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", select_column.id.to_s => "Active" } }
+    record = CustomRecord.last
+
+    patch table_record_path(@table, record), params: { values: { @name_column.id.to_s => "Charlie", select_column.id.to_s => "Inactive" } }
+    assert_redirected_to table_record_path(@table, record)
+    assert_equal "Inactive", record.custom_values.find_by(custom_column: select_column).reload.value
+  end
+
+  test "should not update record with invalid select value" do
+    select_column = custom_columns(:select)
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice", select_column.id.to_s => "BadValue" } }
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should create record with valid linked select value" do
+    linked_select = custom_columns(:linked_select)
+    assert_difference "CustomRecord.count", 1 do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", linked_select.id.to_s => "Deal Alpha" } }
+    end
+
+    assert_redirected_to table_path(@table)
+  end
+
+  test "should not create record with invalid linked select value" do
+    linked_select = custom_columns(:linked_select)
+    assert_no_difference "CustomRecord.count" do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", linked_select.id.to_s => "Nonexistent Deal" } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should update record with valid linked select value" do
+    linked_select = custom_columns(:linked_select)
+    post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", linked_select.id.to_s => "Deal Alpha" } }
+    record = CustomRecord.last
+
+    patch table_record_path(@table, record), params: { values: { @name_column.id.to_s => "Charlie", linked_select.id.to_s => "Deal Beta" } }
+    assert_redirected_to table_record_path(@table, record)
+    assert_equal "Deal Beta", record.custom_values.find_by(custom_column: linked_select).reload.value
+  end
+
+  test "should not update record with invalid linked select value" do
+    linked_select = custom_columns(:linked_select)
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice", linked_select.id.to_s => "BadDeal" } }
+
+    assert_response :unprocessable_entity
+  end
+
   test "should redirect when not managing" do
     stop_managing_organisation
     get edit_table_record_path(@table, @record)

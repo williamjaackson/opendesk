@@ -32,6 +32,8 @@ module CustomRecordsHelper
       time_field_tag name, value, id: id, class: classes, required: required
     when "datetime"
       datetime_local_field_tag name, value, id: id, class: classes, required: required
+    when "select"
+      select_dropdown_tag(name, id, value, column.effective_options, border)
     else
       text_field_tag name, value, id: id, class: classes, required: required
     end
@@ -51,12 +53,54 @@ module CustomRecordsHelper
     when "datetime"
       return "—" if raw_value.blank?
       format_datetime_for_display(raw_value)
+    when "select"
+      return "—" if raw_value.blank?
+      raw_value
     else
       raw_value
     end
   end
 
   private
+
+  def select_dropdown_tag(name, id, value, options, border)
+    selected_label = options.include?(value) ? value : ""
+
+    tag.div(data: { controller: "dropdown", action: "keydown->dropdown#keydown" }, class: "relative") do
+      hidden_field_tag(name, value, id: id, data: { dropdown_target: "input" }) +
+      tag.div(class: "relative") do
+        tag.input(
+          type: "text", readonly: true, placeholder: "Select...", value: selected_label,
+          data: { action: "click->dropdown#toggle", dropdown_target: "button" },
+          class: "block w-full rounded-md border #{border} bg-white px-3 py-2 pr-8 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 cursor-pointer"
+        ) +
+        lucide_icon("chevron-down", class: "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none")
+      end +
+      tag.div(data: { dropdown_target: "menu" }, class: "hidden absolute z-10 mt-1 w-full rounded-md border border-gray-200 bg-white shadow-lg max-h-60 overflow-y-auto") do
+        tag.div(class: "sticky top-0 bg-white border-b border-gray-200 p-1.5") do
+          tag.input(
+            type: "text", placeholder: "Search...",
+            data: { dropdown_target: "search", action: "input->dropdown#filter" },
+            class: "w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+          )
+        end +
+        tag.div(class: "py-1") do
+          safe_join(options.map do |opt|
+            tag.button(
+              type: "button", tabindex: "-1",
+              data: { action: "dropdown#select", value: opt, label: opt },
+              class: "flex items-center justify-between w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer"
+            ) do
+              tag.span(opt) +
+              tag.span(data: { check: "" }, class: opt == value ? "" : "invisible") do
+                lucide_icon("check", class: "h-4 w-4 text-gray-900")
+              end
+            end
+          end)
+        end
+      end
+    end
+  end
 
   def format_time_for_display(value)
     return "" if value.blank?

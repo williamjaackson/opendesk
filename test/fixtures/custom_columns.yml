@@ -46,3 +46,26 @@ datetime:
   column_type: datetime
   required: false
   position: 6
+
+select:
+  custom_table: contacts
+  name: Status
+  column_type: select
+  required: false
+  position: 7
+  options: <%= ["Active", "Inactive", "Pending"].to_json %>
+
+deal_name:
+  custom_table: deals
+  name: Deal Name
+  column_type: text
+  required: false
+  position: 0
+
+linked_select:
+  custom_table: contacts
+  name: Linked Deal
+  column_type: select
+  required: false
+  position: 8
+  linked_column: deal_name

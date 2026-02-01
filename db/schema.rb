@@ -10,18 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_01_163522) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_191022) do
   create_table "custom_columns", force: :cascade do |t|
     t.string "column_type", null: false
     t.datetime "created_at", null: false
     t.integer "custom_table_id", null: false
+    t.integer "linked_column_id"
     t.string "name", null: false
+    t.json "options"
     t.integer "position", default: 0, null: false
     t.boolean "required", default: false, null: false
     t.boolean "show_on_preview", default: true
     t.datetime "updated_at", null: false
     t.index ["custom_table_id", "position"], name: "index_custom_columns_on_custom_table_id_and_position"
     t.index ["custom_table_id"], name: "index_custom_columns_on_custom_table_id"
+    t.index ["linked_column_id"], name: "index_custom_columns_on_linked_column_id"
   end
 
   create_table "custom_record_links", force: :cascade do |t|
@@ -130,6 +133,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_163522) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "custom_columns", "custom_columns", column: "linked_column_id"
   add_foreign_key "custom_columns", "custom_tables"
   add_foreign_key "custom_record_links", "custom_records", column: "source_record_id"
   add_foreign_key "custom_record_links", "custom_records", column: "target_record_id"

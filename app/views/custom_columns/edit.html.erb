@@ -11,6 +11,40 @@
         <span class="block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"><%= @custom_column.column_type.capitalize %></span>
       </div>
 
+      <% if @custom_column.column_type == "select" %>
+        <div data-controller="select-source" data-select-source-tables-value="<%= @tables_json %>">
+          <%= render "shared/radio_group", form: form, field: :select_source, label: "Select options source",
+            selected: @custom_column.select_source,
+            options: [["Manual", "manual"], ["Linked to table", "linked"]],
+            input_data: { action: "change->select-source#sourceChanged", select_source_target: "sourceInput" } %>
+
+          <div data-select-source-target="manualOptions" class="<%= "hidden" if @custom_column.select_source == "linked" %>">
+            <% options_errors = @custom_column.errors[:options_text] %>
+            <div class="mb-4">
+              <%= form.label :options_text, "Options (one per line)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= form.text_area :options_text, rows: 4, placeholder: "Active\nInactive\nPending", class: "block w-full rounded-md border #{options_errors.any? ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
+              <% options_errors.each do |error| %>
+                <p class="mt-1 text-sm text-red-600"><%= error %></p>
+              <% end %>
+            </div>
+          </div>
+
+          <div data-select-source-target="linkedOptions" class="<%= "hidden" if @custom_column.select_source == "manual" %>">
+            <%= render "shared/dropdown", form: form, field: :linked_table_id, label: "Table",
+              searchable: true, selected: @custom_column.linked_table_id,
+              options: Current.organisation.custom_tables.map { |t| [t.name, t.id] },
+              input_data: { action: "change->select-source#tableChanged", select_source_target: "linkedTableInput" } %>
+
+            <% column_options = @custom_column.linked_column ?
+                 @custom_column.linked_column.custom_table.custom_columns.map { |c| [c.name, c.id] } : [] %>
+            <%= render "shared/dropdown", form: form, field: :linked_column_id, label: "Column",
+              searchable: true, selected: @custom_column.linked_column_id,
+              options: column_options,
+              input_data: { select_source_target: "linkedColumnInput" } %>
+          </div>
+        </div>
+      <% end %>
+
       <% unless @custom_column.column_type == "boolean" %>
         <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
       <% end %>
