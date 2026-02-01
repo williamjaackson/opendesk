@@ -1,5 +1,6 @@
 class CustomFieldsController < ApplicationController
   before_action :require_organisation
+  before_action :require_edit_mode
   before_action :set_custom_table
   before_action :set_custom_field, only: [ :edit, :update, :destroy ]
 

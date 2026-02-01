@@ -18,6 +18,10 @@ module SessionTestHelper
     post organisation_session_path, params: { organisation_id: organisation.id }
   end
 
+  def enable_edit_mode
+    patch edit_mode_path
+  end
+
   def stop_managing_organisation
     Current.organisation = nil
     delete organisation_session_path

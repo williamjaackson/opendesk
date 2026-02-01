@@ -4,6 +4,7 @@ class CustomFieldsControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in_as users(:one)
     manage_organisation organisations(:one)
+    enable_edit_mode
     @custom_table = custom_tables(:contacts)
   end
 
