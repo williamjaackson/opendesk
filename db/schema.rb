@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_01_163522) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_184830) do
   create_table "custom_columns", force: :cascade do |t|
     t.string "column_type", null: false
     t.datetime "created_at", null: false
     t.integer "custom_table_id", null: false
     t.string "name", null: false
+    t.json "options"
     t.integer "position", default: 0, null: false
     t.boolean "required", default: false, null: false
     t.boolean "show_on_preview", default: true

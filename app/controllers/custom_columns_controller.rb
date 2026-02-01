@@ -65,6 +65,6 @@ class CustomColumnsController < ApplicationController
   end
 
   def custom_column_params
-    params.require(:custom_column).permit(:name, :column_type, :required, :show_on_preview)
+    params.require(:custom_column).permit(:name, :column_type, :required, :show_on_preview, :options_text)
   end
 end

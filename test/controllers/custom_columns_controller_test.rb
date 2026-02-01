@@ -156,6 +156,39 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
       custom_column: { name: "Phone", column_type: "text" }
     }
 
-    assert_equal 7, CustomColumn.last.position
+    assert_equal 8, CustomColumn.last.position
+  end
+
+  test "should create select column" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Priority", column_type: "select", options_text: "High\nMedium\nLow" }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_equal "select", column.column_type
+    assert_equal ["High", "Medium", "Low"], column.options
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
+  test "should not create select column without options" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Priority", column_type: "select", options_text: "" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should update select column options" do
+    column = custom_columns(:select)
+    patch table_column_path(@custom_table, column), params: {
+      custom_column: { options_text: "Open\nClosed" }
+    }
+
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal ["Open", "Closed"], column.reload.options
   end
 end

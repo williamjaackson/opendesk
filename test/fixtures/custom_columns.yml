@@ -46,3 +46,11 @@ datetime:
   column_type: datetime
   required: false
   position: 6
+
+select:
+  custom_table: contacts
+  name: Status
+  column_type: select
+  required: false
+  position: 7
+  options: <%= ["Active", "Inactive", "Pending"].to_json %>

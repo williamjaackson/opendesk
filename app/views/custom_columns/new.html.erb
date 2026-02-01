@@ -7,7 +7,7 @@
 
     <%= render "shared/dropdown", form: form, field: :column_type, label: "Type", required: true,
       selected: @custom_column.column_type,
-      options: [["Text", "text"], ["Number", "number"], ["Email", "email"], ["Boolean", "boolean"], ["Date", "date"], ["Time", "time"], ["Date & Time", "datetime"]],
+      options: [["Text", "text"], ["Number", "number"], ["Email", "email"], ["Boolean", "boolean"], ["Date", "date"], ["Time", "time"], ["Date & Time", "datetime"], ["Select", "select"]],
       input_data: { action: "change->column-options#typeChanged" } %>
 
     <div data-column-options-target="container" class="hidden">
@@ -15,6 +15,13 @@
         <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
       </div>
       <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>
+
+      <div data-column-options-target="selectOptions" class="hidden">
+        <div class="mb-4">
+          <%= form.label :options_text, "Options (one per line)", class: "block text-sm font-medium text-gray-700 mb-1" %>
+          <%= form.text_area :options_text, rows: 4, placeholder: "Active\nInactive\nPending", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" %>
+        </div>
+      </div>
     </div>
 
     <%= render "shared/button", label: "Add column", form: form %>

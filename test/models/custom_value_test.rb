@@ -186,4 +186,20 @@ class CustomValueTest < ActiveSupport::TestCase
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:datetime), value: "")
     assert cv.valid?
   end
+
+  test "select value accepts valid option" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:select), value: "Active")
+    assert cv.valid?
+  end
+
+  test "select value rejects invalid option" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:select), value: "Unknown")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "is not a valid option"
+  end
+
+  test "select value allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:select), value: "")
+    assert cv.valid?
+  end
 end
