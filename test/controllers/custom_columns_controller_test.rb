@@ -364,4 +364,14 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_table_path(@custom_table)
     assert_equal 0, column.custom_values.count
   end
+
+  test "should reject fixed backfill value that fails regex validation" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Phone", column_type: "text", regex_pattern: '^\d{3}-\d{4}$', regex_label: "Phone Number", backfill_mode: "fixed", backfill_value: "not-a-phone" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
 end
