@@ -11,6 +11,7 @@
       <%= link_to group_path(group),
         data: {
           sortable_id: group.id,
+          active_group: (active ? true : nil),
           controller: "table-drop",
           table_drop_url_value: add_table_group_path(group),
           action: "dragover->table-drop#dragover dragleave->table-drop#dragleave drop->table-drop#drop"

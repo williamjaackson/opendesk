@@ -29,7 +29,8 @@ export default class extends Controller {
       },
       body: JSON.stringify({ table_id: tableId })
     }).then(() => {
-      Turbo.visit(window.location.href)
+      const activeGroup = document.querySelector("[data-active-group]")
+      Turbo.visit(activeGroup ? activeGroup.href : window.location.href)
     })
   }
 }
