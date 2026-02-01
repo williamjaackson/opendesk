@@ -6,7 +6,7 @@ module CustomRecordsHelper
 
     case column.column_type
     when "number"
-      text_field_tag name, value, id: id, class: classes, required: required, inputmode: "numeric", pattern: "[0-9]*"
+      text_field_tag name, value, id: id, class: classes, required: required, inputmode: "numeric", pattern: "[0-9]+"
     when "email"
       email_field_tag name, value, id: id, class: classes, required: required
     else

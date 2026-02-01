@@ -95,8 +95,8 @@ class CustomRecordsController < ApplicationController
     valid = true
     values.each do |column_id, value|
       next if value.blank?
-      cv = @custom_record.custom_values.create(custom_column_id: column_id, value: value)
-      unless cv.errors.empty?
+      cv = @custom_record.custom_values.build(custom_column_id: column_id, value: value)
+      unless cv.save
         column = @columns.find { |c| c.id == column_id.to_i }
         cv.errors.each do |error|
           @custom_record.errors.add(:base, "#{column.name} #{error.message}")

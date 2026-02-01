@@ -34,6 +34,17 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_table_path(@custom_table)
   end
 
+  test "should create number column" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Age", column_type: "number", required: false }
+      }
+    end
+
+    assert_equal "number", CustomColumn.last.column_type
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
   test "should get edit" do
     get edit_table_column_path(@custom_table, custom_columns(:name))
     assert_response :success

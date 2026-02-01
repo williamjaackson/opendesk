@@ -13,7 +13,7 @@ class CustomValue < ApplicationRecord
     when "number"
       errors.add(:value, "must be a whole number") unless value.match?(/\A[0-9]+\z/)
     when "email"
-      errors.add(:value, "must be a valid email address") unless value.match?(/\A[^@\s]+@[^@\s]+\z/)
+      errors.add(:value, "must be a valid email address") unless value.match?(/\A[^@\s]+@[^@\s]+\.[^@\s]+\z/)
     end
   end
 end
