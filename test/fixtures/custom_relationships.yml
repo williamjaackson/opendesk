@@ -4,6 +4,7 @@ contacts_deals:
   name: Deals
   inverse_name: Contact
   kind: one_to_many
+  position: 0
 
 contacts_projects:
   source_table: contacts
@@ -11,6 +12,7 @@ contacts_projects:
   name: Projects
   inverse_name: Contacts
   kind: many_to_many
+  position: 1
 
 deals_projects:
   source_table: deals
@@ -18,6 +20,7 @@ deals_projects:
   name: Project
   inverse_name: Deal
   kind: one_to_one
+  position: 0
 
 projects_contacts:
   source_table: projects
@@ -25,6 +28,7 @@ projects_contacts:
   name: Contact
   inverse_name: Projects
   kind: many_to_one
+  position: 0
 
 contacts_self:
   source_table: contacts
@@ -32,3 +36,4 @@ contacts_self:
   name: Children
   inverse_name: Parent
   kind: one_to_many
+  position: 2
