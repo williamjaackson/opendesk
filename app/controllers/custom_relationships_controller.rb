@@ -49,7 +49,7 @@ class CustomRelationshipsController < ApplicationController
 
   def destroy
     @custom_relationship.destroy
-    redirect_back fallback_location: edit_table_path(@custom_table)
+    redirect_to edit_table_path(@custom_table)
   end
 
   private
