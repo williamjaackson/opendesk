@@ -49,6 +49,9 @@
         class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" %>
     </div>
 
-    <%= render "shared/button", label: "Add relationship", form: form %>
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", label: "Add relationship", form: form %>
+      <%= render "shared/button", style: "ghost", label: "Cancel", href: edit_table_path(@custom_table) %>
+    </div>
   <% end %>
 </div>

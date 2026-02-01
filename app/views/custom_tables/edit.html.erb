@@ -1,5 +1,5 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
   <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)]] %>
   <%= render "shared/page_heading", title: "Edit table" %>
-  <%= render "form" %>
+  <%= render "form", cancel_path: table_path(@custom_table) %>
 </div>

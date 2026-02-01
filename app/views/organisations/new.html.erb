@@ -5,6 +5,9 @@
   <%= form_with model: @organisation do |form| %>
     <%= render "shared/form_input", form: form, field: :name, options: { required: true, autofocus: true } %>
 
-    <%= render "shared/button", label: "Create organisation", form: form %>
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", label: "Create organisation", form: form %>
+      <%= render "shared/button", style: "ghost", label: "Cancel", href: organisations_path %>
+    </div>
   <% end %>
 </div>

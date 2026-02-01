@@ -19,7 +19,10 @@
         </div>
       <% end %>
 
-      <%= render "shared/button", label: "Save changes", form: form %>
+      <div class="flex items-center gap-3">
+        <%= render "shared/button", label: "Save changes", form: form %>
+        <%= render "shared/button", style: "ghost", label: "Cancel", href: table_record_path(@custom_table, @custom_record) %>
+      </div>
     <% end %>
 
     <%= render "shared/danger_zone",
