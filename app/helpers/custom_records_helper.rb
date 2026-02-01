@@ -30,6 +30,8 @@ module CustomRecordsHelper
       date_field_tag name, value, id: id, class: classes, required: required
     when "time"
       time_field_tag name, value, id: id, class: classes, required: required
+    when "datetime"
+      datetime_local_field_tag name, value, id: id, class: classes, required: required
     else
       text_field_tag name, value, id: id, class: classes, required: required
     end
@@ -46,6 +48,9 @@ module CustomRecordsHelper
     when "time"
       return "—" if raw_value.blank?
       format_time_for_display(raw_value)
+    when "datetime"
+      return "—" if raw_value.blank?
+      format_datetime_for_display(raw_value)
     else
       raw_value
     end
@@ -60,6 +65,17 @@ module CustomRecordsHelper
     hour12 = hours % 12
     hour12 = 12 if hour12 == 0
     "#{hour12}:#{format('%02d', minutes)} #{period}"
+  rescue
+    value
+  end
+
+  def format_datetime_for_display(value)
+    return "" if value.blank?
+    date_part, time_part = value.split("T")
+    date = Date.parse(date_part)
+    formatted_date = date.strftime("%-d %b %Y")
+    formatted_time = format_time_for_display(time_part)
+    "#{formatted_date}, #{formatted_time}"
   rescue
     value
   end

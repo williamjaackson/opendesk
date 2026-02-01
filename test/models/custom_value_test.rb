@@ -158,4 +158,32 @@ class CustomValueTest < ActiveSupport::TestCase
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "")
     assert cv.valid?
   end
+
+  test "datetime value accepts valid datetime" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:datetime), value: "2026-01-15T14:30")
+    assert cv.valid?
+  end
+
+  test "datetime value rejects non-datetime string" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:datetime), value: "not-a-datetime")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid date and time"
+  end
+
+  test "datetime value rejects date without time" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:datetime), value: "2026-01-15")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid date and time"
+  end
+
+  test "datetime value rejects wrong format" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:datetime), value: "15/01/2026 14:30")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid date and time"
+  end
+
+  test "datetime value allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:datetime), value: "")
+    assert cv.valid?
+  end
 end
