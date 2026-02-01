@@ -51,6 +51,7 @@ export default class extends Controller {
         this.buttonTarget.focus()
         break
       case " ":
+        if (this.hasSearchTarget && event.target === this.searchTarget && this.focusIndex < 0) break
         event.preventDefault()
         if (!this.openValue) {
           this.openValue = true
@@ -60,10 +61,13 @@ export default class extends Controller {
         }
         break
       case "Enter":
-        if (this.openValue && this.focusIndex >= 0) {
-          event.preventDefault()
+        if (this.openValue) {
           const options = this.visibleOptions
-          if (options[this.focusIndex]) options[this.focusIndex].click()
+          const target = this.focusIndex >= 0 ? options[this.focusIndex] : options[0]
+          if (target) {
+            event.preventDefault()
+            target.click()
+          }
         }
         break
     }
