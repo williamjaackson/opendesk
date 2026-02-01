@@ -65,14 +65,14 @@
 
           <div data-regex-toggle-target="fields" class="<%= 'hidden' unless regex_enabled %> mt-3 space-y-3">
             <div>
-              <%= form.label :regex_pattern, "Regex pattern", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= form.label :regex_pattern, class: "block text-sm font-medium text-gray-700 mb-1" do %>Regex pattern<span class="text-red-500 ml-0.5">*</span><% end %>
               <%= form.text_field :regex_pattern, required: regex_enabled, placeholder: '^\d{3}-\d{4}$', class: "block w-full rounded-md border #{@custom_column.errors[:regex_pattern].any? ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
               <% @custom_column.errors[:regex_pattern].each do |error| %>
                 <p class="mt-1 text-sm text-red-600"><%= error %></p>
               <% end %>
             </div>
             <div>
-              <%= form.label :regex_label, "Validation name", class: "block text-sm font-medium text-gray-700 mb-1" %>
+              <%= form.label :regex_label, class: "block text-sm font-medium text-gray-700 mb-1" do %>Validation name<span class="text-red-500 ml-0.5">*</span><% end %>
               <%= form.text_field :regex_label, required: regex_enabled, placeholder: "Phone Number", class: "block w-full rounded-md border #{@custom_column.errors[:regex_label].any? ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
               <% @custom_column.errors[:regex_label].each do |error| %>
                 <p class="mt-1 text-sm text-red-600"><%= error %></p>
