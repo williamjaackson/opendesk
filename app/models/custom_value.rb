@@ -25,5 +25,12 @@ class CustomValue < ApplicationRecord
     when "select"
       errors.add(:value, "is not a valid option") unless custom_column.effective_options.include?(value)
     end
+
+    if custom_column.column_type.in?(%w[text number]) && custom_column.regex_pattern.present?
+      unless value.match?(Regexp.new(custom_column.regex_pattern))
+        label = custom_column.regex_label.presence || "validation"
+        errors.add(:value, "failed #{label} check")
+      end
+    end
   end
 end
