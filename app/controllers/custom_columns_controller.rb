@@ -32,6 +32,7 @@ class CustomColumnsController < ApplicationController
     backfill_mode = params.dig(:custom_column, :backfill_mode)
     backfill_value = params.dig(:custom_column, :backfill_value)
     backfill_column_id = params.dig(:custom_column, :backfill_column_id)
+    backfill_fallback = params.dig(:custom_column, :backfill_fallback)
 
     saved = false
 
@@ -72,12 +73,35 @@ class CustomColumnsController < ApplicationController
           raise ActiveRecord::Rollback
         end
 
+        if backfill_fallback.present?
+          test_fallback = @custom_column.custom_values.build(
+            custom_record: @custom_table.custom_records.first,
+            value: backfill_fallback
+          )
+          unless test_fallback.valid?
+            @custom_column.errors.add(:backfill_fallback, test_fallback.errors[:value].first)
+            raise ActiveRecord::Rollback
+          end
+        end
+
         @custom_table.custom_records.includes(:custom_values).find_each do |record|
           source_value = record.custom_values.find { |v| v.custom_column_id == source_column.id }
-          next unless source_value&.value.present?
+          value_to_use = source_value&.value.presence
 
-          new_value = record.custom_values.build(custom_column: @custom_column, value: source_value.value)
-          new_value.save if new_value.valid?
+          if value_to_use
+            value_to_use = coerce_backfill_value(value_to_use, source_column.column_type, @custom_column.column_type)
+            new_value = record.custom_values.build(custom_column: @custom_column, value: value_to_use)
+            unless new_value.valid?
+              if backfill_fallback.present?
+                new_value.value = backfill_fallback
+              else
+                next
+              end
+            end
+            new_value.save!
+          elsif backfill_fallback.present?
+            record.custom_values.create!(custom_column: @custom_column, value: backfill_fallback)
+          end
         end
       elsif backfill_mode.present?
         @custom_column.errors.add(:backfill_mode, "is invalid")
@@ -137,6 +161,37 @@ class CustomColumnsController < ApplicationController
   def load_backfill_data
     @existing_columns = @custom_table.custom_columns
     @has_records = @custom_table.custom_records.exists?
+  end
+
+  DATETIME_PATTERN = /\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T([01]\d|2[0-3]):[0-5]\d\z/
+  DATE_PATTERN = /\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])\z/
+  TIME_PATTERN = /\A([01]\d|2[0-3]):[0-5]\d\z/
+
+  def coerce_backfill_value(value, source_type, target_type)
+    effective_source = source_type
+
+    if source_type == "text"
+      if value.match?(DATETIME_PATTERN)
+        effective_source = "datetime"
+      elsif value.match?(DATE_PATTERN)
+        effective_source = "date"
+      elsif value.match?(TIME_PATTERN)
+        effective_source = "time"
+      end
+    end
+
+    case [ effective_source, target_type ]
+    when [ "datetime", "date" ]
+      value.split("T").first
+    when [ "datetime", "time" ]
+      value.split("T").last
+    when [ "date", "datetime" ]
+      "#{value}T00:00"
+    when [ "time", "datetime" ]
+      "1970-01-01T#{value}"
+    else
+      value
+    end
   end
 
   def custom_column_params
