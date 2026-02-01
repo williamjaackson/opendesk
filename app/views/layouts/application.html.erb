@@ -87,7 +87,7 @@
         </div>
       </div>
     </nav>
-    <% if authenticated? && managing_organisation? %>
+    <% if authenticated? && managing_organisation? && controller_name != "table_groups" %>
       <%= render "shared/tables_navbar" %>
     <% end %>
     <% flash.each do |type, message| %>
