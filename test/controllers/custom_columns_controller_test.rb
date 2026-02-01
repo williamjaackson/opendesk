@@ -352,7 +352,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
-  test "should skip invalid values when copying from column" do
+  test "should skip invalid values when copying from column without fallback" do
     name_column = custom_columns(:name)
     assert_difference "CustomColumn.count", 1 do
       post table_columns_path(@custom_table), params: {
@@ -363,5 +363,49 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     column = CustomColumn.last
     assert_redirected_to edit_table_path(@custom_table)
     assert_equal 0, column.custom_values.count
+  end
+
+  test "should use fallback for incompatible values when copying from column" do
+    name_column = custom_columns(:name)
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Contact Number", column_type: "number", backfill_mode: "column", backfill_column_id: name_column.id, backfill_fallback: "0" }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal 3, column.custom_values.count
+    assert column.custom_values.all? { |v| v.value == "0" }
+  end
+
+  test "should use source value when compatible and fallback when not" do
+    number_column = custom_columns(:number)
+    # Give alice a valid number value
+    custom_records(:alice).custom_values.create!(custom_column: number_column, value: "42")
+
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Number Copy", column_type: "number", backfill_mode: "column", backfill_column_id: number_column.id, backfill_fallback: "0" }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal 3, column.custom_values.count
+    assert_equal "42", column.custom_values.find_by(custom_record: custom_records(:alice)).value
+    assert_equal "0", column.custom_values.find_by(custom_record: custom_records(:bob)).value
+    assert_equal "0", column.custom_values.find_by(custom_record: custom_records(:charlie)).value
+  end
+
+  test "should reject column backfill with invalid fallback value" do
+    name_column = custom_columns(:name)
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Contact Number", column_type: "number", backfill_mode: "column", backfill_column_id: name_column.id, backfill_fallback: "abc" }
+      }
+    end
+
+    assert_response :unprocessable_entity
   end
 end
