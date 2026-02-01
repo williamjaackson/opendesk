@@ -6,7 +6,7 @@ class CustomColumn < ApplicationRecord
   has_many :custom_values, dependent: :destroy
 
   validates :name, presence: true
-  validates :column_type, presence: true, inclusion: { in: COLUMN_TYPES }
+  validates :column_type, presence: true, inclusion: { in: COLUMN_TYPES, allow_blank: true }
 
   after_destroy :cleanup_empty_records
 
