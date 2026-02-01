@@ -12,9 +12,8 @@ export default class extends Controller {
         "Accept": "text/html"
       }
     }).then(() => {
+      document.body.toggleAttribute("data-edit-mode")
       if (needsRedirect) Turbo.visit("/")
     })
-
-    document.body.toggleAttribute("data-edit-mode")
   }
 }
