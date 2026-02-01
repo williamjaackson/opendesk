@@ -18,6 +18,10 @@ class CustomTablesController < ApplicationController
 
   def new
     @custom_table = Current.organisation.custom_tables.new
+    if params[:group].present?
+      @custom_table.table_group = Current.organisation.table_groups.find_by(slug: params[:group])
+    end
+    @custom_table.table_group ||= Current.organisation.table_groups.first
   end
 
   def edit
@@ -49,6 +53,7 @@ class CustomTablesController < ApplicationController
 
   def create
     @custom_table = Current.organisation.custom_tables.new(custom_table_params)
+    @custom_table.table_group ||= Current.organisation.table_groups.first
     @custom_table.position = Current.organisation.custom_tables.maximum(:position).to_i + 1
 
     if @custom_table.save
@@ -85,6 +90,10 @@ class CustomTablesController < ApplicationController
   end
 
   def custom_table_params
-    params.require(:custom_table).permit(:name)
+    permitted = params.require(:custom_table).permit(:name, :table_group_id)
+    if permitted[:table_group_id].present?
+      permitted[:table_group_id] = Current.organisation.table_groups.find_by(id: permitted[:table_group_id])&.id
+    end
+    permitted
   end
 end

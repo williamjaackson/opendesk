@@ -5,10 +5,7 @@ class DashboardController < ApplicationController
       return
     end
 
-    first_table = Current.organisation.custom_tables.order(:position).first
-
-    if first_table
-      redirect_to table_path(first_table)
-    end
+    first_group = Current.organisation.table_groups.first
+    redirect_to group_path(first_group)
   end
 end

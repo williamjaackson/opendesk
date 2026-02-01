@@ -1,17 +1,20 @@
 contacts:
   organisation: one
+  table_group: default
   name: Contacts
   slug: contacts
   position: 0
 
 deals:
   organisation: one
+  table_group: default
   name: Deals
   slug: deals
   position: 1
 
 projects:
   organisation: one
+  table_group: default
   name: Projects
   slug: projects
   position: 2

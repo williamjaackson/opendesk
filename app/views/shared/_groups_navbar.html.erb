@@ -1,0 +1,31 @@
+<% groups = Current.organisation.table_groups.order(:position) %>
+<% active_group = @table_group || @custom_table&.table_group || groups.first %>
+
+<div class="flex items-center gap-1 text-sm">
+  <div class="flex items-center gap-1"
+       data-controller="sortable"
+       data-sortable-url-value="<%= reorder_groups_path %>"
+       data-sortable-direction-value="horizontal"
+       data-sortable-handle-value="[data-edit-only]">
+    <% groups.each do |group| %>
+      <% active = group == active_group %>
+      <%= link_to group_path(group),
+        data: {
+          sortable_id: group.id,
+          active_group: (active ? true : nil),
+          controller: "table-drop",
+          table_drop_url_value: add_table_group_path(group),
+          action: "dragover->table-drop#dragover dragleave->table-drop#dragleave drop->table-drop#drop"
+        },
+        class: "px-3 py-2 rounded-md font-medium transition-colors #{active ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}" do %>
+        <span data-edit-only class="inline-flex items-center gap-1">
+          <%= lucide_icon("grip-vertical", class: "h-3 w-3 text-gray-400 flex-shrink-0") %>
+        </span>
+        <%= group.name %>
+      <% end %>
+    <% end %>
+  </div>
+  <%= link_to groups_path, data: { edit_only: true }, class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+    <%= lucide_icon("pencil", class: "h-4 w-4") %>
+  <% end %>
+</div>

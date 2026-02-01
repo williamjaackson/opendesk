@@ -75,6 +75,19 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
     assert_equal 3, table.position
   end
 
+  test "should default to first table group on create" do
+    post tables_path, params: { custom_table: { name: "Tickets" } }
+    table = CustomTable.last
+    assert_equal table_groups(:default), table.table_group
+  end
+
+  test "should accept table_group_id on create" do
+    group = Current.organisation.table_groups.create!(name: "Sales", slug: "sales", position: 1)
+    post tables_path, params: { custom_table: { name: "Tickets", table_group_id: group.id } }
+    table = CustomTable.last
+    assert_equal group, table.table_group
+  end
+
   test "should redirect to organisations when not managing" do
     stop_managing_organisation
     get edit_table_path(custom_tables(:contacts))

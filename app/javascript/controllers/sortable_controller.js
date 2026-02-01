@@ -6,7 +6,8 @@ export default class extends Controller {
     url: String,
     direction: { type: String, default: "vertical" },
     handle: String,
-    fallback: { type: Boolean, default: false }
+    fallback: { type: Boolean, default: false },
+    reload: { type: Boolean, default: false }
   }
 
   connect() {
@@ -16,6 +17,9 @@ export default class extends Controller {
       draggable: "[data-sortable-id]",
       handle: this.hasHandleValue ? this.handleValue : undefined,
       forceFallback: this.fallbackValue,
+      setData: (dataTransfer, dragEl) => {
+        dataTransfer.setData("application/x-sortable-id", dragEl.dataset.sortableId)
+      },
       onEnd: this.onEnd.bind(this)
     })
   }
@@ -52,6 +56,8 @@ export default class extends Controller {
         "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content
       },
       body: JSON.stringify({ ids })
+    }).then(() => {
+      if (this.reloadValue) Turbo.visit(window.location.href)
     })
   }
 }
