@@ -8,7 +8,10 @@
         <%= label_tag "values_#{column.id}", class: "block text-sm font-medium text-gray-700 mb-1" do %>
           <%= column.name %><% if column.required? %><span class="text-red-500 ml-0.5">*</span><% end %>
         <% end %>
-        <%= text_field_tag "values[#{column.id}]", nil, id: "values_#{column.id}", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500", required: column.required? %>
+        <%= column_value_tag(column, params.dig(:values, column.id.to_s), required: column.required?) %>
+        <% @custom_record.errors[:"column_#{column.id}"].each do |message| %>
+          <p class="mt-1 text-sm text-red-600"><%= message %></p>
+        <% end %>
       </div>
     <% end %>
 

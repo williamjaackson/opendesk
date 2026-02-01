@@ -8,6 +8,13 @@ name:
 email:
   custom_table: contacts
   name: Email
-  column_type: text
+  column_type: email
   required: false
   position: 1
+
+number:
+  custom_table: contacts
+  name: Age
+  column_type: number
+  required: false
+  position: 2

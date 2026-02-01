@@ -23,6 +23,28 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_table_path(@custom_table)
   end
 
+  test "should create email column" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Work Email", column_type: "email", required: false }
+      }
+    end
+
+    assert_equal "email", CustomColumn.last.column_type
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
+  test "should create number column" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Age", column_type: "number", required: false }
+      }
+    end
+
+    assert_equal "number", CustomColumn.last.column_type
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
   test "should get edit" do
     get edit_table_column_path(@custom_table, custom_columns(:name))
     assert_response :success
@@ -70,6 +92,6 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
       custom_column: { name: "Phone", column_type: "text" }
     }
 
-    assert_equal 2, CustomColumn.last.position
+    assert_equal 3, CustomColumn.last.position
   end
 end
