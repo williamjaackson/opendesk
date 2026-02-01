@@ -4,6 +4,9 @@ alice:
 bob:
   custom_table: contacts
 
+charlie:
+  custom_table: contacts
+
 deal_one:
   custom_table: deals
 

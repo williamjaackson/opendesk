@@ -128,15 +128,18 @@ class CustomRecordsController < ApplicationController
     valid
   end
 
-  RelationshipSection = Struct.new(:relationship, :label, :is_source, :suffix, :self_referential, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
+  RelationshipSection = Struct.new(:relationship, :label, :is_source, :suffix, :self_referential, :symmetric, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
 
   def build_relationship_sections
     @custom_table.all_relationships.includes(:source_table, :target_table).flat_map do |rel|
-      self_referential = rel.source_table_id == rel.target_table_id
-      directions = self_referential ? [ true, false ] : [ rel.source_table_id == @custom_table.id ]
+      self_referential = rel.self_referential?
 
-      directions.map do |is_source|
-        build_section(rel, is_source, self_referential)
+      if rel.symmetric?
+        [ build_symmetric_section(rel) ]
+      elsif self_referential
+        [ true, false ].map { |is_source| build_section(rel, is_source, self_referential) }
+      else
+        [ build_section(rel, rel.source_table_id == @custom_table.id, self_referential) ]
       end
     end
   end
@@ -211,6 +214,68 @@ class CustomRecordsController < ApplicationController
       is_source: is_source,
       suffix: suffix,
       self_referential: self_referential,
+      symmetric: false,
+      target_table: target_table,
+      record_links: paginated_links,
+      display_columns: display_columns,
+      available_records: available_records,
+      accepts_more: accepts_more,
+      pagy: pagy_obj
+    )
+  end
+
+  def build_symmetric_section(rel)
+    target_table = rel.source_table
+    suffix = "symmetric"
+
+    all_links = rel.custom_record_links
+      .where("source_record_id = :id OR target_record_id = :id", id: @custom_record.id)
+      .includes(source_record: { custom_values: :custom_column }, target_record: { custom_values: :custom_column })
+
+    linked_record_ids = all_links.map { |l| l.source_record_id == @custom_record.id ? l.target_record_id : l.source_record_id }
+    display_columns = target_table.custom_columns.where(show_on_preview: true).order(:position)
+
+    exclude_ids = linked_record_ids + [ @custom_record.id ]
+
+    if rel.kind == "one_to_one"
+      taken_ids = rel.custom_record_links.pluck(:source_record_id, :target_record_id).flatten.uniq
+      exclude_ids = (exclude_ids + taken_ids).uniq
+    end
+
+    available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column)
+
+    accepts_more = if rel.kind == "one_to_one"
+      all_links.empty?
+    else
+      true
+    end
+
+    search_param = :"rq_#{rel.id}_#{suffix}"
+    search_query = params[search_param]
+    record_links = if search_query.present?
+      all_links.select { |link|
+        rec = link.source_record_id == @custom_record.id ? link.target_record : link.source_record
+        rec.display_name.downcase.include?(search_query.downcase)
+      }
+    else
+      all_links.to_a
+    end
+
+    page_param = :"rp_#{rel.id}_#{suffix}"
+    page = (params[page_param] || 1).to_i
+    page = 1 if page < 1
+    total = record_links.length
+    page = [ page, (total / 25.0).ceil.clamp(1..) ].min
+    pagy_obj = Pagy::Offset.new(count: total, page: page, limit: 25)
+    paginated_links = record_links[pagy_obj.offset, pagy_obj.limit] || []
+
+    RelationshipSection.new(
+      relationship: rel,
+      label: rel.name,
+      is_source: true,
+      suffix: suffix,
+      self_referential: true,
+      symmetric: true,
       target_table: target_table,
       record_links: paginated_links,
       display_columns: display_columns,

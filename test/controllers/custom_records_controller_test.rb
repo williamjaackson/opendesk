@@ -36,11 +36,18 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
-  test "should show both directions of self-referential relationship" do
+  test "should show both directions of asymmetric self-referential relationship" do
     get table_record_path(@table, @record)
     assert_response :success
     assert_select "h2", text: "Children"
     assert_select "h2", text: "Parent"
+  end
+
+  test "should show one section for symmetric relationship" do
+    get table_record_path(@table, @record)
+    assert_response :success
+    assert_select "h2", text: "Spouse", count: 1
+    assert_select "h2", text: "Knows", count: 1
   end
 
   test "should get edit" do

@@ -6,7 +6,8 @@
     data: {
       controller: "relationship-form",
       relationship_form_source_table_value: @custom_table.name,
-      relationship_form_source_table_singular_value: @custom_table.name.singularize
+      relationship_form_source_table_singular_value: @custom_table.name.singularize,
+      relationship_form_source_table_id_value: @custom_table.id
     } do |form| %>
 
     <%= render "shared/dropdown", form: form, field: :target_table_id, label: "Related table", required: true, searchable: true,
@@ -19,6 +20,13 @@
       options: [["One to one", "one_to_one"], ["One to many", "one_to_many"], ["Many to one", "many_to_one"], ["Many to many", "many_to_many"]],
       input_data: { relationship_form_target: "kind", action: "change->relationship-form#updateDefaults" } %>
 
+    <div class="hidden" data-relationship-form-target="directionContainer">
+      <%= render "shared/radio_group", form: form, field: :symmetric, label: "Direction",
+        selected: "1",
+        options: [["Symmetric", "1"], ["Asymmetric", "0"]],
+        input_data: { relationship_form_target: "symmetric", action: "change->relationship-form#updateDefaults" } %>
+    </div>
+
     <div class="mb-4">
       <%= form.label :name, class: "block text-sm font-medium text-gray-700 mb-1" do %>
         Name<span class="text-red-500 ml-0.5">*</span>
@@ -30,7 +38,7 @@
         class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" %>
     </div>
 
-    <div class="mb-4">
+    <div class="mb-4" data-relationship-form-target="inverseNameContainer">
       <%= form.label :inverse_name, class: "block text-sm font-medium text-gray-700 mb-1" do %>
         Inverse name<span class="text-red-500 ml-0.5">*</span>
       <% end %>

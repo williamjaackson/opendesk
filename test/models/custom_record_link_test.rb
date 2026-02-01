@@ -88,4 +88,55 @@ class CustomRecordLinkTest < ActiveSupport::TestCase
     )
     assert link.valid?
   end
+
+  test "prevents symmetric duplicate link" do
+    rel = custom_relationships(:contacts_knows)
+    CustomRecordLink.create!(
+      custom_relationship: rel,
+      source_record: custom_records(:alice),
+      target_record: custom_records(:bob)
+    )
+    link = CustomRecordLink.new(
+      custom_relationship: rel,
+      source_record: custom_records(:bob),
+      target_record: custom_records(:alice)
+    )
+    assert_not link.valid?
+    assert link.errors[:base].any? { |e| e.include?("symmetric link already exists") }
+  end
+
+  test "allows first symmetric link" do
+    rel = custom_relationships(:contacts_knows)
+    link = CustomRecordLink.new(
+      custom_relationship: rel,
+      source_record: custom_records(:alice),
+      target_record: custom_records(:bob)
+    )
+    assert link.valid?
+  end
+
+  test "symmetric one-to-one checks both directions for cardinality" do
+    rel = custom_relationships(:contacts_spouse)
+    CustomRecordLink.create!(
+      custom_relationship: rel,
+      source_record: custom_records(:alice),
+      target_record: custom_records(:bob)
+    )
+    link = CustomRecordLink.new(
+      custom_relationship: rel,
+      source_record: custom_records(:charlie),
+      target_record: custom_records(:bob)
+    )
+    assert_not link.valid?
+  end
+
+  test "symmetric one-to-one allows first link" do
+    rel = custom_relationships(:contacts_spouse)
+    link = CustomRecordLink.new(
+      custom_relationship: rel,
+      source_record: custom_records(:alice),
+      target_record: custom_records(:bob)
+    )
+    assert link.valid?
+  end
 end

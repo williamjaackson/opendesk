@@ -8,13 +8,19 @@
   <section class="space-y-3">
     <h2 class="text-lg font-semibold text-gray-900"><%= section.label %></h2>
 
-    <% linked_record_for = ->(link) { section.is_source ? link.target_record : link.source_record } %>
+    <% linked_record_for = ->(link) {
+      if section.symmetric
+        link.source_record_id == record.id ? link.target_record : link.source_record
+      else
+        section.is_source ? link.target_record : link.source_record
+      end
+    } %>
 
     <% columns = section.display_columns.map do |column|
       {
         header: column.name,
         accessor: ->(link) {
-          rec = section.is_source ? link.target_record : link.source_record
+          rec = linked_record_for.call(link)
           rec.custom_values.detect { |v| v.custom_column_id == column.id }&.value.presence || "—"
         }
       }

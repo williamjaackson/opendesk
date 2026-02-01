@@ -76,4 +76,36 @@ class CustomRecordLinksControllerTest < ActionDispatch::IntegrationTest
       delete record_link_path(link)
     end
   end
+
+  test "should create symmetric link" do
+    rel = custom_relationships(:contacts_knows)
+    assert_difference "CustomRecordLink.count", 1 do
+      post record_links_path, params: {
+        custom_record_link: {
+          custom_relationship_id: rel.id,
+          source_record_id: custom_records(:alice).id,
+          target_record_id: custom_records(:bob).id
+        }
+      }
+    end
+  end
+
+  test "should block reverse duplicate on symmetric link" do
+    rel = custom_relationships(:contacts_knows)
+    CustomRecordLink.create!(
+      custom_relationship: rel,
+      source_record: custom_records(:alice),
+      target_record: custom_records(:bob)
+    )
+
+    assert_no_difference "CustomRecordLink.count" do
+      post record_links_path, params: {
+        custom_record_link: {
+          custom_relationship_id: rel.id,
+          source_record_id: custom_records(:bob).id,
+          target_record_id: custom_records(:alice).id
+        }
+      }
+    end
+  end
 end

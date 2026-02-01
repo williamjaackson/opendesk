@@ -107,7 +107,7 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
       }
     }
 
-    assert_equal 3, CustomRelationship.last.position
+    assert_equal 5, CustomRelationship.last.position
   end
 
   test "should destroy relationship and its links" do
@@ -118,5 +118,42 @@ class CustomRelationshipsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to edit_table_path(@custom_table)
+  end
+
+  test "should create symmetric many-to-many self-referential" do
+    assert_difference "CustomRelationship.count", 1 do
+      post table_relationships_path(@custom_table), params: {
+        custom_relationship: {
+          name: "Friends",
+          inverse_name: "Friends",
+          kind: "many_to_many",
+          target_table_id: @custom_table.id,
+          symmetric: "1"
+        }
+      }
+    end
+
+    rel = CustomRelationship.last
+    assert rel.symmetric?
+    assert_equal "Friends", rel.inverse_name
+  end
+
+  test "should auto-set symmetric for one-to-one self-referential" do
+    custom_relationships(:contacts_spouse).destroy
+
+    assert_difference "CustomRelationship.count", 1 do
+      post table_relationships_path(@custom_table), params: {
+        custom_relationship: {
+          name: "Partner",
+          inverse_name: "anything",
+          kind: "one_to_one",
+          target_table_id: @custom_table.id
+        }
+      }
+    end
+
+    rel = CustomRelationship.last
+    assert rel.symmetric?
+    assert_equal "Partner", rel.inverse_name
   end
 end

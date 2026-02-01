@@ -5,6 +5,7 @@ contacts_deals:
   inverse_name: Contact
   kind: one_to_many
   position: 0
+  symmetric: false
 
 contacts_projects:
   source_table: contacts
@@ -13,6 +14,7 @@ contacts_projects:
   inverse_name: Contacts
   kind: many_to_many
   position: 1
+  symmetric: false
 
 deals_projects:
   source_table: deals
@@ -21,6 +23,7 @@ deals_projects:
   inverse_name: Deal
   kind: one_to_one
   position: 0
+  symmetric: false
 
 projects_contacts:
   source_table: projects
@@ -29,6 +32,7 @@ projects_contacts:
   inverse_name: Projects
   kind: many_to_one
   position: 0
+  symmetric: false
 
 contacts_self:
   source_table: contacts
@@ -37,3 +41,22 @@ contacts_self:
   inverse_name: Parent
   kind: one_to_many
   position: 2
+  symmetric: false
+
+contacts_spouse:
+  source_table: contacts
+  target_table: contacts
+  name: Spouse
+  inverse_name: Spouse
+  kind: one_to_one
+  position: 3
+  symmetric: true
+
+contacts_knows:
+  source_table: contacts
+  target_table: contacts
+  name: Knows
+  inverse_name: Knows
+  kind: many_to_many
+  position: 4
+  symmetric: true
