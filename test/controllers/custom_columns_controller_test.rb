@@ -310,10 +310,10 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "Bob Jones", column.custom_values.find_by(custom_record: custom_records(:bob)).value
   end
 
-  test "should create column without backfill when mode is none" do
+  test "should create column without backfill when checkbox unchecked" do
     assert_difference "CustomColumn.count", 1 do
       post table_columns_path(@custom_table), params: {
-        custom_column: { name: "Notes", column_type: "text", backfill_mode: "none" }
+        custom_column: { name: "Notes", column_type: "text" }
       }
     end
 
@@ -326,6 +326,26 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "CustomColumn.count" do
       post table_columns_path(@custom_table), params: {
         custom_column: { name: "Count", column_type: "number", backfill_mode: "fixed", backfill_value: "abc" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should reject fixed backfill with blank value" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Notes", column_type: "text", backfill_mode: "fixed", backfill_value: "" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should reject column backfill without selected column" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Notes", column_type: "text", backfill_mode: "column", backfill_column_id: "" }
       }
     end
 

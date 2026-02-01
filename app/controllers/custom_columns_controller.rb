@@ -40,7 +40,12 @@ class CustomColumnsController < ApplicationController
         raise ActiveRecord::Rollback
       end
 
-      if backfill_mode == "fixed" && backfill_value.present?
+      if backfill_mode == "fixed"
+        if backfill_value.blank?
+          @custom_column.errors.add(:backfill_value, "can't be blank")
+          raise ActiveRecord::Rollback
+        end
+
         test_value = @custom_column.custom_values.build(
           custom_record: @custom_table.custom_records.first,
           value: backfill_value
@@ -53,7 +58,12 @@ class CustomColumnsController < ApplicationController
         @custom_table.custom_records.find_each do |record|
           record.custom_values.create!(custom_column: @custom_column, value: backfill_value)
         end
-      elsif backfill_mode == "column" && backfill_column_id.present?
+      elsif backfill_mode == "column"
+        if backfill_column_id.blank?
+          @custom_column.errors.add(:backfill_column_id, "must be selected")
+          raise ActiveRecord::Rollback
+        end
+
         source_column = @custom_table.custom_columns.find_by(id: backfill_column_id)
         if source_column
           @custom_table.custom_records.includes(:custom_values).find_each do |record|
