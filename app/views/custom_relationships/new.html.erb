@@ -6,8 +6,7 @@
     data: {
       controller: "relationship-form",
       relationship_form_source_table_value: @custom_table.name,
-      relationship_form_source_table_singular_value: @custom_table.name.singularize,
-      relationship_form_source_table_id_value: @custom_table.id
+      relationship_form_source_table_singular_value: @custom_table.name.singularize
     } do |form| %>
 
     <%= render "shared/dropdown", form: form, field: :target_table_id, label: "Related table", required: true, searchable: true,
