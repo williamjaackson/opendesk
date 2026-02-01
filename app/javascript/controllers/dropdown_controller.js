@@ -51,7 +51,7 @@ export default class extends Controller {
         this.buttonTarget.focus()
         break
       case " ":
-        if (this.hasSearchTarget && event.target === this.searchTarget) break
+        if (this.hasSearchTarget && event.target === this.searchTarget && this.focusIndex < 0) break
         event.preventDefault()
         if (!this.openValue) {
           this.openValue = true
