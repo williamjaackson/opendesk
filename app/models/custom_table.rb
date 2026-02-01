@@ -1,9 +1,4 @@
 class CustomTable < ApplicationRecord
-  RESERVED_SLUGS = %w[
-    session sessions organisation_session edit_mode passwords organisations
-    record-links up new reorder-tables rails manifests service-worker
-  ].freeze
-
   belongs_to :organisation
 
   has_many :custom_fields, dependent: :destroy
@@ -13,7 +8,6 @@ class CustomTable < ApplicationRecord
 
   validates :name, presence: true, uniqueness: { scope: :organisation_id }
   validates :slug, presence: true, uniqueness: { scope: :organisation_id }
-  validates :slug, exclusion: { in: RESERVED_SLUGS, message: "is reserved" }
   validate :name_must_be_plural
 
   before_validation :generate_slug
