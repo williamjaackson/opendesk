@@ -21,6 +21,7 @@ class CustomColumnsController < ApplicationController
   def new
     @custom_column = @custom_table.custom_columns.new
     load_tables_json
+    load_backfill_data
   end
 
   def create
@@ -28,10 +29,69 @@ class CustomColumnsController < ApplicationController
     max = @custom_table.custom_columns.maximum(:position)
     @custom_column.position = max ? max + 1 : 0
 
-    if @custom_column.save
+    backfill_mode = params.dig(:custom_column, :backfill_mode)
+    backfill_value = params.dig(:custom_column, :backfill_value)
+    backfill_column_id = params.dig(:custom_column, :backfill_column_id)
+
+    saved = false
+
+    ActiveRecord::Base.transaction do
+      unless @custom_column.save
+        raise ActiveRecord::Rollback
+      end
+
+      if backfill_mode == "fixed"
+        if backfill_value.blank?
+          @custom_column.errors.add(:backfill_value, "can't be blank")
+          raise ActiveRecord::Rollback
+        end
+
+        test_value = @custom_column.custom_values.build(
+          custom_record: @custom_table.custom_records.first,
+          value: backfill_value
+        )
+        unless test_value.valid?
+          test_value.errors[:value].each do |message|
+            @custom_column.errors.add(:backfill_value, message)
+          end
+          raise ActiveRecord::Rollback
+        end
+
+        @custom_table.custom_records.find_each do |record|
+          record.custom_values.create!(custom_column: @custom_column, value: backfill_value)
+        end
+      elsif backfill_mode == "column"
+        if backfill_column_id.blank?
+          @custom_column.errors.add(:backfill_column_id, "must be selected")
+          raise ActiveRecord::Rollback
+        end
+
+        source_column = @custom_table.custom_columns.find_by(id: backfill_column_id)
+        unless source_column
+          @custom_column.errors.add(:backfill_column_id, "is invalid")
+          raise ActiveRecord::Rollback
+        end
+
+        @custom_table.custom_records.includes(:custom_values).find_each do |record|
+          source_value = record.custom_values.find { |v| v.custom_column_id == source_column.id }
+          next unless source_value&.value.present?
+
+          new_value = record.custom_values.build(custom_column: @custom_column, value: source_value.value)
+          new_value.save if new_value.valid?
+        end
+      elsif backfill_mode.present?
+        @custom_column.errors.add(:backfill_mode, "is invalid")
+        raise ActiveRecord::Rollback
+      end
+
+      saved = true
+    end
+
+    if saved
       redirect_to edit_table_path(@custom_table)
     else
       load_tables_json
+      load_backfill_data
       render :new, status: :unprocessable_entity
     end
   end
@@ -72,6 +132,11 @@ class CustomColumnsController < ApplicationController
     @tables_json = Current.organisation.custom_tables.includes(:custom_columns).map { |t|
       { id: t.id, name: t.name, columns: t.custom_columns.map { |c| { id: c.id, name: c.name } } }
     }.to_json
+  end
+
+  def load_backfill_data
+    @existing_columns = @custom_table.custom_columns
+    @has_records = @custom_table.custom_records.exists?
   end
 
   def custom_column_params

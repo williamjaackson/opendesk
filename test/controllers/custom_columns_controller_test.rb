@@ -281,4 +281,97 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_nil column.regex_pattern.presence
     assert_nil column.regex_label.presence
   end
+
+  test "should create column with fixed backfill" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Notes", column_type: "text", backfill_mode: "fixed", backfill_value: "N/A" }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal 3, column.custom_values.count
+    assert column.custom_values.all? { |v| v.value == "N/A" }
+  end
+
+  test "should create column with copy from column backfill" do
+    name_column = custom_columns(:name)
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Name Copy", column_type: "text", backfill_mode: "column", backfill_column_id: name_column.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal 2, column.custom_values.count
+    assert_equal "Alice Smith", column.custom_values.find_by(custom_record: custom_records(:alice)).value
+    assert_equal "Bob Jones", column.custom_values.find_by(custom_record: custom_records(:bob)).value
+  end
+
+  test "should create column without backfill when checkbox unchecked" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Notes", column_type: "text" }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal 0, column.custom_values.count
+  end
+
+  test "should reject fixed backfill with invalid value for column type" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Count", column_type: "number", backfill_mode: "fixed", backfill_value: "abc" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should reject fixed backfill with blank value" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Notes", column_type: "text", backfill_mode: "fixed", backfill_value: "" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should reject column backfill without selected column" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Notes", column_type: "text", backfill_mode: "column", backfill_column_id: "" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should skip invalid values when copying from column" do
+    name_column = custom_columns(:name)
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Contact Number", column_type: "number", backfill_mode: "column", backfill_column_id: name_column.id }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_equal 0, column.custom_values.count
+  end
+
+  test "should reject fixed backfill value that fails regex validation" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Phone", column_type: "text", regex_pattern: '^\d{3}-\d{4}$', regex_label: "Phone Number", backfill_mode: "fixed", backfill_value: "not-a-phone" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
 end
