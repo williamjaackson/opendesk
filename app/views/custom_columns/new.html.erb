@@ -85,7 +85,9 @@
       <% if @has_records %>
         <% backfill_mode = params.dig(:custom_column, :backfill_mode) %>
         <% backfill_enabled = backfill_mode.present? && backfill_mode != "none" %>
-        <div class="mb-4" data-controller="backfill">
+        <% selected_type = @custom_column.column_type %>
+        <% select_options = @custom_column.column_type == "select" ? (@custom_column.options_text || "").split("\n").map(&:strip).reject(&:blank?) : [] %>
+        <div class="mb-4" data-controller="backfill" data-action="column-options:typeChanged->backfill#updateFallbackType">
           <input type="hidden" value="<%= backfill_enabled ? '1' : '0' %>" data-backfill-target="input">
           <div tabindex="0" role="checkbox" aria-checked="<%= backfill_enabled %>" aria-label="Backfill existing records"
             data-action="click->backfill#toggle keydown->backfill#keydown"
@@ -111,9 +113,14 @@
               <% backfill_value_errors = @custom_column.errors[:backfill_value] || [] %>
               <div class="mb-4">
                 <%= form.label :backfill_value, class: "block text-sm font-medium text-gray-700 mb-1" do %>Value<span class="text-red-500 ml-0.5">*</span><% end %>
-                <%= form.text_field :backfill_value, value: params.dig(:custom_column, :backfill_value),
-                  placeholder: "Enter value for all records",
-                  class: "block w-full rounded-md border #{backfill_value_errors.any? ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
+                <% border = backfill_value_errors.any? ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-gray-500 focus:ring-gray-500" %>
+                <% CustomColumn::COLUMN_TYPES.each do |type| %>
+                  <div data-backfill-target="fixedType" data-type="<%= type %>" class="<%= 'hidden' unless type == selected_type %>">
+                    <%= type_input_tag(type, "custom_column[backfill_value]", "backfill_value_#{type}",
+                      type == selected_type ? params.dig(:custom_column, :backfill_value) : nil,
+                      border: border, select_options: select_options, label: "Value") %>
+                  </div>
+                <% end %>
                 <% backfill_value_errors.each do |error| %>
                   <p class="mt-1 text-sm text-red-600"><%= error %></p>
                 <% end %>
@@ -128,9 +135,14 @@
               <% backfill_fallback_errors = @custom_column.errors[:backfill_fallback] || [] %>
               <div class="mb-4">
                 <%= form.label :backfill_fallback, "Fallback value", class: "block text-sm font-medium text-gray-700 mb-1" %>
-                <%= form.text_field :backfill_fallback, value: params.dig(:custom_column, :backfill_fallback),
-                  placeholder: "Used when source value is incompatible",
-                  class: "block w-full rounded-md border #{backfill_fallback_errors.any? ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
+                <% fallback_border = backfill_fallback_errors.any? ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-gray-500 focus:ring-gray-500" %>
+                <% CustomColumn::COLUMN_TYPES.each do |type| %>
+                  <div data-backfill-target="fallbackType" data-type="<%= type %>" class="<%= 'hidden' unless type == selected_type %>">
+                    <%= type_input_tag(type, "custom_column[backfill_fallback]", "backfill_fallback_#{type}",
+                      type == selected_type ? params.dig(:custom_column, :backfill_fallback) : nil,
+                      border: fallback_border, select_options: select_options, label: "Fallback value") %>
+                  </div>
+                <% end %>
                 <p class="mt-1 text-sm text-gray-500">If a source value is incompatible with this column type, the fallback is used instead.</p>
                 <% backfill_fallback_errors.each do |error| %>
                   <p class="mt-1 text-sm text-red-600"><%= error %></p>
