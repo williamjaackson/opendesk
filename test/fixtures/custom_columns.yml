@@ -64,6 +64,13 @@ regex_text:
   regex_pattern: '^\d{3}-\d{4}$'
   regex_label: Phone Number
 
+currency:
+  custom_table: contacts
+  name: Salary
+  column_type: currency
+  required: false
+  position: 10
+
 deal_name:
   custom_table: deals
   name: Deal Name

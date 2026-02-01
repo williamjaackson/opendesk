@@ -34,6 +34,8 @@ module CustomRecordsHelper
       datetime_local_field_tag name, value, id: id, class: classes, required: required
     when "select"
       select_dropdown_tag(name, id, value, column.effective_options, border)
+    when "currency"
+      currency_input_tag(name, id, value, border)
     else
       text_field_tag name, value, id: id, class: classes, required: required
     end
@@ -56,6 +58,9 @@ module CustomRecordsHelper
     when "select"
       return "—" if raw_value.blank?
       raw_value
+    when "currency"
+      return "—" if raw_value.blank?
+      format_currency_for_display(raw_value)
     else
       raw_value
     end
@@ -100,6 +105,39 @@ module CustomRecordsHelper
         end
       end
     end
+  end
+
+  def currency_input_tag(name, id, value, border)
+    wrapper_border = border.gsub("focus:", "focus-within:")
+
+    tag.div(data: { controller: "currency-input" }) do
+      hidden_field_tag(name, value, id: "#{id}_hidden", data: { currency_input_target: "input" }) +
+      tag.div(class: "flex items-center rounded-md border #{wrapper_border} bg-white text-sm focus-within:ring-1") do
+        tag.span("$", class: "pl-3 pr-1 text-gray-500 select-none") +
+        tag.input(
+          type: "text", id: id,
+          data: { currency_input_target: "dollars", action: "input->currency-input#update keydown->currency-input#dollarsKeydown" },
+          class: "border-0 bg-transparent py-2 px-0 text-sm focus:outline-none focus:ring-0",
+          placeholder: "0", size: 1,
+          aria: { label: "Dollars" }
+        ) +
+        tag.span(".", class: "text-gray-500 select-none") +
+        tag.input(
+          type: "text", inputmode: "numeric", maxlength: 2,
+          data: { currency_input_target: "cents", action: "input->currency-input#update blur->currency-input#padCents keydown->currency-input#centsKeydown" },
+          class: "w-16 border-0 bg-transparent py-2 px-1 text-sm focus:outline-none focus:ring-0",
+          placeholder: "00",
+          aria: { label: "Cents" }
+        )
+      end
+    end
+  end
+
+  def format_currency_for_display(value)
+    return value unless value.match?(/\A\d+\.\d{2}\z/)
+    dollars, cents = value.split(".")
+    formatted_dollars = dollars.reverse.gsub(/(\d{3})(?=\d)/, '\\1,').reverse
+    "$#{formatted_dollars}.#{cents}"
   end
 
   def format_time_for_display(value)

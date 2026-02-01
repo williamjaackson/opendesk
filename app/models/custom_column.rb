@@ -1,5 +1,5 @@
 class CustomColumn < ApplicationRecord
-  COLUMN_TYPES = %w[text number email boolean date time datetime select].freeze
+  COLUMN_TYPES = %w[text number email boolean date time datetime select currency].freeze
 
   belongs_to :custom_table
   belongs_to :linked_column, class_name: "CustomColumn", optional: true
