@@ -90,6 +90,10 @@ class CustomTablesController < ApplicationController
   end
 
   def custom_table_params
-    params.require(:custom_table).permit(:name, :table_group_id)
+    permitted = params.require(:custom_table).permit(:name, :table_group_id)
+    if permitted[:table_group_id].present?
+      permitted[:table_group_id] = Current.organisation.table_groups.find_by(id: permitted[:table_group_id])&.id
+    end
+    permitted
   end
 end

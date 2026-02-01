@@ -7,7 +7,7 @@
 
     <% if edit_mode? %>
       <%= render "shared/danger_zone",
-        description: "Deleting this group will ungroup its tables but will not delete them.",
+        description: "You can only delete a group that has no tables. Move all tables out of this group first.",
         path: group_path(@table_group),
         button_label: "Delete group",
         confirm: "Are you sure you want to delete this group? This cannot be undone." %>
