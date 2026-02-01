@@ -1,6 +1,22 @@
 class TableGroupsController < ApplicationController
   before_action :require_organisation
 
+  def index
+    @table_groups = Current.organisation.table_groups.order(:position)
+    @table_groups = @table_groups.where("name LIKE ?", "%#{TableGroup.sanitize_sql_like(params[:query])}%") if params[:query].present?
+    @pagy, @table_groups = pagy(@table_groups)
+    @table_group = Current.organisation.table_groups.new
+  end
+
+  def show
+    @table_group = Current.organisation.table_groups.find_by!(slug: params[:id])
+    first_table = @table_group.custom_tables.first
+
+    if first_table
+      redirect_to table_path(first_table)
+    end
+  end
+
   def new
     @table_group = Current.organisation.table_groups.new
   end
@@ -10,9 +26,10 @@ class TableGroupsController < ApplicationController
     @table_group.position = Current.organisation.table_groups.maximum(:position).to_i + 1
 
     if @table_group.save
-      redirect_to root_path
+      redirect_to groups_path
     else
-      render :new, status: :unprocessable_entity
+      @table_groups = Current.organisation.table_groups.order(:position)
+      render :index, status: :unprocessable_entity
     end
   end
 
@@ -24,7 +41,7 @@ class TableGroupsController < ApplicationController
     @table_group = Current.organisation.table_groups.find_by!(slug: params[:id])
 
     if @table_group.update(table_group_params)
-      redirect_to root_path
+      redirect_to groups_path
     else
       render :edit, status: :unprocessable_entity
     end
@@ -32,8 +49,22 @@ class TableGroupsController < ApplicationController
 
   def destroy
     @table_group = Current.organisation.table_groups.find_by!(slug: params[:id])
-    @table_group.destroy
-    redirect_to root_path
+
+    if Current.organisation.table_groups.count <= 1
+      redirect_to groups_path, alert: "Cannot delete the last group"
+    elsif @table_group.custom_tables.any?
+      redirect_to groups_path, alert: "Cannot delete a group that contains tables"
+    else
+      @table_group.destroy
+      redirect_to groups_path
+    end
+  end
+
+  def add_table
+    @table_group = Current.organisation.table_groups.find_by!(slug: params[:id])
+    table = Current.organisation.custom_tables.find(params[:table_id])
+    table.update!(table_group: @table_group, position: @table_group.custom_tables.maximum(:position).to_i + 1)
+    head :no_content
   end
 
   def reorder

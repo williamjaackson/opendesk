@@ -7,7 +7,10 @@ Rails.application.routes.draw do
   resources :custom_record_links, path: "record-links", as: :record_links, only: [ :create, :destroy ]
 
   # Table groups
-  resources :table_groups, path: "groups", as: :groups, only: [ :new, :create, :edit, :update, :destroy ] do
+  resources :table_groups, path: "groups", as: :groups, only: [ :index, :show, :new, :create, :edit, :update, :destroy ] do
+    member do
+      patch :add_table
+    end
     collection do
       patch :reorder
     end
