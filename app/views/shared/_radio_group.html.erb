@@ -1,0 +1,23 @@
+<%# locals: (form:, field:, options:, label: nil, selected: nil, input_data: {}) %>
+<% selected = selected.to_s %>
+
+<div class="mb-4" data-controller="radio-group">
+  <span class="block text-sm font-medium text-gray-700 mb-1"><%= label || field.to_s.humanize %></span>
+  <%= form.hidden_field field, value: selected, data: { radio_group_target: "input" }.merge(input_data) %>
+  <div class="flex flex-col gap-2">
+    <% options.each do |option_label, option_value| %>
+      <div tabindex="0" role="radio" aria-checked="<%= option_value.to_s == selected ? 'true' : 'false' %>" aria-label="<%= option_label %>"
+        data-radio-group-target="option" data-value="<%= option_value %>"
+        data-action="click->radio-group#select keydown->radio-group#keydown"
+        class="inline-flex items-center gap-2 cursor-pointer select-none group">
+        <span data-ring
+          class="flex shrink-0 items-center justify-center h-5 w-5 rounded-full border bg-white transition-colors
+            <%= option_value.to_s == selected ? 'border-gray-900' : 'border-gray-300' %>
+            group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
+          <span data-dot class="h-2.5 w-2.5 rounded-full bg-gray-900 <%= 'invisible' unless option_value.to_s == selected %>"></span>
+        </span>
+        <span class="text-sm font-medium text-gray-700"><%= option_label %></span>
+      </div>
+    <% end %>
+  </div>
+</div>
