@@ -43,7 +43,9 @@
               <%= image_tag "logo.svg", class: "h-5 w-5" %>
               <span class="font-semibold text-gray-900 tracking-tight">OpenDesk</span>
             <% end %>
-            <% unless authenticated? %>
+            <% if authenticated? && managing_organisation? %>
+              <%= render "shared/groups_navbar" %>
+            <% elsif !authenticated? %>
               <div class="flex items-center gap-1 text-sm">
                 <%= link_to "Home", root_path, class: "px-3 py-2 rounded-md font-medium text-gray-900 bg-gray-100" %>
                 <%= link_to "About", "#", class: "px-3 py-2 rounded-md font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors" %>
@@ -85,7 +87,7 @@
         </div>
       </div>
     </nav>
-    <% if authenticated? && managing_organisation? %>
+    <% if authenticated? && managing_organisation? && controller_name != "table_groups" %>
       <%= render "shared/tables_navbar" %>
     <% end %>
     <% flash.each do |type, message| %>

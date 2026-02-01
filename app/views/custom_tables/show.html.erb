@@ -1,11 +1,9 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold text-gray-900"><%= @custom_table.name %></h1>
-    <div data-edit-only>
-      <%= link_to edit_table_path(@custom_table), class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
-        <%= lucide_icon("pencil", class: "h-4 w-4") %>
-      <% end %>
-    </div>
+    <%= link_to edit_table_path(@custom_table), data: { edit_only: true }, class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors" do %>
+      <%= lucide_icon("pencil", class: "h-4 w-4") %>
+    <% end %>
   </div>
 
   <% if @fields.any? %>
