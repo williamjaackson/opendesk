@@ -6,7 +6,7 @@
     <%= render "shared/form_input", form: form, field: :name, label: "Column name", options: { required: true, autofocus: true, placeholder: "e.g. Email, Phone, Status" } %>
 
     <%= render "shared/dropdown", form: form, field: :column_type, label: "Type", required: true,
-      selected: @custom_column.column_type,
+      searchable: true, selected: @custom_column.column_type,
       options: [["Text", "text"], ["Number", "number"], ["Email", "email"], ["Boolean", "boolean"], ["Date", "date"], ["Time", "time"], ["Date & Time", "datetime"], ["Select", "select"]],
       input_data: { action: "change->column-options#typeChanged" } %>
 
