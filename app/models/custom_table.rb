@@ -1,5 +1,6 @@
 class CustomTable < ApplicationRecord
   belongs_to :organisation
+  belongs_to :table_group, optional: true
 
   has_many :custom_fields, dependent: :destroy
   has_many :custom_records, dependent: :destroy

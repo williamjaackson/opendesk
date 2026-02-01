@@ -1,0 +1,4 @@
+<%= form_with model: @table_group, url: @table_group.persisted? ? group_path(@table_group) : groups_path do |form| %>
+  <%= render "shared/form_input", form: form, field: :name, label: "Group name", options: { required: true, autofocus: true, placeholder: "e.g. Sales, HR, Operations" } %>
+  <%= render "shared/button", label: @table_group.persisted? ? "Save changes" : "Create group", form: form %>
+<% end %>

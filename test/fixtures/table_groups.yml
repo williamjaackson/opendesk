@@ -1,0 +1,5 @@
+default:
+  organisation: one
+  name: Tables
+  slug: tables
+  position: 0

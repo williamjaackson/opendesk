@@ -6,6 +6,13 @@ Rails.application.routes.draw do
   resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   resources :custom_record_links, path: "record-links", as: :record_links, only: [ :create, :destroy ]
 
+  # Table groups
+  resources :table_groups, path: "groups", as: :groups, only: [ :new, :create, :edit, :update, :destroy ] do
+    collection do
+      patch :reorder
+    end
+  end
+
   # Table routes under /t/
   scope "/t" do
     get "/new", to: "custom_tables#new", as: :new_table

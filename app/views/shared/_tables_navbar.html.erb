@@ -1,4 +1,5 @@
-<% tables = Current.organisation.custom_tables.order(:position) %>
+<% active_group = @custom_table&.table_group || Current.organisation.table_groups.first %>
+<% tables = active_group ? active_group.custom_tables.order(:position) : Current.organisation.custom_tables.order(:position) %>
 
 <nav class="bg-gray-50">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

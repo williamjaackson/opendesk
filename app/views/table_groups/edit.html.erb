@@ -1,0 +1,12 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/page_heading", title: "Edit group" %>
+  <%= render "form" %>
+
+  <% if edit_mode? %>
+    <%= render "shared/danger_zone",
+      description: "Deleting this group will ungroup its tables but will not delete them.",
+      path: group_path(@table_group),
+      button_label: "Delete group",
+      confirm: "Are you sure you want to delete this group? This cannot be undone." %>
+  <% end %>
+</div>

@@ -49,6 +49,7 @@ class CustomTablesController < ApplicationController
 
   def create
     @custom_table = Current.organisation.custom_tables.new(custom_table_params)
+    @custom_table.table_group ||= Current.organisation.table_groups.first
     @custom_table.position = Current.organisation.custom_tables.maximum(:position).to_i + 1
 
     if @custom_table.save
@@ -85,6 +86,6 @@ class CustomTablesController < ApplicationController
   end
 
   def custom_table_params
-    params.require(:custom_table).permit(:name)
+    params.require(:custom_table).permit(:name, :table_group_id)
   end
 end

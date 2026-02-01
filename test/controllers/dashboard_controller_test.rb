@@ -11,4 +11,11 @@ class RootRoutingTest < ActionDispatch::IntegrationTest
     get root_path
     assert_response :success
   end
+
+  test "managing users are redirected to first group first table" do
+    sign_in_as users(:one)
+    manage_organisation organisations(:one)
+    get root_path
+    assert_redirected_to table_path(custom_tables(:contacts))
+  end
 end

@@ -1,0 +1,31 @@
+<% groups = Current.organisation.table_groups.order(:position) %>
+<% active_group = @custom_table&.table_group || groups.first %>
+
+<div class="flex items-center gap-1 text-sm"
+     <% if edit_mode? %>
+     data-controller="sortable"
+     data-sortable-url-value="<%= reorder_groups_path %>"
+     data-sortable-direction-value="horizontal"
+     <% end %>>
+  <% groups.each do |group| %>
+    <% active = group == active_group %>
+    <% first_table = group.custom_tables.first %>
+    <%= link_to (first_table ? table_path(first_table) : root_path),
+      data: edit_mode? ? { sortable_id: group.id } : {},
+      class: "px-3 py-2 rounded-md font-medium #{edit_mode? ? 'cursor-grab active:cursor-grabbing' : ''} #{active ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors'}" do %>
+      <% if edit_mode? %>
+        <span data-edit-only class="inline-flex items-center gap-1">
+          <%= lucide_icon("grip-vertical", class: "h-3 w-3 text-gray-400 flex-shrink-0") %>
+          <%= group.name %>
+        </span>
+      <% else %>
+        <%= group.name %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% if edit_mode? %>
+    <%= link_to new_group_path, class: "px-2 py-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors" do %>
+      <%= lucide_icon("plus", class: "h-4 w-4") %>
+    <% end %>
+  <% end %>
+</div>
