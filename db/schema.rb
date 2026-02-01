@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_01_161412) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_163522) do
   create_table "custom_columns", force: :cascade do |t|
     t.string "column_type", null: false
     t.datetime "created_at", null: false
@@ -50,6 +50,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_161412) do
     t.string "name", null: false
     t.integer "position", default: 0, null: false
     t.integer "source_table_id", null: false
+    t.boolean "symmetric", default: false, null: false
     t.integer "target_table_id", null: false
     t.datetime "updated_at", null: false
     t.index ["source_table_id", "name"], name: "index_custom_relationships_on_source_table_id_and_name", unique: true

@@ -67,6 +67,6 @@ class CustomRelationshipsController < ApplicationController
   end
 
   def custom_relationship_params
-    params.require(:custom_relationship).permit(:name, :inverse_name, :kind, :target_table_id)
+    params.require(:custom_relationship).permit(:name, :inverse_name, :kind, :target_table_id, :symmetric)
   end
 end

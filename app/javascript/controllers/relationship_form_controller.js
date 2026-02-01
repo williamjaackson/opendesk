@@ -1,10 +1,11 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["name", "inverseName", "targetTableId", "kind"]
+  static targets = ["name", "inverseName", "targetTableId", "kind", "directionContainer", "symmetric", "inverseNameContainer"]
   static values = {
     sourceTable: String,
-    sourceTableSingular: String
+    sourceTableSingular: String,
+    sourceTableId: Number
   }
 
   connect() {
@@ -26,6 +27,12 @@ export default class extends Controller {
 
     const kind = this.kindTarget.value
     if (!kind) return
+
+    const isSelfRef = parseInt(tableId) === this.sourceTableIdValue
+
+    this.updateDirectionVisibility(isSelfRef, kind)
+
+    const isSymmetric = this.isSymmetric(isSelfRef, kind)
 
     let autoName, autoInverse
 
@@ -49,11 +56,46 @@ export default class extends Controller {
     }
     this.lastAutoName = autoName
 
-    const inverseField = this.inverseNameTarget
-    if (!inverseField.value || inverseField.value === this.lastAutoInverse) {
-      inverseField.value = autoInverse
+    if (isSymmetric) {
+      this.inverseNameTarget.value = this.nameTarget.value
+    } else {
+      const inverseField = this.inverseNameTarget
+      if (!inverseField.value || inverseField.value === this.lastAutoInverse) {
+        inverseField.value = autoInverse
+      }
     }
     this.lastAutoInverse = autoInverse
+
+    if (this.hasInverseNameContainerTarget) {
+      this.inverseNameContainerTarget.classList.toggle("hidden", isSymmetric)
+      this.inverseNameTarget.required = !isSymmetric
+    }
+  }
+
+  updateDirectionVisibility(isSelfRef, kind) {
+    if (!this.hasDirectionContainerTarget) return
+
+    const showDirection = isSelfRef && kind === "many_to_many"
+    this.directionContainerTarget.classList.toggle("hidden", !showDirection)
+
+    if (isSelfRef && kind === "one_to_one") {
+      if (this.hasSymmetricTarget) {
+        this.symmetricTarget.value = "1"
+      }
+    }
+
+    if (!showDirection && this.hasSymmetricTarget) {
+      if (kind !== "one_to_one" || !isSelfRef) {
+        this.symmetricTarget.value = "0"
+      }
+    }
+  }
+
+  isSymmetric(isSelfRef, kind) {
+    if (!isSelfRef) return false
+    if (kind === "one_to_one") return true
+    if (kind === "many_to_many" && this.hasSymmetricTarget && this.symmetricTarget.value === "1") return true
+    return false
   }
 
   updateKindLabels(targetPlural, targetSingular) {
