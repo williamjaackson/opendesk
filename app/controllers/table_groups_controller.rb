@@ -1,5 +1,6 @@
 class TableGroupsController < ApplicationController
   before_action :require_organisation
+  before_action :require_edit_mode, except: [ :index, :show ]
 
   def index
     @table_groups = Current.organisation.table_groups.order(:position)
