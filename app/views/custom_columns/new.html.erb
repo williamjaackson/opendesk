@@ -87,7 +87,7 @@
         <% backfill_enabled = backfill_mode.present? && backfill_mode != "none" %>
         <% selected_type = @custom_column.column_type %>
         <% select_options = @custom_column.column_type == "select" ? (@custom_column.options_text || "").split("\n").map(&:strip).reject(&:blank?) : [] %>
-        <div class="mb-4" data-controller="backfill" data-action="column-options:typeChanged->backfill#updateFallbackType">
+        <div class="mb-4" data-controller="backfill" data-action="column-options:typeChanged@document->backfill#updateFallbackType">
           <input type="hidden" value="<%= backfill_enabled ? '1' : '0' %>" data-backfill-target="input">
           <div tabindex="0" role="checkbox" aria-checked="<%= backfill_enabled %>" aria-label="Backfill existing records"
             data-action="click->backfill#toggle keydown->backfill#keydown"
