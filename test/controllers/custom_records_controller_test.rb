@@ -191,6 +191,41 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "should create record with valid time value" do
+    time_column = custom_columns(:time)
+    assert_difference "CustomRecord.count", 1 do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", time_column.id.to_s => "14:30" } }
+    end
+
+    assert_redirected_to table_path(@table)
+  end
+
+  test "should not create record with invalid time value" do
+    time_column = custom_columns(:time)
+    assert_no_difference "CustomRecord.count" do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", time_column.id.to_s => "25:00" } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should update record with valid time value" do
+    time_column = custom_columns(:time)
+    post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", time_column.id.to_s => "09:00" } }
+    record = CustomRecord.last
+
+    patch table_record_path(@table, record), params: { values: { @name_column.id.to_s => "Charlie", time_column.id.to_s => "17:45" } }
+    assert_redirected_to table_record_path(@table, record)
+    assert_equal "17:45", record.custom_values.find_by(custom_column: time_column).reload.value
+  end
+
+  test "should not update record with invalid time value" do
+    time_column = custom_columns(:time)
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice", time_column.id.to_s => "not-a-time" } }
+
+    assert_response :unprocessable_entity
+  end
+
   test "should redirect when not managing" do
     stop_managing_organisation
     get edit_table_record_path(@table, @record)

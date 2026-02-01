@@ -28,6 +28,8 @@ module CustomRecordsHelper
       end
     when "date"
       date_field_tag name, value, id: id, class: classes, required: required
+    when "time"
+      time_field_tag name, value, id: id, class: classes, required: required
     else
       text_field_tag name, value, id: id, class: classes, required: required
     end
@@ -38,8 +40,24 @@ module CustomRecordsHelper
     when "boolean"
       return "—" if raw_value.nil?
       raw_value == "1" ? "Yes" : "No"
+    when "time"
+      return "—" if raw_value.blank?
+      format_time_for_display(raw_value)
     else
       raw_value
     end
+  end
+
+  private
+
+  def format_time_for_display(value)
+    return "" if value.blank?
+    hours, minutes = value.split(":").map(&:to_i)
+    period = hours >= 12 ? "PM" : "AM"
+    hour12 = hours % 12
+    hour12 = 12 if hour12 == 0
+    "#{hour12}:#{format('%02d', minutes)} #{period}"
+  rescue
+    value
   end
 end
