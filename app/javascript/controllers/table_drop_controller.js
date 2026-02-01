@@ -4,6 +4,7 @@ export default class extends Controller {
   static values = { url: String }
 
   dragover(event) {
+    if (!this.editMode) return
     if (Array.from(event.dataTransfer.types).includes("application/x-sortable-id")) {
       event.preventDefault()
       this.element.classList.add("bg-gray-200")
@@ -15,6 +16,7 @@ export default class extends Controller {
   }
 
   drop(event) {
+    if (!this.editMode) return
     event.preventDefault()
     this.element.classList.remove("bg-gray-200")
 
@@ -32,5 +34,9 @@ export default class extends Controller {
       const activeGroup = document.querySelector("[data-active-group]")
       Turbo.visit(activeGroup ? activeGroup.href : window.location.href)
     })
+  }
+
+  get editMode() {
+    return document.body.hasAttribute("data-edit-mode")
   }
 }
