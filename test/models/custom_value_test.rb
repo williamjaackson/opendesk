@@ -242,6 +242,40 @@ class CustomValueTest < ActiveSupport::TestCase
     assert cv.valid?
   end
 
+  test "currency value accepts valid amount" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:currency), value: "100.00")
+    assert cv.valid?
+  end
+
+  test "currency value rejects no decimals" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:currency), value: "100")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid dollar amount"
+  end
+
+  test "currency value rejects one decimal place" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:currency), value: "100.5")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid dollar amount"
+  end
+
+  test "currency value rejects letters" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:currency), value: "abc")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid dollar amount"
+  end
+
+  test "currency value rejects dollar sign" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:currency), value: "$100.00")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid dollar amount"
+  end
+
+  test "currency value allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:currency), value: "")
+    assert cv.valid?
+  end
+
   test "text value with no regex set passes any value" do
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:name), value: "anything at all")
     assert cv.valid?
