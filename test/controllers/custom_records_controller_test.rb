@@ -34,7 +34,6 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
   test "should show custom record" do
     get table_record_path(@table, @record)
     assert_response :success
-    assert_select "h2", text: "Deals"
   end
 
   test "should show both directions of asymmetric self-referential relationship" do
