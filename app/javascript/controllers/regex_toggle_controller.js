@@ -23,6 +23,7 @@ export default class extends Controller {
     this.boxTarget.classList.toggle("border-gray-900", checked)
     this.boxTarget.classList.toggle("border-gray-300", !checked)
     this.boxTarget.querySelector("[data-checkmark]").classList.toggle("invisible", !checked)
+    this.boxTarget.closest("[role='checkbox']").setAttribute("aria-checked", checked)
 
     this.fieldsTarget.classList.toggle("hidden", !checked)
 

@@ -27,9 +27,13 @@ class CustomValue < ApplicationRecord
     end
 
     if custom_column.column_type.in?(%w[text number]) && custom_column.regex_pattern.present?
-      unless value.match?(Regexp.new(custom_column.regex_pattern))
-        label = custom_column.regex_label.presence || "validation"
-        errors.add(:value, "failed #{label} check")
+      begin
+        unless value.match?(Regexp.new(custom_column.regex_pattern, timeout: 1))
+          label = custom_column.regex_label.presence || "validation"
+          errors.add(:value, "failed #{label} check")
+        end
+      rescue Regexp::TimeoutError
+        errors.add(:value, "validation timed out")
       end
     end
   end
