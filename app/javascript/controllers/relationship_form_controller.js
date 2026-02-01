@@ -68,6 +68,7 @@ export default class extends Controller {
 
     if (this.hasInverseNameContainerTarget) {
       this.inverseNameContainerTarget.classList.toggle("hidden", isSymmetric)
+      this.inverseNameTarget.required = !isSymmetric
     }
   }
 

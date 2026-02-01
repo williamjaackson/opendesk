@@ -6,7 +6,7 @@ class AddSymmetricToCustomRelationships < ActiveRecord::Migration[8.1]
       dir.up do
         execute <<~SQL
           UPDATE custom_relationships
-          SET symmetric = TRUE
+          SET symmetric = TRUE, inverse_name = name
           WHERE kind = 'one_to_one'
             AND source_table_id = target_table_id
         SQL
