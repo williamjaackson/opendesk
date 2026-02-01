@@ -46,5 +46,4 @@ class CustomTableTest < ActiveSupport::TestCase
     assert_not table.valid?
     assert_includes table.errors[:slug], "has already been taken"
   end
-
 end
