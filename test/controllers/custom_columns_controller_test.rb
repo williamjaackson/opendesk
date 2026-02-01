@@ -66,6 +66,17 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "should create date column" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Birthday", column_type: "date", required: false }
+      }
+    end
+
+    assert_equal "date", CustomColumn.last.column_type
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
   test "should not create column with invalid type" do
     assert_no_difference "CustomColumn.count" do
       post table_columns_path(@custom_table), params: {
@@ -123,6 +134,6 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
       custom_column: { name: "Phone", column_type: "text" }
     }
 
-    assert_equal 4, CustomColumn.last.position
+    assert_equal 5, CustomColumn.last.position
   end
 end

@@ -1,8 +1,9 @@
 module CustomRecordsHelper
-  def column_value_tag(column, value, required:)
+  def column_value_tag(column, value, required:, errors: false)
     name = "values[#{column.id}]"
     id = "values_#{column.id}"
-    classes = "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+    border = errors ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+    classes = "block w-full rounded-md border #{border} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
 
     case column.column_type
     when "number"
@@ -25,6 +26,8 @@ module CustomRecordsHelper
           tag.span(column.name, class: "text-sm font-medium text-gray-700")
         }
       end
+    when "date"
+      date_field_tag name, value, id: id, class: classes, required: required
     else
       text_field_tag name, value, id: id, class: classes, required: required
     end

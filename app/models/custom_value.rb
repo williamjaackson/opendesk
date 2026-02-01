@@ -16,6 +16,8 @@ class CustomValue < ApplicationRecord
       errors.add(:value, "must be a valid email address") unless value.match?(/\A[^@\s]+@[^@\s]+\.[^@\s]+\z/)
     when "boolean"
       errors.add(:value, "must be yes or no") unless value.in?(%w[0 1])
+    when "date"
+      errors.add(:value, "must be a valid date") unless value.match?(/\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])\z/)
     end
   end
 end
