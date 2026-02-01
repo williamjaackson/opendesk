@@ -25,3 +25,10 @@ projects_contacts:
   name: Contact
   inverse_name: Projects
   kind: many_to_one
+
+contacts_self:
+  source_table: contacts
+  target_table: contacts
+  name: Children
+  inverse_name: Parent
+  kind: one_to_many

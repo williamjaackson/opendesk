@@ -2,3 +2,8 @@ alice_deal_one:
   custom_relationship: contacts_deals
   source_record: alice
   target_record: deal_one
+
+alice_parent_of_bob:
+  custom_relationship: contacts_self
+  source_record: alice
+  target_record: bob

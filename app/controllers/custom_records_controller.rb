@@ -128,72 +128,95 @@ class CustomRecordsController < ApplicationController
     valid
   end
 
-  RelationshipSection = Struct.new(:relationship, :label, :is_source, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
+  RelationshipSection = Struct.new(:relationship, :label, :is_source, :suffix, :self_referential, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
 
   def build_relationship_sections
-    @custom_table.all_relationships.includes(:source_table, :target_table).map do |rel|
-      is_source = rel.source_table_id == @custom_table.id
-      target_table = is_source ? rel.target_table : rel.source_table
+    @custom_table.all_relationships.includes(:source_table, :target_table).flat_map do |rel|
+      self_referential = rel.source_table_id == rel.target_table_id
+      directions = self_referential ? [ true, false ] : [ rel.source_table_id == @custom_table.id ]
 
-      all_links = if is_source
-        rel.custom_record_links.where(source_record: @custom_record).includes(target_record: { custom_values: :custom_column })
-      else
-        rel.custom_record_links.where(target_record: @custom_record).includes(source_record: { custom_values: :custom_column })
+      directions.map do |is_source|
+        build_section(rel, is_source, self_referential)
       end
-
-      linked_record_ids = all_links.map { |l| is_source ? l.target_record_id : l.source_record_id }
-      display_columns = target_table.custom_columns.where(show_on_preview: true).order(:position)
-
-      taken_ids = if rel.kind == "one_to_one"
-        is_source ? rel.custom_record_links.pluck(:target_record_id) : rel.custom_record_links.pluck(:source_record_id)
-      elsif rel.kind == "one_to_many" && is_source
-        rel.custom_record_links.pluck(:target_record_id)
-      elsif rel.kind == "many_to_one" && !is_source
-        rel.custom_record_links.pluck(:source_record_id)
-      else
-        []
-      end
-
-      available_records = target_table.custom_records.where.not(id: (linked_record_ids + taken_ids).uniq).includes(custom_values: :custom_column)
-
-      accepts_more = if rel.kind == "one_to_one"
-        all_links.empty?
-      elsif rel.kind == "one_to_many" && !is_source
-        all_links.empty?
-      elsif rel.kind == "many_to_one" && is_source
-        all_links.empty?
-      else
-        true
-      end
-
-      search_query = params[:"rq_#{rel.id}"]
-      record_links = if search_query.present?
-        all_links.select { |link|
-          rec = is_source ? link.target_record : link.source_record
-          rec.display_name.downcase.include?(search_query.downcase)
-        }
-      else
-        all_links.to_a
-      end
-
-      page = (params[:"rp_#{rel.id}"] || 1).to_i
-      page = 1 if page < 1
-      total = record_links.length
-      page = [ page, (total / 25.0).ceil.clamp(1..) ].min
-      pagy_obj = Pagy::Offset.new(count: total, page: page, limit: 25)
-      paginated_links = record_links[pagy_obj.offset, pagy_obj.limit] || []
-
-      RelationshipSection.new(
-        relationship: rel,
-        label: is_source ? rel.name : rel.inverse_name,
-        is_source: is_source,
-        target_table: target_table,
-        record_links: paginated_links,
-        display_columns: display_columns,
-        available_records: available_records,
-        accepts_more: accepts_more,
-        pagy: pagy_obj
-      )
     end
+  end
+
+  def build_section(rel, is_source, self_referential)
+    target_table = is_source ? rel.target_table : rel.source_table
+    suffix = is_source ? "source" : "target"
+
+    all_links = if is_source
+      rel.custom_record_links.where(source_record: @custom_record).includes(target_record: { custom_values: :custom_column })
+    else
+      rel.custom_record_links.where(target_record: @custom_record).includes(source_record: { custom_values: :custom_column })
+    end
+
+    linked_record_ids = all_links.map { |l| is_source ? l.target_record_id : l.source_record_id }
+    display_columns = target_table.custom_columns.where(show_on_preview: true).order(:position)
+
+    taken_ids = if rel.kind == "one_to_one"
+      is_source ? rel.custom_record_links.pluck(:target_record_id) : rel.custom_record_links.pluck(:source_record_id)
+    elsif rel.kind == "one_to_many" && is_source
+      rel.custom_record_links.pluck(:target_record_id)
+    elsif rel.kind == "many_to_one" && !is_source
+      rel.custom_record_links.pluck(:source_record_id)
+    else
+      []
+    end
+
+    exclude_ids = (linked_record_ids + taken_ids).uniq
+    if self_referential
+      exclude_ids << @custom_record.id
+      inverse_ids = if is_source
+        rel.custom_record_links.where(target_record: @custom_record).pluck(:source_record_id)
+      else
+        rel.custom_record_links.where(source_record: @custom_record).pluck(:target_record_id)
+      end
+      exclude_ids.concat(inverse_ids)
+    end
+    available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column)
+
+    accepts_more = if rel.kind == "one_to_one"
+      all_links.empty?
+    elsif rel.kind == "one_to_many" && !is_source
+      all_links.empty?
+    elsif rel.kind == "many_to_one" && is_source
+      all_links.empty?
+    else
+      true
+    end
+
+    search_param = :"rq_#{rel.id}_#{suffix}"
+    search_query = params[search_param]
+    record_links = if search_query.present?
+      all_links.select { |link|
+        rec = is_source ? link.target_record : link.source_record
+        rec.display_name.downcase.include?(search_query.downcase)
+      }
+    else
+      all_links.to_a
+    end
+
+    page_param = :"rp_#{rel.id}_#{suffix}"
+    page = (params[page_param] || 1).to_i
+    page = 1 if page < 1
+    total = record_links.length
+    page = [ page, (total / 25.0).ceil.clamp(1..) ].min
+    pagy_obj = Pagy::Offset.new(count: total, page: page, limit: 25)
+    paginated_links = record_links[pagy_obj.offset, pagy_obj.limit] || []
+
+    RelationshipSection.new(
+      relationship: rel,
+      label: is_source ? rel.name : rel.inverse_name,
+      is_source: is_source,
+      suffix: suffix,
+      self_referential: self_referential,
+      target_table: target_table,
+      record_links: paginated_links,
+      display_columns: display_columns,
+      available_records: available_records,
+      accepts_more: accepts_more,
+      pagy: pagy_obj
+    )
   end
 end

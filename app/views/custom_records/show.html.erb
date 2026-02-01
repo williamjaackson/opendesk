@@ -19,8 +19,20 @@
 
   <% if @relationship_sections.any? %>
     <div class="pt-8 space-y-8">
-      <% @relationship_sections.each do |section| %>
-        <%= render "related_records", section: section, record: @custom_record %>
+      <% @relationship_sections.chunk { |s| s.self_referential ? s.relationship.id : nil }.each do |rel_id, sections| %>
+        <% if rel_id %>
+          <%= turbo_frame_tag "related_#{rel_id}" do %>
+            <div class="space-y-8">
+              <% sections.each do |section| %>
+                <%= render "related_records", section: section, record: @custom_record %>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <% sections.each do |section| %>
+            <%= render "related_records", section: section, record: @custom_record %>
+          <% end %>
+        <% end %>
       <% end %>
     </div>
   <% end %>
