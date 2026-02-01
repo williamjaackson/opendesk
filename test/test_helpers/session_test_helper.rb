@@ -19,7 +19,11 @@ module SessionTestHelper
   end
 
   def enable_edit_mode
-    patch edit_mode_path
+    patch edit_mode_path unless session[:edit_mode]
+  end
+
+  def disable_edit_mode
+    patch edit_mode_path if session[:edit_mode]
   end
 
   def stop_managing_organisation
