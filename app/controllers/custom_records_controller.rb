@@ -165,7 +165,15 @@ class CustomRecordsController < ApplicationController
     end
 
     exclude_ids = (linked_record_ids + taken_ids).uniq
-    exclude_ids << @custom_record.id if self_referential
+    if self_referential
+      exclude_ids << @custom_record.id
+      inverse_ids = if is_source
+        rel.custom_record_links.where(target_record: @custom_record).pluck(:source_record_id)
+      else
+        rel.custom_record_links.where(source_record: @custom_record).pluck(:target_record_id)
+      end
+      exclude_ids.concat(inverse_ids)
+    end
     available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column)
 
     accepts_more = if rel.kind == "one_to_one"
