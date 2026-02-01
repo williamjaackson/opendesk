@@ -9,10 +9,8 @@
           <%= column.name %><% if column.required? %><span class="text-red-500 ml-0.5">*</span><% end %>
         <% end %>
         <%= column_value_tag(column, params.dig(:values, column.id.to_s), required: column.required?) %>
-        <% @custom_record.errors.full_messages.each do |message| %>
-          <% if message.start_with?("#{column.name} ") %>
-            <p class="mt-1 text-sm text-red-600"><%= message.delete_prefix("#{column.name} ") %></p>
-          <% end %>
+        <% @custom_record.errors[:"column_#{column.id}"].each do |message| %>
+          <p class="mt-1 text-sm text-red-600"><%= message %></p>
         <% end %>
       </div>
     <% end %>

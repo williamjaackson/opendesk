@@ -99,7 +99,7 @@ class CustomRecordsController < ApplicationController
       unless cv.save
         column = @columns.find { |c| c.id == column_id.to_i }
         cv.errors.each do |error|
-          @custom_record.errors.add(:base, "#{column.name} #{error.message}")
+          @custom_record.errors.add(:"column_#{column.id}", error.message)
         end
         valid = false
       end
@@ -117,7 +117,7 @@ class CustomRecordsController < ApplicationController
         cv.value = value
         unless cv.save
           cv.errors.each do |error|
-            @custom_record.errors.add(:base, "#{column.name} #{error.message}")
+            @custom_record.errors.add(:"column_#{column.id}", error.message)
           end
           valid = false
         end
