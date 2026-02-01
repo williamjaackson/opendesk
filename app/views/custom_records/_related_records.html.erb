@@ -1,7 +1,7 @@
 <%# locals: (section:, record:) %>
-<% section_frame_id = "related_#{section.relationship.id}_section" %>
-<% table_frame_id = "related_#{section.relationship.id}_frame" %>
-<% search_param = "rq_#{section.relationship.id}" %>
+<% section_frame_id = "related_#{section.relationship.id}_#{section.suffix}_section" %>
+<% table_frame_id = "related_#{section.relationship.id}_#{section.suffix}_frame" %>
+<% search_param = "rq_#{section.relationship.id}_#{section.suffix}" %>
 
 <%= turbo_frame_tag section_frame_id do %>
   <section class="space-y-3">
@@ -90,7 +90,7 @@
         frame_id: nil,
         pagination_frame: table_frame_id,
         pagy: section.pagy,
-        page_param: :"rp_#{section.relationship.id}" %>
+        page_param: :"rp_#{section.relationship.id}_#{section.suffix}" %>
     <% end %>
   </section>
 <% end %>

@@ -36,6 +36,13 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "should show both directions of self-referential relationship" do
+    get table_record_path(@table, @record)
+    assert_response :success
+    assert_select "h2", text: "Children"
+    assert_select "h2", text: "Parent"
+  end
+
   test "should get edit" do
     get edit_table_record_path(@table, @record)
     assert_response :success
