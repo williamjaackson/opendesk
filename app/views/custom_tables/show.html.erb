@@ -6,10 +6,10 @@
     <% end %>
   </div>
 
-  <% if @fields.any? %>
+  <% if @columns.any? %>
     <%= render "shared/table",
-      columns: @fields.map { |field|
-        { header: field.name, accessor: ->(record) { record.custom_values.detect { |v| v.custom_field_id == field.id }&.value } }
+      columns: @columns.map { |column|
+        { header: column.name, accessor: ->(record) { record.custom_values.detect { |v| v.custom_column_id == column.id }&.value } }
       },
       rows: @records,
       actions: [ :view ],
@@ -20,8 +20,8 @@
       pagy: @pagy %>
   <% else %>
     <div class="rounded-lg border border-gray-200 bg-white px-6 py-12 text-center">
-      <h2 class="text-base font-medium text-gray-900 mb-1">This table needs fields</h2>
-      <p class="text-sm text-gray-400 max-w-sm mx-auto mb-6">You can't add records until you've defined at least one field. Turn on edit mode to configure your table.</p>
+      <h2 class="text-base font-medium text-gray-900 mb-1">This table needs columns</h2>
+      <p class="text-sm text-gray-400 max-w-sm mx-auto mb-6">You can't add records until you've defined at least one column. Turn on edit mode to configure your table.</p>
 
       <label data-controller="edit-mode" data-edit-mode-url-value="<%= edit_mode_path %>"
         class="inline-flex items-center gap-2.5 px-4 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-700 hover:bg-gray-50 cursor-pointer transition-colors">

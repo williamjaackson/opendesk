@@ -14,7 +14,7 @@ class CustomRecord < ApplicationRecord
   end
 
   def display_name
-    ordered_values = custom_values.joins(:custom_field).merge(CustomField.order(:position))
+    ordered_values = custom_values.joins(:custom_column).merge(CustomColumn.order(:position))
     first_non_blank = ordered_values.find { |v| v.value.present? }
     first_non_blank&.value || "Record ##{id}"
   end

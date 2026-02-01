@@ -1,13 +1,13 @@
 name:
   custom_table: contacts
   name: Name
-  field_type: text
+  column_type: text
   required: true
   position: 0
 
 email:
   custom_table: contacts
   name: Email
-  field_type: text
+  column_type: text
   required: false
   position: 1

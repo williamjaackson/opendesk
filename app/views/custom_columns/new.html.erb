@@ -1,0 +1,17 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)]] %>
+  <%= render "shared/page_heading", title: "New column" %>
+
+  <%= form_with model: @custom_column, url: table_columns_path(@custom_table) do |form| %>
+    <%= render "shared/form_input", form: form, field: :name, label: "Column name", options: { required: true, autofocus: true, placeholder: "e.g. Email, Phone, Status" } %>
+
+    <%= render "shared/dropdown", form: form, field: :column_type, label: "Type", required: true,
+      selected: @custom_column.column_type,
+      options: [["Text", "text"], ["Number", "number"], ["Date", "date"], ["Boolean", "boolean"], ["Select", "select"]] %>
+
+    <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
+    <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>
+
+    <%= render "shared/button", label: "Add column", form: form %>
+  <% end %>
+</div>

@@ -1,9 +1,9 @@
 alice_name:
   custom_record: alice
-  custom_field: name
+  custom_column: name
   value: Alice Smith
 
 bob_name:
   custom_record: bob
-  custom_field: name
+  custom_column: name
   value: Bob Jones

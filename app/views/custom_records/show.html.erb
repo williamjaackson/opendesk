@@ -8,10 +8,10 @@
   </div>
 
   <dl class="space-y-4">
-    <% @fields.each do |field| %>
+    <% @columns.each do |column| %>
       <div>
-        <dt class="text-sm font-medium text-gray-500"><%= field.name %></dt>
-        <dd class="mt-1 text-sm text-gray-900"><%= @custom_record.custom_values.detect { |v| v.custom_field_id == field.id }&.value.presence || "—" %></dd>
+        <dt class="text-sm font-medium text-gray-500"><%= column.name %></dt>
+        <dd class="mt-1 text-sm text-gray-900"><%= @custom_record.custom_values.detect { |v| v.custom_column_id == column.id }&.value.presence || "—" %></dd>
       </div>
     <% end %>
   </dl>

@@ -69,7 +69,7 @@ export default class extends Controller {
       primaryBadges.forEach((badge) => badge.remove())
       const firstItem = this.element.querySelector("[data-sortable-id]")
       if (firstItem) {
-        const nameCell = firstItem.querySelector("[data-field-name]")
+        const nameCell = firstItem.querySelector("[data-column-name]")
         if (nameCell) {
           const badge = document.createElement("span")
           badge.setAttribute("data-primary-badge", "")

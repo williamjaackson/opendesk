@@ -10,18 +10,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_01_084912) do
-  create_table "custom_fields", force: :cascade do |t|
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_140025) do
+  create_table "custom_columns", force: :cascade do |t|
+    t.string "column_type", null: false
     t.datetime "created_at", null: false
     t.integer "custom_table_id", null: false
-    t.string "field_type", null: false
     t.string "name", null: false
     t.integer "position", default: 0, null: false
     t.boolean "required", default: false, null: false
     t.boolean "show_on_preview", default: true
     t.datetime "updated_at", null: false
-    t.index ["custom_table_id", "position"], name: "index_custom_fields_on_custom_table_id_and_position"
-    t.index ["custom_table_id"], name: "index_custom_fields_on_custom_table_id"
+    t.index ["custom_table_id", "position"], name: "index_custom_columns_on_custom_table_id_and_position"
+    t.index ["custom_table_id"], name: "index_custom_columns_on_custom_table_id"
   end
 
   create_table "custom_record_links", force: :cascade do |t|
@@ -73,13 +73,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_084912) do
 
   create_table "custom_values", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.integer "custom_field_id", null: false
+    t.integer "custom_column_id", null: false
     t.integer "custom_record_id", null: false
     t.datetime "updated_at", null: false
     t.text "value"
-    t.index ["custom_field_id", "value"], name: "index_custom_values_on_custom_field_id_and_value"
-    t.index ["custom_field_id"], name: "index_custom_values_on_custom_field_id"
-    t.index ["custom_record_id", "custom_field_id"], name: "index_custom_values_on_custom_record_id_and_custom_field_id", unique: true
+    t.index ["custom_column_id", "value"], name: "index_custom_values_on_custom_column_id_and_value"
+    t.index ["custom_column_id"], name: "index_custom_values_on_custom_column_id"
+    t.index ["custom_record_id", "custom_column_id"], name: "index_custom_values_on_custom_record_id_and_custom_column_id", unique: true
     t.index ["custom_record_id"], name: "index_custom_values_on_custom_record_id"
   end
 
@@ -127,7 +127,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_084912) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
-  add_foreign_key "custom_fields", "custom_tables"
+  add_foreign_key "custom_columns", "custom_tables"
   add_foreign_key "custom_record_links", "custom_records", column: "source_record_id"
   add_foreign_key "custom_record_links", "custom_records", column: "target_record_id"
   add_foreign_key "custom_record_links", "custom_relationships"
@@ -136,7 +136,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_084912) do
   add_foreign_key "custom_relationships", "custom_tables", column: "target_table_id"
   add_foreign_key "custom_tables", "organisations"
   add_foreign_key "custom_tables", "table_groups"
-  add_foreign_key "custom_values", "custom_fields"
+  add_foreign_key "custom_values", "custom_columns"
   add_foreign_key "custom_values", "custom_records"
   add_foreign_key "organisation_users", "organisations"
   add_foreign_key "organisation_users", "users"

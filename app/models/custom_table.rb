@@ -2,7 +2,7 @@ class CustomTable < ApplicationRecord
   belongs_to :organisation
   belongs_to :table_group, optional: true
 
-  has_many :custom_fields, dependent: :destroy
+  has_many :custom_columns, dependent: :destroy
   has_many :custom_records, dependent: :destroy
   has_many :source_relationships, class_name: "CustomRelationship", foreign_key: :source_table_id, dependent: :destroy
   has_many :target_relationships, class_name: "CustomRelationship", foreign_key: :target_table_id, dependent: :destroy
