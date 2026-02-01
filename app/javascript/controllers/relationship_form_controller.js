@@ -4,7 +4,8 @@ export default class extends Controller {
   static targets = ["name", "inverseName", "targetTableId", "kind"]
   static values = {
     sourceTable: String,
-    sourceTableSingular: String
+    sourceTableSingular: String,
+    sourceTableId: String
   }
 
   connect() {
@@ -28,8 +29,23 @@ export default class extends Controller {
     if (!kind) return
 
     let autoName, autoInverse
+    const isSelfReferential = tableId === this.sourceTableIdValue
 
-    if (kind === "one_to_one") {
+    if (isSelfReferential) {
+      if (kind === "one_to_one") {
+        autoName = "Partner"
+        autoInverse = "Partner"
+      } else if (kind === "one_to_many") {
+        autoName = "Children"
+        autoInverse = "Parent"
+      } else if (kind === "many_to_one") {
+        autoName = "Parent"
+        autoInverse = "Children"
+      } else {
+        autoName = "Related"
+        autoInverse = "Related"
+      }
+    } else if (kind === "one_to_one") {
       autoName = tableSingular
       autoInverse = this.sourceTableSingularValue
     } else if (kind === "one_to_many") {
