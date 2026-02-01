@@ -128,7 +128,7 @@ class CustomRecordsController < ApplicationController
     valid
   end
 
-  RelationshipSection = Struct.new(:relationship, :label, :is_source, :suffix, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
+  RelationshipSection = Struct.new(:relationship, :label, :is_source, :suffix, :self_referential, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
 
   def build_relationship_sections
     @custom_table.all_relationships.includes(:source_table, :target_table).flat_map do |rel|
@@ -210,6 +210,7 @@ class CustomRecordsController < ApplicationController
       label: is_source ? rel.name : rel.inverse_name,
       is_source: is_source,
       suffix: suffix,
+      self_referential: self_referential,
       target_table: target_table,
       record_links: paginated_links,
       display_columns: display_columns,

@@ -2,6 +2,7 @@
 <% section_frame_id = "related_#{section.relationship.id}_#{section.suffix}_section" %>
 <% table_frame_id = "related_#{section.relationship.id}_#{section.suffix}_frame" %>
 <% search_param = "rq_#{section.relationship.id}_#{section.suffix}" %>
+<% reload_frame_id = section.self_referential ? "related_#{section.relationship.id}" : section_frame_id %>
 
 <%= turbo_frame_tag section_frame_id do %>
   <section class="space-y-3">
@@ -33,7 +34,7 @@
       </div>
       <div>
         <% if section.accepts_more %>
-          <%= form_with model: CustomRecordLink.new, url: record_links_path do |form| %>
+          <%= form_with model: CustomRecordLink.new, url: record_links_path, data: { turbo_frame: reload_frame_id } do |form| %>
             <%= form.hidden_field :custom_relationship_id, value: section.relationship.id %>
             <% if section.is_source %>
               <%= form.hidden_field :source_record_id, value: record.id %>
@@ -86,7 +87,7 @@
         destroy_path: ->(link) { record_link_path(link) },
         destroy_label: "Unlink",
         destroy_confirm: "Unlink this record?",
-        destroy_frame: section_frame_id,
+        destroy_frame: reload_frame_id,
         frame_id: nil,
         pagination_frame: table_frame_id,
         pagy: section.pagy,
