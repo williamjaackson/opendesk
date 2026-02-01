@@ -3,12 +3,12 @@ require "test_helper"
 class CustomColumnTest < ActiveSupport::TestCase
   test "effective_options returns manual options when no linked column" do
     column = custom_columns(:select)
-    assert_equal ["Active", "Inactive", "Pending"], column.effective_options
+    assert_equal [ "Active", "Inactive", "Pending" ], column.effective_options
   end
 
   test "effective_options returns linked column values sorted" do
     column = custom_columns(:linked_select)
-    assert_equal ["Deal Alpha", "Deal Beta"], column.effective_options
+    assert_equal [ "Deal Alpha", "Deal Beta" ], column.effective_options
   end
 
   test "effective_options returns empty array when linked column has no values" do

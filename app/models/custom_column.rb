@@ -17,7 +17,7 @@ class CustomColumn < ApplicationRecord
 
   def effective_options
     if linked_column_id.present?
-      CustomValue.where(custom_column: linked_column).where.not(value: [nil, ""]).distinct.pluck(:value).sort
+      CustomValue.where(custom_column: linked_column).where.not(value: [ nil, "" ]).distinct.pluck(:value).sort
     else
       options || []
     end

@@ -168,7 +168,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
 
     column = CustomColumn.last
     assert_equal "select", column.column_type
-    assert_equal ["High", "Medium", "Low"], column.options
+    assert_equal [ "High", "Medium", "Low" ], column.options
     assert_redirected_to edit_table_path(@custom_table)
   end
 
@@ -189,7 +189,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     }
 
     assert_redirected_to edit_table_path(@custom_table)
-    assert_equal ["Open", "Closed"], column.reload.options
+    assert_equal [ "Open", "Closed" ], column.reload.options
   end
 
   test "should update manual select column with linked_column_id empty" do
@@ -202,7 +202,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     column.reload
     assert_equal "Status Updated", column.name
     assert_nil column.linked_column_id
-    assert_equal ["Active", "Inactive", "Pending"], column.options
+    assert_equal [ "Active", "Inactive", "Pending" ], column.options
   end
 
   test "should create linked select column" do
@@ -242,6 +242,6 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_table_path(@custom_table)
     column.reload
     assert_nil column.linked_column_id
-    assert_equal ["X", "Y", "Z"], column.options
+    assert_equal [ "X", "Y", "Z" ], column.options
   end
 end
