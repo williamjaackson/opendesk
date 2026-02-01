@@ -336,4 +336,22 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     get edit_table_record_path(@table, @record)
     assert_redirected_to organisations_path
   end
+
+  test "should create record with value matching regex" do
+    regex_column = custom_columns(:regex_text)
+    assert_difference "CustomRecord.count", 1 do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", regex_column.id.to_s => "123-4567" } }
+    end
+
+    assert_redirected_to table_path(@table)
+  end
+
+  test "should not create record with value not matching regex" do
+    regex_column = custom_columns(:regex_text)
+    assert_no_difference "CustomRecord.count" do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", regex_column.id.to_s => "bad-value" } }
+    end
+
+    assert_response :unprocessable_entity
+  end
 end

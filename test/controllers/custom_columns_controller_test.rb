@@ -156,7 +156,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
       custom_column: { name: "Phone", column_type: "text" }
     }
 
-    assert_equal 9, CustomColumn.last.position
+    assert_equal 10, CustomColumn.last.position
   end
 
   test "should create select column" do
@@ -243,5 +243,42 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     column.reload
     assert_nil column.linked_column_id
     assert_equal [ "X", "Y", "Z" ], column.options
+  end
+
+  test "should create text column with regex_pattern and regex_label" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Phone", column_type: "text", regex_pattern: '^\d{3}-\d{4}$', regex_label: "Phone Number" }
+      }
+    end
+
+    column = CustomColumn.last
+    assert_equal '^\d{3}-\d{4}$', column.regex_pattern
+    assert_equal "Phone Number", column.regex_label
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
+  test "should update column to add regex" do
+    column = custom_columns(:name)
+    patch table_column_path(@custom_table, column), params: {
+      custom_column: { regex_pattern: '^\w+$', regex_label: "Word Only" }
+    }
+
+    assert_redirected_to edit_table_path(@custom_table)
+    column.reload
+    assert_equal '^\w+$', column.regex_pattern
+    assert_equal "Word Only", column.regex_label
+  end
+
+  test "should update column to remove regex" do
+    column = custom_columns(:regex_text)
+    patch table_column_path(@custom_table, column), params: {
+      custom_column: { regex_pattern: "", regex_label: "" }
+    }
+
+    assert_redirected_to edit_table_path(@custom_table)
+    column.reload
+    assert_nil column.regex_pattern.presence
+    assert_nil column.regex_label.presence
   end
 end

@@ -55,6 +55,15 @@ select:
   position: 7
   options: <%= ["Active", "Inactive", "Pending"].to_json %>
 
+regex_text:
+  custom_table: contacts
+  name: Phone
+  column_type: text
+  required: false
+  position: 9
+  regex_pattern: '^\d{3}-\d{4}$'
+  regex_label: Phone Number
+
 deal_name:
   custom_table: deals
   name: Deal Name

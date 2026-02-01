@@ -10,8 +10,10 @@ class CustomColumn < ApplicationRecord
   validates :name, presence: true
   validates :column_type, presence: true, inclusion: { in: COLUMN_TYPES, allow_blank: true }
   validate :validate_select_options
+  validate :validate_regex_pattern
 
   before_validation :clear_options_for_linked_select
+  before_validation :clear_regex_for_non_applicable_types
 
   after_destroy :cleanup_empty_records
 
@@ -70,6 +72,36 @@ class CustomColumn < ApplicationRecord
       if options.blank? || !options.is_a?(Array) || options.empty?
         errors.add(:options_text, "must have at least one option")
       end
+    end
+  end
+
+  def clear_regex_for_non_applicable_types
+    unless column_type.in?(%w[text number])
+      self.regex_pattern = nil
+      self.regex_label = nil
+    end
+  end
+
+  def validate_regex_pattern
+    return if regex_pattern.blank? && regex_label.blank?
+
+    unless column_type.in?(%w[text number])
+      errors.add(:regex_pattern, "is only allowed on text or number columns") if regex_pattern.present?
+      return
+    end
+
+    if regex_pattern.blank?
+      errors.add(:regex_pattern, "can't be blank")
+    else
+      begin
+        Regexp.new(regex_pattern)
+      rescue RegexpError
+        errors.add(:regex_pattern, "is not a valid regular expression")
+      end
+    end
+
+    if regex_label.blank?
+      errors.add(:regex_label, "can't be blank")
     end
   end
 

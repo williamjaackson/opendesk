@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["container", "required", "selectOptions"]
+  static targets = ["container", "required", "selectOptions", "regexOptions"]
 
   connect() {
     const input = this.element.querySelector("input[name*='column_type']")
@@ -20,6 +20,10 @@ export default class extends Controller {
 
     if (this.hasSelectOptionsTarget) {
       this.selectOptionsTarget.classList.toggle("hidden", type !== "select")
+    }
+
+    if (this.hasRegexOptionsTarget) {
+      this.regexOptionsTarget.classList.toggle("hidden", type !== "text" && type !== "number")
     }
   }
 }

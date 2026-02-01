@@ -218,4 +218,32 @@ class CustomValueTest < ActiveSupport::TestCase
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:linked_select), value: "")
     assert cv.valid?
   end
+
+  test "text value matching regex is valid" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:regex_text), value: "123-4567")
+    assert cv.valid?
+  end
+
+  test "text value not matching regex is invalid" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:regex_text), value: "bad")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "failed Phone Number check"
+  end
+
+  test "number value matching regex is valid" do
+    column = custom_columns(:number)
+    column.update_columns(regex_pattern: '^\d{3}$', regex_label: "Three Digits")
+    cv = CustomValue.new(custom_record: @record, custom_column: column, value: "123")
+    assert cv.valid?
+  end
+
+  test "blank value with regex still passes" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:regex_text), value: "")
+    assert cv.valid?
+  end
+
+  test "text value with no regex set passes any value" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:name), value: "anything at all")
+    assert cv.valid?
+  end
 end

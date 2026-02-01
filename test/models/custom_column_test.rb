@@ -80,4 +80,44 @@ class CustomColumnTest < ActiveSupport::TestCase
     assert_not column.valid?
     assert_includes column.errors[:options_text], "must have at least one option"
   end
+
+  test "valid regex pattern is accepted" do
+    column = custom_columns(:name)
+    column.regex_pattern = '^\d{3}-\d{4}$'
+    column.regex_label = "Phone Number"
+    assert column.valid?
+  end
+
+  test "invalid regex pattern is rejected" do
+    column = custom_columns(:name)
+    column.regex_pattern = "[invalid"
+    column.regex_label = "Test"
+    assert_not column.valid?
+    assert_includes column.errors[:regex_pattern], "is not a valid regular expression"
+  end
+
+  test "regex pattern requires label" do
+    column = custom_columns(:name)
+    column.regex_pattern = '^\d+$'
+    column.regex_label = ""
+    assert_not column.valid?
+    assert_includes column.errors[:regex_label], "can't be blank"
+  end
+
+  test "regex label requires pattern" do
+    column = custom_columns(:name)
+    column.regex_pattern = ""
+    column.regex_label = "Phone Number"
+    assert_not column.valid?
+    assert_includes column.errors[:regex_pattern], "can't be blank"
+  end
+
+  test "regex pattern cleared when column_type is not text or number" do
+    column = custom_columns(:email)
+    column.regex_pattern = '^\d+$'
+    column.regex_label = "Test"
+    column.valid?
+    assert_nil column.regex_pattern
+    assert_nil column.regex_label
+  end
 end
