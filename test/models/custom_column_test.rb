@@ -1,6 +1,6 @@
 require "test_helper"
 
-class CustomFieldTest < ActiveSupport::TestCase
+class CustomColumnTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end

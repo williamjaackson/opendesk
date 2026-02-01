@@ -4,11 +4,11 @@ class CustomTablesController < ApplicationController
 
   def show
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
-    @fields = @custom_table.custom_fields.where(show_on_preview: true).order(:position)
-    @records = @custom_table.custom_records.includes(custom_values: :custom_field)
+    @columns = @custom_table.custom_columns.where(show_on_preview: true).order(:position)
+    @records = @custom_table.custom_records.includes(custom_values: :custom_column)
 
     if params[:query].present?
-      matching_ids = CustomValue.where(custom_field: @fields)
+      matching_ids = CustomValue.where(custom_column: @columns)
         .where("value LIKE ?", "%#{CustomValue.sanitize_sql_like(params[:query])}%")
         .select(:custom_record_id)
       @records = @records.where(id: matching_ids)
@@ -27,9 +27,9 @@ class CustomTablesController < ApplicationController
 
   def edit
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
-    @fields = @custom_table.custom_fields.order(:position)
-    @fields = @fields.where("name LIKE ?", "%#{CustomField.sanitize_sql_like(params[:query])}%") if params[:query].present?
-    @pagy_fields, @fields = pagy(@fields, page_param: :fields_page)
+    @columns = @custom_table.custom_columns.order(:position)
+    @columns = @columns.where("name LIKE ?", "%#{CustomColumn.sanitize_sql_like(params[:query])}%") if params[:query].present?
+    @pagy_columns, @columns = pagy(@columns, page_param: :columns_page)
     @relationships = @custom_table.all_relationships.includes(:source_table, :target_table)
     if params[:relationship_query].present?
       q = "%#{CustomRelationship.sanitize_sql_like(params[:relationship_query])}%"
@@ -70,8 +70,8 @@ class CustomTablesController < ApplicationController
     if @custom_table.update(custom_table_params)
       redirect_to table_path(@custom_table)
     else
-      @fields = @custom_table.custom_fields.order(:position)
-      @pagy_fields, @fields = pagy(@fields, page_param: :fields_page)
+      @columns = @custom_table.custom_columns.order(:position)
+      @pagy_columns, @columns = pagy(@columns, page_param: :columns_page)
       @relationships = @custom_table.all_relationships.includes(:source_table, :target_table)
       @pagy_relationships, @relationships = pagy(@relationships, page_param: :relationships_page)
       render :edit, status: :unprocessable_entity

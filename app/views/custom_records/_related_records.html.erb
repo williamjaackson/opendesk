@@ -9,12 +9,12 @@
 
     <% linked_record_for = ->(link) { section.is_source ? link.target_record : link.source_record } %>
 
-    <% columns = section.display_fields.map do |field|
+    <% columns = section.display_columns.map do |column|
       {
-        header: field.name,
+        header: column.name,
         accessor: ->(link) {
           rec = section.is_source ? link.target_record : link.source_record
-          rec.custom_values.detect { |v| v.custom_field_id == field.id }&.value.presence || "—"
+          rec.custom_values.detect { |v| v.custom_column_id == column.id }&.value.presence || "—"
         }
       }
     end %>

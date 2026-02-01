@@ -6,8 +6,8 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     manage_organisation organisations(:one)
     @table = custom_tables(:contacts)
     @record = custom_records(:alice)
-    @name_field = custom_fields(:name)
-    @email_field = custom_fields(:email)
+    @name_column = custom_columns(:name)
+    @email_column = custom_columns(:email)
   end
 
   test "should get new" do
@@ -17,7 +17,7 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create custom record" do
     assert_difference "CustomRecord.count", 1 do
-      post table_records_path(@table), params: { values: { @name_field.id.to_s => "Charlie" } }
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie" } }
     end
 
     assert_redirected_to table_path(@table)
@@ -25,7 +25,7 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create custom record with missing required fields" do
     assert_no_difference "CustomRecord.count" do
-      post table_records_path(@table), params: { values: { @email_field.id.to_s => "charlie@example.com" } }
+      post table_records_path(@table), params: { values: { @email_column.id.to_s => "charlie@example.com" } }
     end
 
     assert_response :unprocessable_entity
@@ -42,13 +42,13 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update custom record" do
-    patch table_record_path(@table, @record), params: { values: { @name_field.id.to_s => "Alice Updated" } }
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice Updated" } }
     assert_redirected_to table_record_path(@table, @record)
-    assert_equal "Alice Updated", @record.custom_values.find_by(custom_field: @name_field).reload.value
+    assert_equal "Alice Updated", @record.custom_values.find_by(custom_column: @name_column).reload.value
   end
 
   test "should not update custom record with missing required fields" do
-    patch table_record_path(@table, @record), params: { values: { @name_field.id.to_s => "" } }
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "" } }
     assert_response :unprocessable_entity
   end
 

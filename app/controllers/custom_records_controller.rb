@@ -4,21 +4,21 @@ class CustomRecordsController < ApplicationController
   before_action :set_custom_record, only: [ :show, :edit, :update, :destroy ]
 
   def show
-    @fields = @custom_table.custom_fields.order(:position)
+    @columns = @custom_table.custom_columns.order(:position)
     @relationship_sections = build_relationship_sections
   end
 
   def edit
-    @fields = @custom_table.custom_fields.order(:position)
+    @columns = @custom_table.custom_columns.order(:position)
   end
 
   def update
-    @fields = @custom_table.custom_fields.order(:position)
+    @columns = @custom_table.custom_columns.order(:position)
     values = params[:values] || {}
 
-    missing = @fields.where(required: true).reject { |f| values[f.id.to_s].present? }
+    missing = @columns.where(required: true).reject { |c| values[c.id.to_s].present? }
     if missing.any?
-      @custom_record.errors.add(:base, "Required fields missing: #{missing.map(&:name).join(', ')}")
+      @custom_record.errors.add(:base, "Required columns missing: #{missing.map(&:name).join(', ')}")
       render :edit, status: :unprocessable_entity
       return
     end
@@ -34,17 +34,17 @@ class CustomRecordsController < ApplicationController
 
   def new
     @custom_record = @custom_table.custom_records.new
-    @fields = @custom_table.custom_fields.order(:position)
+    @columns = @custom_table.custom_columns.order(:position)
   end
 
   def create
     @custom_record = @custom_table.custom_records.new
-    @fields = @custom_table.custom_fields.order(:position)
+    @columns = @custom_table.custom_columns.order(:position)
     values = params[:values] || {}
 
-    missing = @fields.where(required: true).reject { |f| values[f.id.to_s].present? }
+    missing = @columns.where(required: true).reject { |c| values[c.id.to_s].present? }
     if missing.any?
-      @custom_record.errors.add(:base, "Required fields missing: #{missing.map(&:name).join(', ')}")
+      @custom_record.errors.add(:base, "Required columns missing: #{missing.map(&:name).join(', ')}")
       render :new, status: :unprocessable_entity
       return
     end
@@ -72,16 +72,16 @@ class CustomRecordsController < ApplicationController
   end
 
   def save_values(values)
-    values.each do |field_id, value|
+    values.each do |column_id, value|
       next if value.blank?
-      @custom_record.custom_values.create!(custom_field_id: field_id, value: value)
+      @custom_record.custom_values.create!(custom_column_id: column_id, value: value)
     end
   end
 
   def update_values(values)
-    @fields.each do |field|
-      cv = @custom_record.custom_values.find_or_initialize_by(custom_field_id: field.id)
-      value = values[field.id.to_s]
+    @columns.each do |column|
+      cv = @custom_record.custom_values.find_or_initialize_by(custom_column_id: column.id)
+      value = values[column.id.to_s]
 
       if value.present?
         cv.update!(value: value)
@@ -91,7 +91,7 @@ class CustomRecordsController < ApplicationController
     end
   end
 
-  RelationshipSection = Struct.new(:relationship, :label, :is_source, :target_table, :record_links, :display_fields, :available_records, :accepts_more, :pagy, keyword_init: true)
+  RelationshipSection = Struct.new(:relationship, :label, :is_source, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
 
   def build_relationship_sections
     @custom_table.all_relationships.includes(:source_table, :target_table).map do |rel|
@@ -99,13 +99,13 @@ class CustomRecordsController < ApplicationController
       target_table = is_source ? rel.target_table : rel.source_table
 
       all_links = if is_source
-        rel.custom_record_links.where(source_record: @custom_record).includes(target_record: { custom_values: :custom_field })
+        rel.custom_record_links.where(source_record: @custom_record).includes(target_record: { custom_values: :custom_column })
       else
-        rel.custom_record_links.where(target_record: @custom_record).includes(source_record: { custom_values: :custom_field })
+        rel.custom_record_links.where(target_record: @custom_record).includes(source_record: { custom_values: :custom_column })
       end
 
       linked_record_ids = all_links.map { |l| is_source ? l.target_record_id : l.source_record_id }
-      display_fields = target_table.custom_fields.where(show_on_preview: true).order(:position)
+      display_columns = target_table.custom_columns.where(show_on_preview: true).order(:position)
 
       taken_ids = if rel.kind == "one_to_one"
         is_source ? rel.custom_record_links.pluck(:target_record_id) : rel.custom_record_links.pluck(:source_record_id)
@@ -117,7 +117,7 @@ class CustomRecordsController < ApplicationController
         []
       end
 
-      available_records = target_table.custom_records.where.not(id: (linked_record_ids + taken_ids).uniq).includes(custom_values: :custom_field)
+      available_records = target_table.custom_records.where.not(id: (linked_record_ids + taken_ids).uniq).includes(custom_values: :custom_column)
 
       accepts_more = if rel.kind == "one_to_one"
         all_links.empty?
@@ -152,7 +152,7 @@ class CustomRecordsController < ApplicationController
         is_source: is_source,
         target_table: target_table,
         record_links: paginated_links,
-        display_fields: display_fields,
+        display_columns: display_columns,
         available_records: available_records,
         accepts_more: accepts_more,
         pagy: pagy_obj
