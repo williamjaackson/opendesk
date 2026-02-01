@@ -38,9 +38,6 @@ module CustomRecordsHelper
     when "boolean"
       return "—" if raw_value.nil?
       raw_value == "1" ? "Yes" : "No"
-    when "date"
-      return raw_value if raw_value.blank?
-      Date.parse(raw_value).strftime("%-d %b %Y")
     else
       raw_value
     end
