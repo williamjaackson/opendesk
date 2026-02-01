@@ -23,8 +23,20 @@ class CustomRecordsController < ApplicationController
       return
     end
 
-    update_values(values)
-    redirect_to table_record_path(@custom_table, @custom_record)
+    success = false
+    ActiveRecord::Base.transaction do
+      if update_values(values)
+        success = true
+      else
+        raise ActiveRecord::Rollback
+      end
+    end
+
+    if success
+      redirect_to table_record_path(@custom_table, @custom_record)
+    else
+      render :edit, status: :unprocessable_entity
+    end
   end
 
   def destroy
@@ -49,8 +61,16 @@ class CustomRecordsController < ApplicationController
       return
     end
 
-    if @custom_record.save
-      save_values(values)
+    success = false
+    ActiveRecord::Base.transaction do
+      if @custom_record.save && save_values(values)
+        success = true
+      else
+        raise ActiveRecord::Rollback
+      end
+    end
+
+    if success
       redirect_to table_path(@custom_table)
     else
       render :new, status: :unprocessable_entity
@@ -72,23 +92,40 @@ class CustomRecordsController < ApplicationController
   end
 
   def save_values(values)
+    valid = true
     values.each do |column_id, value|
       next if value.blank?
-      @custom_record.custom_values.create!(custom_column_id: column_id, value: value)
+      cv = @custom_record.custom_values.create(custom_column_id: column_id, value: value)
+      unless cv.errors.empty?
+        column = @columns.find { |c| c.id == column_id.to_i }
+        cv.errors.each do |error|
+          @custom_record.errors.add(:base, "#{column.name} #{error.message}")
+        end
+        valid = false
+      end
     end
+    valid
   end
 
   def update_values(values)
+    valid = true
     @columns.each do |column|
       cv = @custom_record.custom_values.find_or_initialize_by(custom_column_id: column.id)
       value = values[column.id.to_s]
 
       if value.present?
-        cv.update!(value: value)
+        cv.value = value
+        unless cv.save
+          cv.errors.each do |error|
+            @custom_record.errors.add(:base, "#{column.name} #{error.message}")
+          end
+          valid = false
+        end
       elsif cv.persisted?
         cv.destroy!
       end
     end
+    valid
   end
 
   RelationshipSection = Struct.new(:relationship, :label, :is_source, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
