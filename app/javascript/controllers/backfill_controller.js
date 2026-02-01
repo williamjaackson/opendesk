@@ -1,7 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["input", "box", "fields", "fixedSection", "columnSection"]
+  static targets = ["input", "box", "fields", "modeInput", "fixedSection", "columnSection"]
+
+  connect() {
+    if (this.inputTarget.value !== "1") {
+      this.modeInputTarget.value = ""
+    }
+  }
 
   toggle() {
     this.inputTarget.value = this.inputTarget.value === "1" ? "0" : "1"
@@ -34,7 +40,14 @@ export default class extends Controller {
 
     this.fieldsTarget.classList.toggle("hidden", !checked)
 
-    if (!checked) {
+    if (checked) {
+      if (!this.modeInputTarget.value) {
+        this.modeInputTarget.value = "fixed"
+        this.fixedSectionTarget.classList.remove("hidden")
+        this.columnSectionTarget.classList.add("hidden")
+      }
+    } else {
+      this.modeInputTarget.value = ""
       this.fixedSectionTarget.classList.add("hidden")
       this.columnSectionTarget.classList.add("hidden")
     }

@@ -105,7 +105,7 @@
             <%= render "shared/radio_group", form: form, field: :backfill_mode, label: "Source type",
               selected: backfill_enabled ? backfill_mode : "fixed",
               options: [["Fixed value", "fixed"], ["Copy from column", "column"]],
-              input_data: { action: "change->backfill#modeChanged" } %>
+              input_data: { action: "change->backfill#modeChanged", backfill_target: "modeInput" } %>
 
             <div data-backfill-target="fixedSection" class="<%= 'hidden' unless backfill_mode == 'fixed' %>">
               <% backfill_value_errors = @custom_column.errors[:backfill_value] || [] %>
