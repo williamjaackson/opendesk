@@ -381,7 +381,6 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
 
   test "should use source value when compatible and fallback when not" do
     number_column = custom_columns(:number)
-    # Give alice a valid number value
     custom_records(:alice).custom_values.create!(custom_column: number_column, value: "42")
 
     assert_difference "CustomColumn.count", 1 do
@@ -403,6 +402,16 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "CustomColumn.count" do
       post table_columns_path(@custom_table), params: {
         custom_column: { name: "Contact Number", column_type: "number", backfill_mode: "column", backfill_column_id: name_column.id, backfill_fallback: "abc" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should reject fixed backfill value that fails regex validation" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Phone", column_type: "text", regex_pattern: '^\d{3}-\d{4}$', regex_label: "Phone Number", backfill_mode: "fixed", backfill_value: "not-a-phone" }
       }
     end
 

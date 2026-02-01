@@ -52,7 +52,9 @@ class CustomColumnsController < ApplicationController
           value: backfill_value
         )
         unless test_value.valid?
-          @custom_column.errors.add(:backfill_value, test_value.errors[:value].first)
+          test_value.errors[:value].each do |message|
+            @custom_column.errors.add(:backfill_value, message)
+          end
           raise ActiveRecord::Rollback
         end
 
@@ -66,37 +68,43 @@ class CustomColumnsController < ApplicationController
         end
 
         source_column = @custom_table.custom_columns.find_by(id: backfill_column_id)
-        if source_column
-          if backfill_fallback.present?
-            test_fallback = @custom_column.custom_values.build(
-              custom_record: @custom_table.custom_records.first,
-              value: backfill_fallback
-            )
-            unless test_fallback.valid?
-              @custom_column.errors.add(:backfill_fallback, test_fallback.errors[:value].first)
-              raise ActiveRecord::Rollback
-            end
-          end
+        unless source_column
+          @custom_column.errors.add(:backfill_column_id, "is invalid")
+          raise ActiveRecord::Rollback
+        end
 
-          @custom_table.custom_records.includes(:custom_values).find_each do |record|
-            source_value = record.custom_values.find { |v| v.custom_column_id == source_column.id }
-            value_to_use = source_value&.value.presence
-
-            if value_to_use
-              new_value = record.custom_values.build(custom_column: @custom_column, value: value_to_use)
-              unless new_value.valid?
-                if backfill_fallback.present?
-                  new_value.value = backfill_fallback
-                else
-                  next
-                end
-              end
-              new_value.save!
-            elsif backfill_fallback.present?
-              record.custom_values.create!(custom_column: @custom_column, value: backfill_fallback)
-            end
+        if backfill_fallback.present?
+          test_fallback = @custom_column.custom_values.build(
+            custom_record: @custom_table.custom_records.first,
+            value: backfill_fallback
+          )
+          unless test_fallback.valid?
+            @custom_column.errors.add(:backfill_fallback, test_fallback.errors[:value].first)
+            raise ActiveRecord::Rollback
           end
         end
+
+        @custom_table.custom_records.includes(:custom_values).find_each do |record|
+          source_value = record.custom_values.find { |v| v.custom_column_id == source_column.id }
+          value_to_use = source_value&.value.presence
+
+          if value_to_use
+            new_value = record.custom_values.build(custom_column: @custom_column, value: value_to_use)
+            unless new_value.valid?
+              if backfill_fallback.present?
+                new_value.value = backfill_fallback
+              else
+                next
+              end
+            end
+            new_value.save!
+          elsif backfill_fallback.present?
+            record.custom_values.create!(custom_column: @custom_column, value: backfill_fallback)
+          end
+        end
+      elsif backfill_mode.present?
+        @custom_column.errors.add(:backfill_mode, "is invalid")
+        raise ActiveRecord::Rollback
       end
 
       saved = true
