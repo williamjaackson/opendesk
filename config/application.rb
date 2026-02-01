@@ -23,5 +23,8 @@ module Opendesk
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # Disable the default field_with_errors div wrapper — partials handle error styling.
+    config.action_view.field_error_proc = proc { |html_tag, _instance| html_tag }
   end
 end

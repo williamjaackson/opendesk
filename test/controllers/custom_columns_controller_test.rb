@@ -56,6 +56,26 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_table_path(@custom_table)
   end
 
+  test "should not create column without type" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Phone" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should not create column with invalid type" do
+    assert_no_difference "CustomColumn.count" do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Phone", column_type: "invalid" }
+      }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "should get edit" do
     get edit_table_column_path(@custom_table, custom_columns(:name))
     assert_response :success
