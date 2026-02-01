@@ -18,3 +18,10 @@ number:
   column_type: number
   required: false
   position: 2
+
+boolean:
+  custom_table: contacts
+  name: Active
+  column_type: boolean
+  required: false
+  position: 3

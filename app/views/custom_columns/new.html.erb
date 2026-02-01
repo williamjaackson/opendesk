@@ -2,15 +2,20 @@
   <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)]] %>
   <%= render "shared/page_heading", title: "New column" %>
 
-  <%= form_with model: @custom_column, url: table_columns_path(@custom_table) do |form| %>
+  <%= form_with model: @custom_column, url: table_columns_path(@custom_table), data: { controller: "column-options" } do |form| %>
     <%= render "shared/form_input", form: form, field: :name, label: "Column name", options: { required: true, autofocus: true, placeholder: "e.g. Email, Phone, Status" } %>
 
     <%= render "shared/dropdown", form: form, field: :column_type, label: "Type", required: true,
       selected: @custom_column.column_type,
-      options: [["Text", "text"], ["Number", "number"], ["Email", "email"]] %>
+      options: [["Text", "text"], ["Number", "number"], ["Email", "email"], ["Boolean", "boolean"]],
+      input_data: { action: "change->column-options#typeChanged" } %>
 
-    <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
-    <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>
+    <div data-column-options-target="container" class="hidden">
+      <div data-column-options-target="required">
+        <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
+      </div>
+      <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>
+    </div>
 
     <%= render "shared/button", label: "Add column", form: form %>
   <% end %>

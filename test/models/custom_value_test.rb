@@ -53,4 +53,31 @@ class CustomValueTest < ActiveSupport::TestCase
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:email), value: "")
     assert cv.valid?
   end
+
+  test "boolean value accepts 1" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:boolean), value: "1")
+    assert cv.valid?
+  end
+
+  test "boolean value accepts 0" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:boolean), value: "0")
+    assert cv.valid?
+  end
+
+  test "boolean value rejects true" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:boolean), value: "true")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be yes or no"
+  end
+
+  test "boolean value rejects abc" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:boolean), value: "abc")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be yes or no"
+  end
+
+  test "boolean value allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:boolean), value: "")
+    assert cv.valid?
+  end
 end
