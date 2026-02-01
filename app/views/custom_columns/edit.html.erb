@@ -50,7 +50,10 @@
       <% end %>
       <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>
 
-      <%= render "shared/button", label: "Save changes", form: form %>
+      <div class="flex items-center gap-3">
+        <%= render "shared/button", label: "Save changes", form: form %>
+        <%= render "shared/button", style: "ghost", label: "Cancel", href: edit_table_path(@custom_table) %>
+      </div>
     <% end %>
 
     <%= render "shared/danger_zone",
