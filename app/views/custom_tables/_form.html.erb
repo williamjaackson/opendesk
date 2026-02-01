@@ -2,7 +2,12 @@
   <%= form_with model: @custom_table, url: @custom_table.persisted? ? table_path(@custom_table) : tables_path do |form| %>
     <%= render "shared/form_input", form: form, field: :name, label: "Table name", options: { required: true, autofocus: true, placeholder: "e.g. Contacts, Deals, Projects" } %>
     <%= form.hidden_field :table_group_id %>
-    <%= render "shared/button", label: @custom_table.persisted? ? "Save changes" : "Create table", form: form %>
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", label: @custom_table.persisted? ? "Save changes" : "Create table", form: form %>
+      <% if local_assigns[:cancel_path] %>
+        <%= render "shared/button", style: "ghost", label: "Cancel", href: cancel_path %>
+      <% end %>
+    </div>
   <% end %>
 
   <% if @custom_table.persisted? %>

@@ -135,6 +135,9 @@
       <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>
     </div>
 
-    <%= render "shared/button", label: "Add column", form: form %>
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", label: "Add column", form: form %>
+      <%= render "shared/button", style: "ghost", label: "Cancel", href: edit_table_path(@custom_table) %>
+    </div>
   <% end %>
 </div>
