@@ -116,6 +116,25 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to table_path(@table)
   end
 
+  test "should create record with boolean value unchecked" do
+    boolean_column = custom_columns(:boolean)
+    assert_difference "CustomRecord.count", 1 do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", boolean_column.id.to_s => "0" } }
+    end
+
+    assert_redirected_to table_path(@table)
+  end
+
+  test "should update record with boolean value" do
+    boolean_column = custom_columns(:boolean)
+    post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", boolean_column.id.to_s => "1" } }
+    record = CustomRecord.last
+
+    patch table_record_path(@table, record), params: { values: { @name_column.id.to_s => "Charlie", boolean_column.id.to_s => "0" } }
+    assert_redirected_to table_record_path(@table, record)
+    assert_equal "0", record.custom_values.find_by(custom_column: boolean_column).reload.value
+  end
+
   test "should not create record with invalid boolean value" do
     boolean_column = custom_columns(:boolean)
     assert_no_difference "CustomRecord.count" do

@@ -10,7 +10,9 @@
       <span class="block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"><%= @custom_column.column_type.capitalize %></span>
     </div>
 
-    <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
+    <% unless @custom_column.column_type == "boolean" %>
+      <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
+    <% end %>
     <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>
 
     <%= render "shared/button", label: "Save changes", form: form %>
