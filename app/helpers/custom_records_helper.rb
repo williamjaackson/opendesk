@@ -40,6 +40,9 @@ module CustomRecordsHelper
     when "boolean"
       return "—" if raw_value.nil?
       raw_value == "1" ? "Yes" : "No"
+    when "date"
+      return "—" if raw_value.blank?
+      raw_value
     when "time"
       return "—" if raw_value.blank?
       format_time_for_display(raw_value)
