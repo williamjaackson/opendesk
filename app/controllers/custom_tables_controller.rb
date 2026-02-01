@@ -18,6 +18,10 @@ class CustomTablesController < ApplicationController
 
   def new
     @custom_table = Current.organisation.custom_tables.new
+    if params[:group].present?
+      @custom_table.table_group = Current.organisation.table_groups.find_by(slug: params[:group])
+    end
+    @custom_table.table_group ||= Current.organisation.table_groups.first
   end
 
   def edit
