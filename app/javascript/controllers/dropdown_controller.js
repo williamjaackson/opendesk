@@ -61,10 +61,13 @@ export default class extends Controller {
         }
         break
       case "Enter":
-        if (this.openValue && this.focusIndex >= 0) {
-          event.preventDefault()
+        if (this.openValue) {
           const options = this.visibleOptions
-          if (options[this.focusIndex]) options[this.focusIndex].click()
+          const target = this.focusIndex >= 0 ? options[this.focusIndex] : options[0]
+          if (target) {
+            event.preventDefault()
+            target.click()
+          }
         }
         break
     }
