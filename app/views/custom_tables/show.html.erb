@@ -9,7 +9,7 @@
   <% if @columns.any? %>
     <%= render "shared/table",
       columns: @columns.map { |column|
-        { header: column.name, accessor: ->(record) { record.custom_values.detect { |v| v.custom_column_id == column.id }&.value } }
+        { header: column.name, accessor: ->(record) { format_column_value(column, record.custom_values.detect { |v| v.custom_column_id == column.id }&.value) } }
       },
       rows: @records,
       actions: [ :view ],

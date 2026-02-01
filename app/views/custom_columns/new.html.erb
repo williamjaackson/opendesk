@@ -7,7 +7,7 @@
 
     <%= render "shared/dropdown", form: form, field: :column_type, label: "Type", required: true,
       selected: @custom_column.column_type,
-      options: [["Text", "text"], ["Number", "number"], ["Email", "email"]] %>
+      options: [["Text", "text"], ["Number", "number"], ["Email", "email"], ["Boolean", "boolean"]] %>
 
     <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
     <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>

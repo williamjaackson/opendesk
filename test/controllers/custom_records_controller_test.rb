@@ -107,6 +107,24 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "should create record with boolean value" do
+    boolean_column = custom_columns(:boolean)
+    assert_difference "CustomRecord.count", 1 do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", boolean_column.id.to_s => "1" } }
+    end
+
+    assert_redirected_to table_path(@table)
+  end
+
+  test "should not create record with invalid boolean value" do
+    boolean_column = custom_columns(:boolean)
+    assert_no_difference "CustomRecord.count" do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", boolean_column.id.to_s => "abc" } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
   test "should redirect when not managing" do
     stop_managing_organisation
     get edit_table_record_path(@table, @record)
