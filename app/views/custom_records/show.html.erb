@@ -19,7 +19,7 @@
 
   <% if @relationship_sections.any? %>
     <div class="pt-8 space-y-8">
-      <% @relationship_sections.chunk { |s| s.self_referential ? s.relationship.id : nil }.each do |rel_id, sections| %>
+      <% @relationship_sections.chunk { |s| s.self_referential ? s.relationship.id : false }.each do |rel_id, sections| %>
         <% if rel_id %>
           <%= turbo_frame_tag "related_#{rel_id}" do %>
             <div class="space-y-8">
