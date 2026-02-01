@@ -18,6 +18,8 @@ class CustomValue < ApplicationRecord
       errors.add(:value, "must be yes or no") unless value.in?(%w[0 1])
     when "date"
       errors.add(:value, "must be a valid date") unless value.match?(/\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])\z/)
+    when "time"
+      errors.add(:value, "must be a valid time in HH:MM format") unless value.match?(/\A([01]\d|2[0-3]):[0-5]\d\z/)
     end
   end
 end

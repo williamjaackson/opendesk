@@ -32,3 +32,10 @@ date:
   column_type: date
   required: false
   position: 4
+
+time:
+  custom_table: contacts
+  name: Check-in Time
+  column_type: time
+  required: false
+  position: 5

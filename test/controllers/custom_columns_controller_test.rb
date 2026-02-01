@@ -56,6 +56,17 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_redirected_to edit_table_path(@custom_table)
   end
 
+  test "should create time column" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Check-in", column_type: "time", required: false }
+      }
+    end
+
+    assert_equal "time", CustomColumn.last.column_type
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
   test "should not create column without type" do
     assert_no_difference "CustomColumn.count" do
       post table_columns_path(@custom_table), params: {
@@ -134,6 +145,6 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
       custom_column: { name: "Phone", column_type: "text" }
     }
 
-    assert_equal 5, CustomColumn.last.position
+    assert_equal 6, CustomColumn.last.position
   end
 end

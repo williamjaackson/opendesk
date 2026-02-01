@@ -114,4 +114,48 @@ class CustomValueTest < ActiveSupport::TestCase
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:date), value: "")
     assert cv.valid?
   end
+
+  test "time value accepts valid 24h time" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "14:30")
+    assert cv.valid?
+  end
+
+  test "time value accepts midnight" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "00:00")
+    assert cv.valid?
+  end
+
+  test "time value accepts 23:59" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "23:59")
+    assert cv.valid?
+  end
+
+  test "time value rejects invalid hour 24:00" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "24:00")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid time in HH:MM format"
+  end
+
+  test "time value rejects invalid minute 14:60" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "14:60")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid time in HH:MM format"
+  end
+
+  test "time value rejects 12h format" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "2:30 PM")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid time in HH:MM format"
+  end
+
+  test "time value rejects random string" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "not a time")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid time in HH:MM format"
+  end
+
+  test "time value allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:time), value: "")
+    assert cv.valid?
+  end
 end
