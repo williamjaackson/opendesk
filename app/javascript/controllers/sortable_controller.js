@@ -21,6 +21,7 @@ export default class extends Controller {
       setData: (dataTransfer, dragEl) => {
         dataTransfer.setData("application/x-sortable-id", dragEl.dataset.sortableId)
       },
+      onStart: this.onStart.bind(this),
       onEnd: this.onEnd.bind(this)
     })
 
@@ -37,6 +38,25 @@ export default class extends Controller {
 
   get editMode() {
     return document.body.hasAttribute("data-edit-mode")
+  }
+
+  onStart(evt) {
+    if (evt.item.tagName !== "TR") return
+
+    const cells = evt.item.querySelectorAll("td")
+    const widths = Array.from(cells).map((cell) => cell.offsetWidth)
+    const rowWidth = evt.item.offsetWidth
+
+    const ghost = document.querySelector(".sortable-fallback")
+    if (!ghost) return
+
+    ghost.style.width = `${rowWidth}px`
+    ghost.style.backgroundColor = "white"
+    ghost.style.borderRadius = "0.5rem"
+    ghost.style.boxShadow = "0 1px 3px 0 rgb(0 0 0 / 0.1)"
+    ghost.querySelectorAll("td").forEach((cell, i) => {
+      cell.style.width = `${widths[i]}px`
+    })
   }
 
   onEnd() {
