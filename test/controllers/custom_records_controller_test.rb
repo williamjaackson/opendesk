@@ -226,6 +226,41 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
+  test "should create record with valid datetime value" do
+    datetime_column = custom_columns(:datetime)
+    assert_difference "CustomRecord.count", 1 do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", datetime_column.id.to_s => "2026-01-15T14:30" } }
+    end
+
+    assert_redirected_to table_path(@table)
+  end
+
+  test "should not create record with invalid datetime value" do
+    datetime_column = custom_columns(:datetime)
+    assert_no_difference "CustomRecord.count" do
+      post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", datetime_column.id.to_s => "not-a-datetime" } }
+    end
+
+    assert_response :unprocessable_entity
+  end
+
+  test "should update record with valid datetime value" do
+    datetime_column = custom_columns(:datetime)
+    post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", datetime_column.id.to_s => "2026-01-15T09:00" } }
+    record = CustomRecord.last
+
+    patch table_record_path(@table, record), params: { values: { @name_column.id.to_s => "Charlie", datetime_column.id.to_s => "2026-06-20T17:45" } }
+    assert_redirected_to table_record_path(@table, record)
+    assert_equal "2026-06-20T17:45", record.custom_values.find_by(custom_column: datetime_column).reload.value
+  end
+
+  test "should not update record with invalid datetime value" do
+    datetime_column = custom_columns(:datetime)
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice", datetime_column.id.to_s => "bad-datetime" } }
+
+    assert_response :unprocessable_entity
+  end
+
   test "should redirect when not managing" do
     stop_managing_organisation
     get edit_table_record_path(@table, @record)

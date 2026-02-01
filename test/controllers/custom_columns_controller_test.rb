@@ -140,11 +140,22 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_equal 1, name_column.reload.position
   end
 
+  test "should create datetime column" do
+    assert_difference "CustomColumn.count", 1 do
+      post table_columns_path(@custom_table), params: {
+        custom_column: { name: "Appointment", column_type: "datetime", required: false }
+      }
+    end
+
+    assert_equal "datetime", CustomColumn.last.column_type
+    assert_redirected_to edit_table_path(@custom_table)
+  end
+
   test "should auto-increment position" do
     post table_columns_path(@custom_table), params: {
       custom_column: { name: "Phone", column_type: "text" }
     }
 
-    assert_equal 6, CustomColumn.last.position
+    assert_equal 7, CustomColumn.last.position
   end
 end
