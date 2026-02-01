@@ -11,6 +11,5 @@ export default class extends Controller {
       }
     })
     document.body.toggleAttribute("data-edit-mode")
-    Turbo.visit(window.location.href)
   }
 }

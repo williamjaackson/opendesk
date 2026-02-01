@@ -17,15 +17,26 @@ export default class extends Controller {
       draggable: "[data-sortable-id]",
       handle: this.hasHandleValue ? this.handleValue : undefined,
       forceFallback: this.fallbackValue,
+      disabled: !this.editMode,
       setData: (dataTransfer, dragEl) => {
         dataTransfer.setData("application/x-sortable-id", dragEl.dataset.sortableId)
       },
       onEnd: this.onEnd.bind(this)
     })
+
+    this.observer = new MutationObserver(() => {
+      this.sortable.option("disabled", !this.editMode)
+    })
+    this.observer.observe(document.body, { attributes: true, attributeFilter: ["data-edit-mode"] })
   }
 
   disconnect() {
+    this.observer.disconnect()
     this.sortable.destroy()
+  }
+
+  get editMode() {
+    return document.body.hasAttribute("data-edit-mode")
   }
 
   onEnd() {

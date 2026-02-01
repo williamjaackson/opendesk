@@ -6,15 +6,13 @@
     <div class="flex items-center h-10">
       <div class="flex-1 min-w-0 overflow-x-auto scrollbar-hide">
         <div class="flex items-center gap-1"
-             <% if edit_mode? %>
              data-controller="sortable"
              data-sortable-url-value="<%= reorder_tables_path %>"
-             data-sortable-direction-value="horizontal"
-             <% end %>>
+             data-sortable-direction-value="horizontal">
           <% tables.each do |table| %>
             <% active = (controller_name == "custom_tables" && params[:slug] == table.slug) || @custom_table&.id == table.id %>
             <%= link_to table_path(table),
-              data: edit_mode? ? { sortable_id: table.id } : {},
+              data: { sortable_id: table.id },
               class: "inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors #{active ? 'text-gray-900 bg-gray-200' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}" do %>
               <span data-edit-only>
                 <%= lucide_icon("grip-vertical", class: "h-3 w-3 text-gray-400 flex-shrink-0") %>
