@@ -180,14 +180,14 @@ class CustomColumnsController < ApplicationController
       end
     end
 
-    case [effective_source, target_type]
-    when ["datetime", "date"]
+    case [ effective_source, target_type ]
+    when [ "datetime", "date" ]
       value.split("T").first
-    when ["datetime", "time"]
+    when [ "datetime", "time" ]
       value.split("T").last
-    when ["date", "datetime"]
+    when [ "date", "datetime" ]
       "#{value}T00:00"
-    when ["time", "datetime"]
+    when [ "time", "datetime" ]
       "1970-01-01T#{value}"
     else
       value
