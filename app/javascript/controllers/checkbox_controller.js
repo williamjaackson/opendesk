@@ -18,6 +18,7 @@ export default class extends Controller {
   render() {
     const checked = this.inputTarget.value === "1"
     this.boxTarget.classList.toggle("bg-gray-900", checked)
+    this.boxTarget.classList.toggle("bg-white", !checked)
     this.boxTarget.classList.toggle("border-gray-900", checked)
     this.boxTarget.classList.toggle("border-gray-300", !checked)
     this.boxTarget.querySelector("[data-checkmark]").classList.toggle("invisible", !checked)
