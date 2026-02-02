@@ -16,14 +16,16 @@
       end
     } %>
 
-    <% columns = section.display_columns.map do |column|
-      {
+    <% columns = section.display_columns.each_with_index.map do |column, i|
+      col = {
         header: column.name,
         accessor: ->(link) {
           rec = linked_record_for.call(link)
           rec.custom_values.detect { |v| v.custom_column_id == column.id }&.value.presence || "—"
         }
       }
+      col[:link] = ->(link) { table_record_path(section.target_table, linked_record_for.call(link)) } if i == 0
+      col
     end %>
 
     <div class="flex items-center justify-between mb-2">
