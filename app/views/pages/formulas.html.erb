@@ -164,7 +164,7 @@
                 ["LEN(text)", "Returns the character count.", '=LEN({Name})', '"Alice" → 5'],
                 ["LEFT(text, n)", "First N characters.", '=LEFT({Name}, 1)', '"Alice" → "A"'],
                 ["RIGHT(text, n)", "Last N characters.", '=RIGHT({Phone}, 4)', '"555-1234" → "1234"'],
-                ["REPLACE(text, old, new)", "Replaces all occurrences.", '=REPLACE({Name}, " ", "-")', nil],
+                ["REPLACE(text, old, new, count?)", "Replaces occurrences. All by default, or first N if count given.", '=REPLACE({Name}, " ", "-")', nil],
                 ["CONTAINS(text, search)", "Returns TRUE if text contains search.", '=IF(CONTAINS({Email}, "@gmail"), "Gmail", "Other")', nil],
                 ["CONCAT(a, b, ...)", "Joins all arguments into one string.", '=CONCAT({First}, " ", {Last})', nil],
                 ["SPLIT(text, delim, index)", "Splits text and returns element at index. Negative index counts from end.", '=SPLIT({Email}, "@", -1)', '"user@co.com" → "co.com"'],

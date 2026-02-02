@@ -68,8 +68,17 @@ class FormulaEvaluator
       count > text.length ? text : text[-count..]
     },
     "REPLACE" => ->(args) {
-      raise Error, "REPLACE requires 3 arguments" unless args.length == 3
-      args[0].to_s.gsub(args[1].to_s, args[2].to_s)
+      raise Error, "REPLACE requires 3 or 4 arguments" unless args.length.in?(3..4)
+      text = args[0].to_s
+      old = args[1].to_s
+      replacement = args[2].to_s
+      if args.length == 4
+        count = args[3].to_i
+        count.times { text = text.sub(old, replacement) }
+        text
+      else
+        text.gsub(old, replacement)
+      end
     },
     "CONTAINS" => ->(args) {
       raise Error, "CONTAINS requires 2 arguments" unless args.length == 2

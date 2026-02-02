@@ -250,6 +250,14 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal "b-b-b", FormulaEvaluator.evaluate('=REPLACE("a-a-a", "a", "b")', {})
   end
 
+  test "REPLACE with occurrence count replaces only N times" do
+    assert_equal "b-b-a", FormulaEvaluator.evaluate('=REPLACE("a-a-a", "a", "b", 2)', {})
+  end
+
+  test "REPLACE with occurrence count of 1 replaces first only" do
+    assert_equal "b-a-a", FormulaEvaluator.evaluate('=REPLACE("a-a-a", "a", "b", 1)', {})
+  end
+
   test "CONTAINS returns true when found" do
     assert_equal true, FormulaEvaluator.evaluate('=CONTAINS("hello world", "world")', {})
   end
