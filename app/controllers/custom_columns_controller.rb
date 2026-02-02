@@ -114,7 +114,7 @@ class CustomColumnsController < ApplicationController
       end
 
       if @custom_column.computed?
-        evaluate_all_records([@custom_column])
+        evaluate_all_records([ @custom_column ])
       end
 
       saved = true
@@ -140,7 +140,7 @@ class CustomColumnsController < ApplicationController
         @custom_column.custom_values.where.not(value: [ nil, "" ]).where.not(value: valid_options).destroy_all
       end
       if @custom_column.computed?
-        evaluate_all_records([@custom_column])
+        evaluate_all_records([ @custom_column ])
       end
       redirect_to edit_table_path(@custom_table)
     else
