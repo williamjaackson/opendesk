@@ -65,9 +65,10 @@ export default class extends Controller {
   render() {
     const checked = this.inputTarget.value === "1"
 
-    this.boxTarget.classList.toggle("bg-gray-900", checked)
+    const colour = getComputedStyle(document.documentElement).getPropertyValue("--theme-colour").trim()
+    this.boxTarget.style.backgroundColor = checked ? colour : ""
+    this.boxTarget.style.borderColor = checked ? colour : ""
     this.boxTarget.classList.toggle("bg-white", !checked)
-    this.boxTarget.classList.toggle("border-gray-900", checked)
     this.boxTarget.classList.toggle("border-gray-300", !checked)
     this.boxTarget.querySelector("[data-checkmark]").classList.toggle("invisible", !checked)
     this.boxTarget.closest("[role='checkbox']").setAttribute("aria-checked", checked)

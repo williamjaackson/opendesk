@@ -24,8 +24,10 @@ export default class extends Controller {
       const dot = option.querySelector("[data-dot]")
       const ring = option.querySelector("[data-ring]")
 
-      ring.classList.toggle("border-gray-900", isSelected)
+      const colour = getComputedStyle(document.documentElement).getPropertyValue("--theme-colour").trim()
+      ring.style.borderColor = isSelected ? colour : ""
       ring.classList.toggle("border-gray-300", !isSelected)
+      dot.style.backgroundColor = isSelected ? colour : ""
       dot.classList.toggle("invisible", !isSelected)
     })
   }
