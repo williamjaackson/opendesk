@@ -13,10 +13,23 @@ class FormulaEvaluator
   # Token
   Token = Struct.new(:type, :value, keyword_init: true)
 
+  def self.truthy?(val)
+    case val
+    when nil, false then false
+    when String then val != "" && val != "0"
+    when Numeric then val != 0
+    else true
+    end
+  end
+
   FUNCTIONS = {
     "IF" => ->(args) {
-      raise Error, "IF requires 3 arguments" unless args.length == 3
-      args[0] ? args[1] : args[2]
+      raise Error, "IF requires 2 or 3 arguments" unless args.length.in?(2..3)
+      if FormulaEvaluator.truthy?(args[0])
+        args[1]
+      else
+        args.length == 3 ? args[2] : ""
+      end
     },
     "UPPER" => ->(args) {
       raise Error, "UPPER requires 1 argument" unless args.length == 1
@@ -103,7 +116,7 @@ class FormulaEvaluator
       evaluate_template_mode(@formula)
     end
   rescue Error => e
-    ""
+    "#ERROR: #{e.message}"
   end
 
   private
@@ -418,11 +431,8 @@ class FormulaEvaluator
     raise Error, "Unknown function: #{node.name}" unless func
 
     if node.name == "IF"
-      # Evaluate condition first, then only the matching branch
-      condition = evaluate_node(node.args[0])
-      then_val = evaluate_node(node.args[1])
-      else_val = evaluate_node(node.args[2])
-      func.call([condition, then_val, else_val])
+      evaluated = node.args.map { |arg| evaluate_node(arg) }
+      func.call(evaluated)
     else
       args = node.args.map { |arg| evaluate_node(arg) }
       func.call(args)

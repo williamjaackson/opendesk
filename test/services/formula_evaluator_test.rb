@@ -56,9 +56,9 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal 25.0, result
   end
 
-  test "formula mode division by zero returns empty string" do
+  test "formula mode division by zero returns error" do
     result = FormulaEvaluator.evaluate("={A} / {B}", { "A" => 100, "B" => 0 })
-    assert_equal "", result
+    assert result.start_with?("#ERROR:")
   end
 
   test "formula mode operator precedence" do
@@ -149,6 +149,26 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal "Inactive", result
   end
 
+  test "IF treats empty string as falsy" do
+    result = FormulaEvaluator.evaluate('=IF({Name}, "present", "blank")', { "Name" => "" })
+    assert_equal "blank", result
+  end
+
+  test "IF treats non-empty string as truthy" do
+    result = FormulaEvaluator.evaluate('=IF({Name}, "present", "blank")', { "Name" => "Alice" })
+    assert_equal "present", result
+  end
+
+  test "IF treats zero as falsy" do
+    result = FormulaEvaluator.evaluate('=IF({Count}, "has items", "empty")', { "Count" => 0 })
+    assert_equal "empty", result
+  end
+
+  test "IF treats string 0 as falsy for boolean columns" do
+    result = FormulaEvaluator.evaluate('=IF({Active}, "yes", "no")', { "Active" => "0" })
+    assert_equal "no", result
+  end
+
   test "UPPER converts to uppercase" do
     result = FormulaEvaluator.evaluate('=UPPER("hello")', {})
     assert_equal "HELLO", result
@@ -210,9 +230,19 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_nil result
   end
 
-  test "invalid formula returns empty string" do
+  test "invalid formula returns error string" do
     result = FormulaEvaluator.evaluate("=IF(", {})
+    assert result.start_with?("#ERROR:")
+  end
+
+  test "IF with 2 arguments returns empty string for falsy" do
+    result = FormulaEvaluator.evaluate('=IF({Name}, "present")', { "Name" => "" })
     assert_equal "", result
+  end
+
+  test "IF with 2 arguments returns then value for truthy" do
+    result = FormulaEvaluator.evaluate('=IF({Name}, "present")', { "Name" => "Alice" })
+    assert_equal "present", result
   end
 
   test "string number coercion for addition" do

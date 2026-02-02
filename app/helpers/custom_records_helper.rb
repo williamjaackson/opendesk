@@ -53,6 +53,12 @@ module CustomRecordsHelper
 
   def format_column_value(column, raw_value)
     case column.column_type
+    when "computed"
+      return "—" if raw_value.blank?
+      if raw_value.start_with?("#ERROR:")
+        return tag.span(raw_value, class: "text-red-500 text-xs")
+      end
+      raw_value
     when "boolean"
       return "—" if raw_value.nil?
       raw_value == "1" ? "Yes" : "No"
