@@ -556,6 +556,26 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal({ h: 5, m: 30 }, result.value)
   end
 
+  test "TIME errors on blank value" do
+    result = FormulaEvaluator.evaluate("=TIME({X})", { "X" => nil })
+    assert result.start_with?("#ERROR:")
+  end
+
+  test "DATE extracts date from datetime string" do
+    result = FormulaEvaluator.evaluate('=DATE("2026-03-12T05:30")', {})
+    assert_equal Date.new(2026, 3, 12), result.value
+  end
+
+  test "DATE errors on blank value" do
+    result = FormulaEvaluator.evaluate("=DATE({X})", { "X" => nil })
+    assert result.start_with?("#ERROR:")
+  end
+
+  test "DATETIME errors on blank value" do
+    result = FormulaEvaluator.evaluate("=DATETIME({X})", { "X" => nil })
+    assert result.start_with?("#ERROR:")
+  end
+
   test "TIME from hours and minutes" do
     result = FormulaEvaluator.evaluate("=TIME(14, 30)", {})
     assert_equal({ h: 14, m: 30 }, result.value)

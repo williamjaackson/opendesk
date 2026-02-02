@@ -192,17 +192,24 @@ class FormulaEvaluator
     },
     "DATE" => ->(args) {
       raise Error, "DATE requires 1 or 3 arguments" unless args.length.in?([ 1, 3 ])
-      date = if args.length == 3
-        Date.new(args[0].to_i, args[1].to_i, args[2].to_i)
-      else
-        val = args[0]
-        case val
-        when Date then val
-        when String then Date.parse(val)
-        else Date.parse(val.to_s)
+      begin
+        date = if args.length == 3
+          Date.new(args[0].to_i, args[1].to_i, args[2].to_i)
+        else
+          val = args[0]
+          raise Error, "DATE received a blank value" if val.nil? || (val.is_a?(String) && val.strip.empty?)
+          case val
+          when Date then val
+          when String
+            date_str = val.include?("T") ? val.split("T").first : val
+            Date.parse(date_str)
+          else Date.parse(val.to_s)
+          end
         end
+        TypedResult.new(value: date, result_type: "date")
+      rescue Date::Error => e
+        raise Error, "DATE: #{e.message}"
       end
-      TypedResult.new(value: date, result_type: "date")
     },
     "TIME" => ->(args) {
       raise Error, "TIME requires 1 or 2 arguments" unless args.length.in?([ 1, 2 ])
@@ -211,6 +218,7 @@ class FormulaEvaluator
         m = args[1].to_i
       else
         val = args[0].to_s
+        raise Error, "TIME received a blank value" if val.strip.empty?
         val = val.split("T").last if val.include?("T")
         parts = val.split(":")
         h = parts[0].to_i
@@ -220,27 +228,35 @@ class FormulaEvaluator
     },
     "DATETIME" => ->(args) {
       raise Error, "DATETIME requires 1 or 2 arguments" unless args.length.in?([ 1, 2 ])
-      if args.length == 2
-        date_val = args[0]
-        time_val = args[1]
-        date = date_val.is_a?(Date) ? date_val : Date.parse(date_val.to_s)
-        if time_val.is_a?(Hash)
-          h = time_val[:h]
-          m = time_val[:m]
+      begin
+        if args.length == 2
+          date_val = args[0]
+          time_val = args[1]
+          raise Error, "DATETIME received a blank date" if date_val.nil? || (date_val.is_a?(String) && date_val.strip.empty?)
+          date = date_val.is_a?(Date) ? date_val : Date.parse(date_val.to_s.split("T").first)
+          if time_val.is_a?(Hash)
+            h = time_val[:h]
+            m = time_val[:m]
+          else
+            time_str = time_val.to_s
+            time_str = time_str.split("T").last if time_str.include?("T")
+            parts = time_str.split(":")
+            h = parts[0].to_i
+            m = parts[1].to_i
+          end
+          TypedResult.new(value: { date: date, h: h, m: m }, result_type: "datetime")
         else
-          parts = time_val.to_s.split(":")
+          val = args[0].to_s
+          raise Error, "DATETIME received a blank value" if val.strip.empty?
+          date_part, time_part = val.split("T")
+          date = Date.parse(date_part)
+          parts = time_part.to_s.split(":")
           h = parts[0].to_i
           m = parts[1].to_i
+          TypedResult.new(value: { date: date, h: h, m: m }, result_type: "datetime")
         end
-        TypedResult.new(value: { date: date, h: h, m: m }, result_type: "datetime")
-      else
-        val = args[0].to_s
-        date_part, time_part = val.split("T")
-        date = Date.parse(date_part)
-        parts = time_part.to_s.split(":")
-        h = parts[0].to_i
-        m = parts[1].to_i
-        TypedResult.new(value: { date: date, h: h, m: m }, result_type: "datetime")
+      rescue Date::Error => e
+        raise Error, "DATETIME: #{e.message}"
       end
     }
   }.freeze
