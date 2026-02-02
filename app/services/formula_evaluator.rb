@@ -703,15 +703,18 @@ class FormulaEvaluator
     func = FUNCTIONS[node.name]
     raise Error, "Unknown function: #{node.name}" unless func
 
-    args = node.args.map { |arg| evaluate_node(arg) }
-
-    if TYPED_FUNCTIONS.include?(node.name)
-      # Unwrap TypedResult args for typed functions, passing raw values
-      unwrapped = args.map { |a| a.is_a?(TypedResult) ? a.value : a }
-      func.call(unwrapped)
-    elsif node.name == "IF"
-      func.call(args)
+    if node.name == "IF"
+      # IF must evaluate lazily — only evaluate the branch that's taken
+      raise Error, "IF requires 2 or 3 arguments" unless node.args.length.in?(2..3)
+      condition = evaluate_node(node.args[0])
+      condition = condition.value if condition.is_a?(TypedResult)
+      if FormulaEvaluator.truthy?(condition)
+        evaluate_node(node.args[1])
+      else
+        node.args.length == 3 ? evaluate_node(node.args[2]) : ""
+      end
     else
+      args = node.args.map { |arg| evaluate_node(arg) }
       unwrapped = args.map { |a| a.is_a?(TypedResult) ? a.value : a }
       func.call(unwrapped)
     end

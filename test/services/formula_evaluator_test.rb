@@ -491,6 +491,12 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal "present", result
   end
 
+  test "IF does not evaluate the untaken branch" do
+    # DATE({X}) would error on blank, but IF should not evaluate it
+    result = FormulaEvaluator.evaluate('=IF({X}, DATE({X}), "")', { "X" => nil })
+    assert_equal "", result
+  end
+
   test "string number coercion for addition" do
     result = FormulaEvaluator.evaluate("={A} + {B}", { "A" => "10", "B" => "20" })
     assert_equal 30, result
