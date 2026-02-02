@@ -4,7 +4,7 @@
   <% only_one_group = Current.organisation.table_groups.count <= 1 %>
   <%= render "shared/table",
     columns: [
-      { header: "Name", accessor: :name }
+      { header: "Name", accessor: :name, link: ->(g) { group_path(g) } }
     ],
     rows: @table_groups,
     actions: [ :edit, :destroy ],
