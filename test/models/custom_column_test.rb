@@ -153,7 +153,7 @@ class CustomColumnTest < ActiveSupport::TestCase
   end
 
   test "computed column clears options and linked_column_id" do
-    column = custom_tables(:contacts).custom_columns.new(name: "Test", column_type: "computed", formula: "{A}", options: ["A"], linked_column_id: custom_columns(:deal_name).id)
+    column = custom_tables(:contacts).custom_columns.new(name: "Test", column_type: "computed", formula: "{A}", options: [ "A" ], linked_column_id: custom_columns(:deal_name).id)
     column.valid?
     assert_nil column.options
     assert_nil column.linked_column_id

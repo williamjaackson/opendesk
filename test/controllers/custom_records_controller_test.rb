@@ -365,7 +365,7 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
 
   test "should evaluate computed columns on update" do
     computed = @table.custom_columns.create!(name: "Full Name", column_type: "computed", formula: "{Name}", position: 99)
-    FormulaEvaluator.evaluate_record(@record, [computed])
+    FormulaEvaluator.evaluate_record(@record, [ computed ])
 
     patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice Updated" } }
     assert_equal "Alice Updated", @record.custom_values.reload.find_by(custom_column: computed)&.value

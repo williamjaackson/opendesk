@@ -419,9 +419,9 @@ class FormulaEvaluator
           raise Error, "Unterminated index" if k >= chars.length
           index = chars[(i + 1)...k].join.to_i
           i = k + 1
-          tokens << Token.new(type: :column_ref, value: [col_name, index])
+          tokens << Token.new(type: :column_ref, value: [ col_name, index ])
         else
-          tokens << Token.new(type: :column_ref, value: [col_name, nil])
+          tokens << Token.new(type: :column_ref, value: [ col_name, nil ])
         end
         next
       end

@@ -278,29 +278,29 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
   # --- Logical functions ---
 
   test "AND returns true when all truthy" do
-    assert_equal true, FormulaEvaluator.evaluate('=AND(TRUE, TRUE, TRUE)', {})
+    assert_equal true, FormulaEvaluator.evaluate("=AND(TRUE, TRUE, TRUE)", {})
   end
 
   test "AND returns false when any falsy" do
-    assert_equal false, FormulaEvaluator.evaluate('=AND(TRUE, FALSE, TRUE)', {})
+    assert_equal false, FormulaEvaluator.evaluate("=AND(TRUE, FALSE, TRUE)", {})
   end
 
   test "AND with column references" do
-    assert_equal true, FormulaEvaluator.evaluate('=AND({A}, {B})', { "A" => "yes", "B" => 1 })
-    assert_equal false, FormulaEvaluator.evaluate('=AND({A}, {B})', { "A" => "yes", "B" => "" })
+    assert_equal true, FormulaEvaluator.evaluate("=AND({A}, {B})", { "A" => "yes", "B" => 1 })
+    assert_equal false, FormulaEvaluator.evaluate("=AND({A}, {B})", { "A" => "yes", "B" => "" })
   end
 
   test "OR returns true when any truthy" do
-    assert_equal true, FormulaEvaluator.evaluate('=OR(FALSE, TRUE)', {})
+    assert_equal true, FormulaEvaluator.evaluate("=OR(FALSE, TRUE)", {})
   end
 
   test "OR returns false when all falsy" do
-    assert_equal false, FormulaEvaluator.evaluate('=OR(FALSE, FALSE, 0)', {})
+    assert_equal false, FormulaEvaluator.evaluate("=OR(FALSE, FALSE, 0)", {})
   end
 
   test "NOT negates truthiness" do
-    assert_equal false, FormulaEvaluator.evaluate('=NOT(TRUE)', {})
-    assert_equal true, FormulaEvaluator.evaluate('=NOT(FALSE)', {})
+    assert_equal false, FormulaEvaluator.evaluate("=NOT(TRUE)", {})
+    assert_equal true, FormulaEvaluator.evaluate("=NOT(FALSE)", {})
     assert_equal true, FormulaEvaluator.evaluate('=NOT("")', {})
   end
 
@@ -365,7 +365,7 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
   end
 
   test "COALESCE with nil column" do
-    result = FormulaEvaluator.evaluate('=COALESCE({Nickname}, {Name})', { "Nickname" => nil, "Name" => "Alice" })
+    result = FormulaEvaluator.evaluate("=COALESCE({Nickname}, {Name})", { "Nickname" => nil, "Name" => "Alice" })
     assert_equal "Alice", result
   end
 
