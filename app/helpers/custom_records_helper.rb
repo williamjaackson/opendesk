@@ -14,6 +14,8 @@ module CustomRecordsHelper
     case type
     when "number"
       text_field_tag name, value, id: id, class: classes, required: required, inputmode: "numeric", pattern: "[0-9]+"
+    when "decimal"
+      text_field_tag name, value, id: id, class: classes, required: required, inputmode: "decimal", pattern: "[0-9]+(\.[0-9]+)?"
     when "email"
       email_field_tag name, value, id: id, class: classes, required: required
     when "boolean"

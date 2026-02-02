@@ -19,6 +19,13 @@ number:
   required: false
   position: 2
 
+decimal:
+  custom_table: contacts
+  name: Score
+  column_type: decimal
+  required: false
+  position: 11
+
 boolean:
   custom_table: contacts
   name: Active
@@ -76,7 +83,7 @@ colour:
   name: Favourite Colour
   column_type: colour
   required: false
-  position: 11
+  position: 12
 
 deal_name:
   custom_table: deals

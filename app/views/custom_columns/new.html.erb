@@ -7,7 +7,7 @@
 
     <%= render "shared/dropdown", form: form, field: :column_type, label: "Type", required: true,
       searchable: true, selected: @custom_column.column_type,
-      options: [["Text", "text"], ["Number", "number"], ["Email", "email"], ["Boolean", "boolean"], ["Date", "date"], ["Time", "time"], ["Date & Time", "datetime"], ["Select", "select"], ["Currency", "currency"], ["Colour", "colour"]],
+      options: [["Text", "text"], ["Number", "number"], ["Decimal", "decimal"], ["Email", "email"], ["Boolean", "boolean"], ["Date", "date"], ["Time", "time"], ["Date & Time", "datetime"], ["Select", "select"], ["Currency", "currency"], ["Colour", "colour"]],
       input_data: { action: "change->column-options#typeChanged" } %>
 
     <div data-column-options-target="container" class="hidden">

@@ -12,6 +12,8 @@ class CustomValue < ApplicationRecord
     case custom_column.column_type
     when "number"
       errors.add(:value, "must be a whole number") unless value.match?(/\A[0-9]+\z/)
+    when "decimal"
+      errors.add(:value, "must be a number") unless value.match?(/\A\d+(\.\d+)?\z/)
     when "email"
       errors.add(:value, "must be a valid email address") unless value.match?(/\A[^@\s]+@[^@\s]+\.[^@\s]+\z/)
     when "boolean"
@@ -30,7 +32,7 @@ class CustomValue < ApplicationRecord
       errors.add(:value, "must be a valid hex colour (e.g. #ff0000)") unless value.match?(/\A#[0-9a-fA-F]{6}\z/)
     end
 
-    if custom_column.column_type.in?(%w[text number]) && custom_column.regex_pattern.present?
+    if custom_column.column_type.in?(%w[text number decimal]) && custom_column.regex_pattern.present?
       begin
         unless value.match?(Regexp.new(custom_column.regex_pattern, timeout: 1))
           label = custom_column.regex_label.presence || "validation"

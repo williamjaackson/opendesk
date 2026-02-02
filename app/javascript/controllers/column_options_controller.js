@@ -23,7 +23,7 @@ export default class extends Controller {
     }
 
     if (this.hasRegexOptionsTarget) {
-      this.regexOptionsTarget.classList.toggle("hidden", type !== "text" && type !== "number")
+      this.regexOptionsTarget.classList.toggle("hidden", type !== "text" && type !== "number" && type !== "decimal")
     }
 
     this.dispatch("typeChanged", { detail: { type } })

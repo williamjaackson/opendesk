@@ -32,6 +32,33 @@ class CustomValueTest < ActiveSupport::TestCase
     assert cv.valid?
   end
 
+  test "decimal value accepts whole numbers" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:decimal), value: "42")
+    assert cv.valid?
+  end
+
+  test "decimal value accepts decimal numbers" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:decimal), value: "3.14")
+    assert cv.valid?
+  end
+
+  test "decimal value rejects non-numeric string" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:decimal), value: "abc")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a number"
+  end
+
+  test "decimal value rejects negative numbers" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:decimal), value: "-5.5")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a number"
+  end
+
+  test "decimal value allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:decimal), value: "")
+    assert cv.valid?
+  end
+
   test "email value accepts valid email" do
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:email), value: "test@example.com")
     assert cv.valid?
