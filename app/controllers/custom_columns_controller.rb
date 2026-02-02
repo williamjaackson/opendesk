@@ -113,6 +113,10 @@ class CustomColumnsController < ApplicationController
         raise ActiveRecord::Rollback
       end
 
+      if @custom_column.computed?
+        evaluate_all_records([@custom_column])
+      end
+
       saved = true
     end
 
@@ -130,10 +134,15 @@ class CustomColumnsController < ApplicationController
   end
 
   def update
+    formula_changed = @custom_column.computed? && custom_column_params[:formula] != @custom_column.formula
+
     if @custom_column.update(custom_column_params.except(:column_type))
       if @custom_column.column_type == "select"
         valid_options = @custom_column.effective_options
         @custom_column.custom_values.where.not(value: [ nil, "" ]).where.not(value: valid_options).destroy_all
+      end
+      if formula_changed
+        evaluate_all_records([@custom_column])
       end
       redirect_to edit_table_path(@custom_table)
     else
@@ -203,7 +212,13 @@ class CustomColumnsController < ApplicationController
     end
   end
 
+  def evaluate_all_records(computed_columns)
+    @custom_table.custom_records.includes(custom_values: :custom_column).find_each do |record|
+      FormulaEvaluator.evaluate_record(record, computed_columns)
+    end
+  end
+
   def custom_column_params
-    params.require(:custom_column).permit(:name, :column_type, :required, :show_on_preview, :options_text, :linked_column_id, :select_source, :regex_pattern, :regex_label)
+    params.require(:custom_column).permit(:name, :column_type, :required, :show_on_preview, :options_text, :linked_column_id, :select_source, :regex_pattern, :regex_label, :formula)
   end
 end

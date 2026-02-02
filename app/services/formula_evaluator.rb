@@ -45,6 +45,50 @@ class FormulaEvaluator
     new(formula, values).evaluate
   end
 
+  def self.evaluate_record(record, computed_columns)
+    return if computed_columns.empty?
+
+    all_columns = record.custom_table.custom_columns.order(:position)
+    existing_values = record.custom_values.includes(:custom_column).index_by { |v| v.custom_column_id }
+
+    # Build values hash keyed by column name, with positional index for duplicates
+    values = {}
+    name_counts = Hash.new(0)
+
+    all_columns.each do |col|
+      next if col.computed?
+      cv = existing_values[col.id]
+      raw = cv&.value
+
+      val = case col.column_type
+      when "boolean"
+        raw == "1"
+      when "number"
+        raw.present? ? raw.to_i : nil
+      when "decimal", "currency"
+        raw.present? ? raw.to_f : nil
+      else
+        raw
+      end
+
+      idx = name_counts[col.name]
+      if idx == 0
+        values[col.name] = val
+      end
+      values["#{col.name}[#{idx}]"] = val
+      name_counts[col.name] += 1
+    end
+
+    computed_columns.each do |col|
+      result = evaluate(col.formula, values)
+      result_str = result.to_s
+
+      cv = existing_values[col.id] || record.custom_values.build(custom_column: col)
+      cv.value = result_str.presence
+      cv.save!
+    end
+  end
+
   def initialize(formula, values)
     @formula = formula.to_s.strip
     @values = values

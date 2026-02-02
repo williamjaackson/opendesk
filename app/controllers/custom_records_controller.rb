@@ -26,6 +26,7 @@ class CustomRecordsController < ApplicationController
     success = false
     ActiveRecord::Base.transaction do
       if update_values(values)
+        evaluate_computed_columns(@custom_record)
         success = true
       else
         raise ActiveRecord::Rollback
@@ -64,6 +65,7 @@ class CustomRecordsController < ApplicationController
     success = false
     ActiveRecord::Base.transaction do
       if @custom_record.save && save_values(values)
+        evaluate_computed_columns(@custom_record)
         success = true
       else
         raise ActiveRecord::Rollback
@@ -109,7 +111,7 @@ class CustomRecordsController < ApplicationController
 
   def update_values(values)
     valid = true
-    @columns.each do |column|
+    @columns.reject(&:computed?).each do |column|
       cv = @custom_record.custom_values.find_or_initialize_by(custom_column_id: column.id)
       value = values[column.id.to_s]
 
@@ -126,6 +128,11 @@ class CustomRecordsController < ApplicationController
       end
     end
     valid
+  end
+
+  def evaluate_computed_columns(record)
+    computed = @custom_table.custom_columns.where(column_type: "computed").order(:position)
+    FormulaEvaluator.evaluate_record(record, computed)
   end
 
   RelationshipSection = Struct.new(:relationship, :label, :is_source, :suffix, :self_referential, :symmetric, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
