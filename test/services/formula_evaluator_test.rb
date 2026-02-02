@@ -510,4 +510,148 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     result = FormulaEvaluator.evaluate("=1.5 + 2.5", {})
     assert_equal 4.0, result
   end
+
+  # --- Display-typed casting functions ---
+
+  test "CURRENCY wraps value as TypedResult with currency type" do
+    result = FormulaEvaluator.evaluate("=CURRENCY(42.567)", {})
+    assert_instance_of FormulaEvaluator::TypedResult, result
+    assert_equal "currency", result.result_type
+    assert_equal BigDecimal("42.57"), result.value
+  end
+
+  test "CURRENCY with column reference" do
+    result = FormulaEvaluator.evaluate("=CURRENCY({Price})", { "Price" => 99.999 })
+    assert_equal BigDecimal("100.00"), result.value
+    assert_equal "currency", result.result_type
+  end
+
+  test "CURRENCY with string value" do
+    result = FormulaEvaluator.evaluate('=CURRENCY("19.99")', {})
+    assert_equal BigDecimal("19.99"), result.value
+  end
+
+  test "DATE from string" do
+    result = FormulaEvaluator.evaluate('=DATE("2024-03-15")', {})
+    assert_instance_of FormulaEvaluator::TypedResult, result
+    assert_equal "date", result.result_type
+    assert_equal Date.new(2024, 3, 15), result.value
+  end
+
+  test "DATE from year month day" do
+    result = FormulaEvaluator.evaluate("=DATE(2024, 3, 15)", {})
+    assert_equal Date.new(2024, 3, 15), result.value
+    assert_equal "date", result.result_type
+  end
+
+  test "TIME from string" do
+    result = FormulaEvaluator.evaluate('=TIME("14:30")', {})
+    assert_instance_of FormulaEvaluator::TypedResult, result
+    assert_equal "time", result.result_type
+    assert_equal({ h: 14, m: 30 }, result.value)
+  end
+
+  test "TIME from hours and minutes" do
+    result = FormulaEvaluator.evaluate("=TIME(14, 30)", {})
+    assert_equal({ h: 14, m: 30 }, result.value)
+    assert_equal "time", result.result_type
+  end
+
+  test "DATETIME from string" do
+    result = FormulaEvaluator.evaluate('=DATETIME("2024-03-15T14:30")', {})
+    assert_instance_of FormulaEvaluator::TypedResult, result
+    assert_equal "datetime", result.result_type
+    assert_equal Date.new(2024, 3, 15), result.value[:date]
+    assert_equal 14, result.value[:h]
+    assert_equal 30, result.value[:m]
+  end
+
+  test "DATETIME from date and time args" do
+    # Simulate passing results from DATE and TIME functions (unwrapped)
+    result = FormulaEvaluator.evaluate('=DATETIME("2024-03-15", "09:45")', {})
+    assert_equal "datetime", result.result_type
+    assert_equal Date.new(2024, 3, 15), result.value[:date]
+    assert_equal 9, result.value[:h]
+    assert_equal 45, result.value[:m]
+  end
+
+  test "TypedResult is unwrapped for arithmetic" do
+    result = FormulaEvaluator.evaluate("=CURRENCY({Price}) + 10", { "Price" => 5.0 })
+    # The + operator unwraps TypedResult, so result is a plain number
+    assert_not_instance_of FormulaEvaluator::TypedResult, result
+    assert_in_delta 15.0, result, 0.01
+  end
+
+  test "TypedResult is unwrapped for comparison" do
+    result = FormulaEvaluator.evaluate("=CURRENCY({Price}) > 5", { "Price" => 10.0 })
+    assert_equal true, result
+  end
+
+  # --- Type inference ---
+
+  test "infer_type returns number for Integer" do
+    assert_equal "number", FormulaEvaluator.infer_type(42)
+  end
+
+  test "infer_type returns decimal for Float" do
+    assert_equal "decimal", FormulaEvaluator.infer_type(3.14)
+  end
+
+  test "infer_type returns boolean for true/false" do
+    assert_equal "boolean", FormulaEvaluator.infer_type(true)
+    assert_equal "boolean", FormulaEvaluator.infer_type(false)
+  end
+
+  test "infer_type returns text for String" do
+    assert_equal "text", FormulaEvaluator.infer_type("hello")
+  end
+
+  # --- Storage formatting ---
+
+  test "format_typed_value formats currency" do
+    assert_equal "42.57", FormulaEvaluator.format_typed_value(BigDecimal("42.567"), "currency")
+  end
+
+  test "format_typed_value formats date" do
+    assert_equal "2024-03-15", FormulaEvaluator.format_typed_value(Date.new(2024, 3, 15), "date")
+  end
+
+  test "format_typed_value formats time" do
+    assert_equal "14:30", FormulaEvaluator.format_typed_value({ h: 14, m: 30 }, "time")
+  end
+
+  test "format_typed_value formats datetime" do
+    assert_equal "2024-03-15T14:30", FormulaEvaluator.format_typed_value({ date: Date.new(2024, 3, 15), h: 14, m: 30 }, "datetime")
+  end
+
+  test "format_for_storage formats boolean" do
+    assert_equal "1", FormulaEvaluator.format_for_storage(true, "boolean")
+    assert_equal "0", FormulaEvaluator.format_for_storage(false, "boolean")
+  end
+
+  test "format_for_storage formats number" do
+    assert_equal "42", FormulaEvaluator.format_for_storage(42, "number")
+  end
+
+  test "format_for_storage formats decimal" do
+    assert_equal "3.14", FormulaEvaluator.format_for_storage(3.14, "decimal")
+  end
+
+  test "integer arithmetic infers number type" do
+    result = FormulaEvaluator.evaluate("={Qty} * 2", { "Qty" => 5 })
+    assert_equal 10, result
+    assert_equal "number", FormulaEvaluator.infer_type(result)
+  end
+
+  test "float arithmetic infers decimal type" do
+    result = FormulaEvaluator.evaluate("={Price} * 1.1", { "Price" => 10.0 })
+    assert_in_delta 11.0, result, 0.001
+    assert_equal "decimal", FormulaEvaluator.infer_type(result)
+  end
+
+  test "boolean function infers boolean type" do
+    result = FormulaEvaluator.evaluate("=AND({A}, {B})", { "A" => true, "B" => true })
+    assert_equal true, result
+    assert_equal "boolean", FormulaEvaluator.infer_type(result)
+  end
 end
