@@ -3,4 +3,7 @@ class PagesController < ApplicationController
 
   def landing
   end
+
+  def formulas
+  end
 end

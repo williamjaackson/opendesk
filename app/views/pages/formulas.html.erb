@@ -1,0 +1,280 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <h1 class="text-2xl font-bold text-gray-900 mb-2">Formula Reference</h1>
+  <p class="text-gray-500 text-sm mb-8">Computed columns automatically calculate values based on other columns in the same record.</p>
+
+  <div class="space-y-10">
+
+    <%# ── Modes ── %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Modes</h2>
+      <div class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Mode</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Syntax</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Description</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-4 py-2.5 font-medium text-gray-900">Template</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{First Name} {Last Name}</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Plain text with column placeholders. Consecutive whitespace from blank values is collapsed.</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-medium text-gray-900">Formula</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=UPPER({Name})</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Prefix with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">=</code> for expressions with functions, operators, and logic.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%# ── Column References ── %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Column References</h2>
+      <div class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Syntax</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Description</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{Column Name}</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Reference a column by its exact name.</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{Column Name}[0]</code></td>
+              <td class="px-4 py-2.5 text-gray-600">If multiple columns share the same name, use a zero-based positional index to disambiguate.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%# ── Operators ── %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Operators</h2>
+      <p class="text-sm text-gray-500 mb-3">Only available in formula mode (prefix with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">=</code>).</p>
+      <div class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Operator</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Description</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Example</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">&</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Text concatenation</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{First} & " " & {Last}</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">+</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">-</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">*</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">/</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Arithmetic</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{Price} * {Quantity}</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">!=</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Equality / inequality</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{Status} = "Active"</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono"><</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">></code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono"><=</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">>=</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Comparisons</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{Age} >= 18</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%# ── Functions ── %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Functions</h2>
+      <p class="text-sm text-gray-500 mb-3">Only available in formula mode.</p>
+      <div class="space-y-4">
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">IF(condition, then_value)</code>
+            <span class="mx-2 text-gray-300">|</span>
+            <code class="font-mono text-sm font-semibold text-gray-900">IF(condition, then_value, else_value)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 space-y-2">
+            <p>Returns <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">then_value</code> if the condition is truthy, otherwise returns <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">else_value</code> (or blank if omitted).</p>
+            <p class="text-gray-500"><strong>Truthy:</strong> non-empty text, non-zero numbers, <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">TRUE</code></p>
+            <p class="text-gray-500"><strong>Falsy:</strong> blank/empty text, <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">0</code>, <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">FALSE</code>, unchecked booleans</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p class="text-gray-500"># Show name or "Unknown"</p>
+              <p>=IF({Name}, {Name}, "Unknown")</p>
+              <p class="text-gray-500 mt-2"># Conditional with comparison</p>
+              <p>=IF({Age} >= 18, "Adult", "Minor")</p>
+              <p class="text-gray-500 mt-2"># Two-argument form (blank when falsy)</p>
+              <p>=IF({Middle Name}, " " & {Middle Name})</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">UPPER(text)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600">
+            <p>Converts text to uppercase.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=UPPER({Name})</p>
+              <p class="text-gray-500"># "alice" &rarr; "ALICE"</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">LOWER(text)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600">
+            <p>Converts text to lowercase.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=LOWER({Name})</p>
+              <p class="text-gray-500"># "ALICE" &rarr; "alice"</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">SPLIT(text, delimiter, index)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600">
+            <p>Splits text by the delimiter and returns the element at the given index. Negative indices count from the end.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p>=SPLIT("a,b,c", ",", 0)</p>
+              <p class="text-gray-500"># "a"</p>
+              <p class="mt-1">=SPLIT({Email}, "@", -1)</p>
+              <p class="text-gray-500"># "example.com"</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <%# ── Literals ── %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Literals</h2>
+      <div class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Type</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Syntax</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Examples</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-4 py-2.5 font-medium text-gray-900">Text</td>
+              <td class="px-4 py-2.5 text-gray-600">Double quotes</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">"hello"</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-medium text-gray-900">Number</td>
+              <td class="px-4 py-2.5 text-gray-600">Digits with optional decimal</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">42</code>&ensp;<code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">3.14</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-medium text-gray-900">Boolean</td>
+              <td class="px-4 py-2.5 text-gray-600">TRUE or FALSE</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">TRUE</code>&ensp;<code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">FALSE</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%# ── Examples ── %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Examples</h2>
+      <div class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Use case</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Formula</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Full name</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{First Name} {Last Name}</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Full name with optional middle</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">={First Name} & IF({Middle Name}, " " & {Middle Name}) & " " & {Last Name}</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Active status label</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=IF({Active}, "Active", "Inactive")</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Uppercase name when active</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=IF({Active}, UPPER({Name}), LOWER({Name}))</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Line total</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">={Price} * {Quantity}</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Email domain</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=SPLIT({Email}, "@", -1)</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">First initial + last name</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=UPPER(SPLIT({First Name}, "", 0)) & ". " & {Last Name}</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%# ── Errors ── %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Errors</h2>
+      <p class="text-sm text-gray-600 mb-3">When a formula can't be evaluated, the cell displays an error message starting with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono text-red-500">#ERROR:</code>.</p>
+      <div class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Error</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Cause</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-4 py-2.5 text-red-500 font-mono text-xs">#ERROR: Division by zero</td>
+              <td class="px-4 py-2.5 text-gray-600">Dividing by a column that is zero or blank.</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-red-500 font-mono text-xs">#ERROR: Unterminated column reference</td>
+              <td class="px-4 py-2.5 text-gray-600">A <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">{</code> without a matching <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">}</code>.</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-red-500 font-mono text-xs">#ERROR: Unterminated string</td>
+              <td class="px-4 py-2.5 text-gray-600">A double quote without a closing double quote.</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-red-500 font-mono text-xs">#ERROR: Unknown function: X</td>
+              <td class="px-4 py-2.5 text-gray-600">Using a function name that doesn't exist.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+</div>
