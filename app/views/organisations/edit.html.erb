@@ -3,7 +3,7 @@
   <%= render "shared/page_heading", title: "Edit organisation" %>
 
   <div class="space-y-8">
-    <%= form_with model: @organisation do |form| %>
+    <%= form_with model: @organisation, html: { novalidate: true } do |form| %>
       <%= render "shared/form_input", form: form, field: :name, options: { required: true, autofocus: true } %>
       <div class="flex items-center gap-3">
         <%= render "shared/button", label: "Save changes", form: form %>

@@ -3,6 +3,7 @@
   <%= render "shared/page_heading", title: "New relationship" %>
 
   <%= form_with model: @custom_relationship, url: table_relationships_path(@custom_table),
+    html: { novalidate: true },
     data: {
       controller: "relationship-form",
       relationship_form_source_table_value: @custom_table.name,

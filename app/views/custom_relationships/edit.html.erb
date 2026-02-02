@@ -3,7 +3,7 @@
   <%= render "shared/page_heading", title: "Edit relationship" %>
 
   <div class="space-y-8">
-    <%= form_with model: @custom_relationship, url: table_relationship_path(@custom_table, @custom_relationship) do |form| %>
+    <%= form_with model: @custom_relationship, url: table_relationship_path(@custom_table, @custom_relationship), html: { novalidate: true } do |form| %>
       <div class="mb-4">
         <span class="block text-sm font-medium text-gray-700 mb-1">Related table</span>
         <span class="block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"><%= @custom_relationship.target_table.name %></span>

@@ -1,7 +1,7 @@
 <div class="max-w-md mx-auto py-8 px-4">
   <%= render "shared/page_heading", title: "Update your password" %>
 
-  <%= form_with url: password_path(params[:token]), method: :put do |form| %>
+  <%= form_with url: password_path(params[:token]), method: :put, html: { novalidate: true } do |form| %>
     <%= render "shared/form_input", form: form, field: :password, type: :password_field, options: { required: true, autocomplete: "new-password", placeholder: "Enter new password", maxlength: 72 } %>
     <%= render "shared/form_input", form: form, field: :password_confirmation, type: :password_field, options: { required: true, autocomplete: "new-password", placeholder: "Repeat new password", maxlength: 72 } %>
 

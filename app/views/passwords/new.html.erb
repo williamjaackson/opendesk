@@ -1,7 +1,7 @@
 <div class="max-w-md mx-auto py-8 px-4">
   <%= render "shared/page_heading", title: "Forgot your password?" %>
 
-  <%= form_with url: passwords_path do |form| %>
+  <%= form_with url: passwords_path, html: { novalidate: true } do |form| %>
     <%= render "shared/form_input", form: form, field: :email_address, type: :email_field, options: { required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] } %>
 
     <%= render "shared/button", label: "Email reset instructions", form: form %>
