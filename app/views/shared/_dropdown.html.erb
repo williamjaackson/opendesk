@@ -25,10 +25,13 @@
         </div>
       <% end %>
       <div class="py-1">
-      <% options.each do |option_label, option_value, option_data| %>
+      <% options.each do |option_label, option_value, option_data, option_icon| %>
         <button type="button" tabindex="-1" data-action="dropdown#select" data-value="<%= option_value %>" data-label="<%= option_label %>"<% (option_data || {}).each do |attr, val| %> <%= attr %>="<%= val %>"<% end %>
           class="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none">
-          <span><%= option_label %></span>
+          <span class="flex items-center gap-1.5">
+            <% if option_icon %><%= lucide_icon(option_icon, class: "h-3.5 w-3.5 text-gray-400") %><% end %>
+            <%= option_label %>
+          </span>
           <span data-check class="<%= 'invisible' unless option_value.to_s == selected.to_s %>">
             <%= lucide_icon("check", class: "h-4 w-4 text-gray-900") %>
           </span>
