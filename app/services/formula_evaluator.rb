@@ -1,6 +1,9 @@
 class FormulaEvaluator
   class Error < StandardError; end
 
+  # Result wrapper for typed casting functions
+  TypedResult = Struct.new(:value, :result_type, keyword_init: true)
+
   # AST Nodes
   ColumnRef = Struct.new(:name, :index, keyword_init: true)
   StringLiteral = Struct.new(:value, keyword_init: true)
@@ -173,6 +176,71 @@ class FormulaEvaluator
     "BOOLEAN" => ->(args) {
       raise Error, "BOOLEAN requires 1 argument" unless args.length == 1
       FormulaEvaluator.truthy?(args[0])
+    },
+
+    # Display-typed casting functions
+    "CURRENCY" => ->(args) {
+      raise Error, "CURRENCY requires 1 argument" unless args.length == 1
+      val = args[0]
+      num = case val
+      when Numeric then val
+      when String then val.strip.empty? ? 0 : Float(val)
+      when NilClass then 0
+      else val.to_f
+      end
+      TypedResult.new(value: BigDecimal(num.to_s).round(2), result_type: "currency")
+    },
+    "DATE" => ->(args) {
+      raise Error, "DATE requires 1 or 3 arguments" unless args.length.in?([ 1, 3 ])
+      date = if args.length == 3
+        Date.new(args[0].to_i, args[1].to_i, args[2].to_i)
+      else
+        val = args[0]
+        case val
+        when Date then val
+        when String then Date.parse(val)
+        else Date.parse(val.to_s)
+        end
+      end
+      TypedResult.new(value: date, result_type: "date")
+    },
+    "TIME" => ->(args) {
+      raise Error, "TIME requires 1 or 2 arguments" unless args.length.in?([ 1, 2 ])
+      if args.length == 2
+        h = args[0].to_i
+        m = args[1].to_i
+      else
+        val = args[0].to_s
+        parts = val.split(":")
+        h = parts[0].to_i
+        m = parts[1].to_i
+      end
+      TypedResult.new(value: { h: h, m: m }, result_type: "time")
+    },
+    "DATETIME" => ->(args) {
+      raise Error, "DATETIME requires 1 or 2 arguments" unless args.length.in?([ 1, 2 ])
+      if args.length == 2
+        date_val = args[0]
+        time_val = args[1]
+        date = date_val.is_a?(Date) ? date_val : Date.parse(date_val.to_s)
+        if time_val.is_a?(Hash)
+          h = time_val[:h]
+          m = time_val[:m]
+        else
+          parts = time_val.to_s.split(":")
+          h = parts[0].to_i
+          m = parts[1].to_i
+        end
+        TypedResult.new(value: { date: date, h: h, m: m }, result_type: "datetime")
+      else
+        val = args[0].to_s
+        date_part, time_part = val.split("T")
+        date = Date.parse(date_part)
+        parts = time_part.to_s.split(":")
+        h = parts[0].to_i
+        m = parts[1].to_i
+        TypedResult.new(value: { date: date, h: h, m: m }, result_type: "datetime")
+      end
     }
   }.freeze
 
@@ -518,6 +586,7 @@ class FormulaEvaluator
       node.value
     when UnaryOp
       val = evaluate_node(node.operand)
+      val = val.value if val.is_a?(TypedResult)
       case node.op
       when "-" then -to_number(val)
       end
@@ -533,6 +602,8 @@ class FormulaEvaluator
   def evaluate_binary(node)
     left = evaluate_node(node.left)
     right = evaluate_node(node.right)
+    left = left.value if left.is_a?(TypedResult)
+    right = right.value if right.is_a?(TypedResult)
 
     case node.op
     when "&"
@@ -562,16 +633,23 @@ class FormulaEvaluator
     end
   end
 
+  TYPED_FUNCTIONS = %w[CURRENCY DATE TIME DATETIME].freeze
+
   def evaluate_function(node)
     func = FUNCTIONS[node.name]
     raise Error, "Unknown function: #{node.name}" unless func
 
-    if node.name == "IF"
-      evaluated = node.args.map { |arg| evaluate_node(arg) }
-      func.call(evaluated)
-    else
-      args = node.args.map { |arg| evaluate_node(arg) }
+    args = node.args.map { |arg| evaluate_node(arg) }
+
+    if TYPED_FUNCTIONS.include?(node.name)
+      # Unwrap TypedResult args for typed functions, passing raw values
+      unwrapped = args.map { |a| a.is_a?(TypedResult) ? a.value : a }
+      func.call(unwrapped)
+    elsif node.name == "IF"
       func.call(args)
+    else
+      unwrapped = args.map { |a| a.is_a?(TypedResult) ? a.value : a }
+      func.call(unwrapped)
     end
   end
 
