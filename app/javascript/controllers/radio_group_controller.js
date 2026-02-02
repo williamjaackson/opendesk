@@ -19,12 +19,11 @@ export default class extends Controller {
 
   render() {
     const selected = this.inputTarget.value
+    const colour = getComputedStyle(document.documentElement).getPropertyValue("--theme-colour").trim()
     this.optionTargets.forEach(option => {
       const isSelected = option.dataset.value === selected
       const dot = option.querySelector("[data-dot]")
       const ring = option.querySelector("[data-ring]")
-
-      const colour = getComputedStyle(document.documentElement).getPropertyValue("--theme-colour").trim()
       ring.style.borderColor = isSelected ? colour : ""
       ring.classList.toggle("border-gray-300", !isSelected)
       dot.style.backgroundColor = isSelected ? colour : ""
