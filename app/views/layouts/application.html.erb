@@ -46,7 +46,7 @@
               <%= image_tag "logo.svg", class: "h-5 w-5" %>
               <span class="font-semibold text-gray-900 tracking-tight">OpenDesk</span>
             <% end %>
-            <% if authenticated? && managing_organisation? %>
+            <% if authenticated? && managing_organisation? && controller_name != "pages" %>
               <%= render "shared/groups_navbar" %>
             <% elsif !authenticated? %>
               <div class="flex items-center gap-1 text-sm">
@@ -90,7 +90,7 @@
         </div>
       </div>
     </nav>
-    <% if authenticated? && managing_organisation? && (controller_name != "table_groups" || action_name == "show") %>
+    <% if authenticated? && managing_organisation? && controller_name != "pages" && (controller_name != "table_groups" || action_name == "show") %>
       <%= render "shared/tables_navbar" %>
     <% end %>
     <% flash.each do |type, message| %>
