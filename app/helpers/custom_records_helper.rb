@@ -88,6 +88,7 @@ module CustomRecordsHelper
       return "—" if raw_value.blank?
       format_colour_for_display(raw_value)
     else
+      return "—" if raw_value.blank?
       raw_value
     end
   end
