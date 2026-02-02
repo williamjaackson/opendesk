@@ -219,6 +219,142 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal "c", result
   end
 
+  # --- String functions ---
+
+  test "TRIM removes whitespace" do
+    assert_equal "hello", FormulaEvaluator.evaluate('=TRIM("  hello  ")', {})
+  end
+
+  test "LEN returns string length" do
+    assert_equal 5, FormulaEvaluator.evaluate('=LEN("hello")', {})
+    assert_equal 0, FormulaEvaluator.evaluate('=LEN("")', {})
+  end
+
+  test "LEFT returns first N characters" do
+    assert_equal "hel", FormulaEvaluator.evaluate('=LEFT("hello", 3)', {})
+  end
+
+  test "RIGHT returns last N characters" do
+    assert_equal "llo", FormulaEvaluator.evaluate('=RIGHT("hello", 3)', {})
+  end
+
+  test "RIGHT with count greater than length returns full string" do
+    assert_equal "hi", FormulaEvaluator.evaluate('=RIGHT("hi", 10)', {})
+  end
+
+  test "REPLACE replaces occurrences" do
+    assert_equal "hello world", FormulaEvaluator.evaluate('=REPLACE("hello there", "there", "world")', {})
+  end
+
+  test "REPLACE replaces all occurrences" do
+    assert_equal "b-b-b", FormulaEvaluator.evaluate('=REPLACE("a-a-a", "a", "b")', {})
+  end
+
+  test "CONTAINS returns true when found" do
+    assert_equal true, FormulaEvaluator.evaluate('=CONTAINS("hello world", "world")', {})
+  end
+
+  test "CONTAINS returns false when not found" do
+    assert_equal false, FormulaEvaluator.evaluate('=CONTAINS("hello world", "xyz")', {})
+  end
+
+  test "CONCAT joins multiple arguments" do
+    assert_equal "abc", FormulaEvaluator.evaluate('=CONCAT("a", "b", "c")', {})
+  end
+
+  test "CONCAT with column references" do
+    result = FormulaEvaluator.evaluate('=CONCAT({First}, " ", {Last})', { "First" => "Jane", "Last" => "Smith" })
+    assert_equal "Jane Smith", result
+  end
+
+  # --- Logical functions ---
+
+  test "AND returns true when all truthy" do
+    assert_equal true, FormulaEvaluator.evaluate('=AND(TRUE, TRUE, TRUE)', {})
+  end
+
+  test "AND returns false when any falsy" do
+    assert_equal false, FormulaEvaluator.evaluate('=AND(TRUE, FALSE, TRUE)', {})
+  end
+
+  test "AND with column references" do
+    assert_equal true, FormulaEvaluator.evaluate('=AND({A}, {B})', { "A" => "yes", "B" => 1 })
+    assert_equal false, FormulaEvaluator.evaluate('=AND({A}, {B})', { "A" => "yes", "B" => "" })
+  end
+
+  test "OR returns true when any truthy" do
+    assert_equal true, FormulaEvaluator.evaluate('=OR(FALSE, TRUE)', {})
+  end
+
+  test "OR returns false when all falsy" do
+    assert_equal false, FormulaEvaluator.evaluate('=OR(FALSE, FALSE, 0)', {})
+  end
+
+  test "NOT negates truthiness" do
+    assert_equal false, FormulaEvaluator.evaluate('=NOT(TRUE)', {})
+    assert_equal true, FormulaEvaluator.evaluate('=NOT(FALSE)', {})
+    assert_equal true, FormulaEvaluator.evaluate('=NOT("")', {})
+  end
+
+  test "IF with AND condition" do
+    result = FormulaEvaluator.evaluate('=IF(AND({A}, {B}), "both", "nope")', { "A" => true, "B" => true })
+    assert_equal "both", result
+  end
+
+  # --- Math functions ---
+
+  test "ROUND with default decimals" do
+    assert_equal 4, FormulaEvaluator.evaluate("=ROUND(3.7)", {})
+  end
+
+  test "ROUND to specific decimals" do
+    assert_equal 3.14, FormulaEvaluator.evaluate("=ROUND(3.14159, 2)", {})
+  end
+
+  test "ABS of negative number" do
+    assert_equal 5, FormulaEvaluator.evaluate("=ABS(-5)", {})
+  end
+
+  test "ABS of positive number" do
+    assert_equal 5, FormulaEvaluator.evaluate("=ABS(5)", {})
+  end
+
+  test "MIN returns smallest value" do
+    assert_equal 1, FormulaEvaluator.evaluate("=MIN(3, 1, 2)", {})
+  end
+
+  test "MAX returns largest value" do
+    assert_equal 3, FormulaEvaluator.evaluate("=MAX(1, 3, 2)", {})
+  end
+
+  test "MIN and MAX with column references" do
+    assert_equal 10, FormulaEvaluator.evaluate("=MIN({A}, {B})", { "A" => 10, "B" => 20 })
+    assert_equal 20, FormulaEvaluator.evaluate("=MAX({A}, {B})", { "A" => 10, "B" => 20 })
+  end
+
+  test "SUM adds multiple values" do
+    assert_equal 15, FormulaEvaluator.evaluate("=SUM(1, 2, 3, 4, 5)", {})
+  end
+
+  test "SUM with column references" do
+    assert_equal 60, FormulaEvaluator.evaluate("=SUM({A}, {B}, {C})", { "A" => 10, "B" => 20, "C" => 30 })
+  end
+
+  # --- Utility functions ---
+
+  test "COALESCE returns first truthy value" do
+    assert_equal "hello", FormulaEvaluator.evaluate('=COALESCE("", "", "hello", "world")', {})
+  end
+
+  test "COALESCE with nil column" do
+    result = FormulaEvaluator.evaluate('=COALESCE({Nickname}, {Name})', { "Nickname" => nil, "Name" => "Alice" })
+    assert_equal "Alice", result
+  end
+
+  test "COALESCE returns empty string when all falsy" do
+    assert_equal "", FormulaEvaluator.evaluate('=COALESCE("", 0, FALSE)', {})
+  end
+
   # --- Complex formulas ---
 
   test "nested function calls" do

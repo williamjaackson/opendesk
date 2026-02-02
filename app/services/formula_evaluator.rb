@@ -46,6 +46,83 @@ class FormulaEvaluator
       index = args[2].to_i
       parts = text.split(delimiter)
       index < 0 ? parts[index] : parts[index]
+    },
+
+    # String functions
+    "TRIM" => ->(args) {
+      raise Error, "TRIM requires 1 argument" unless args.length == 1
+      args[0].to_s.strip
+    },
+    "LEN" => ->(args) {
+      raise Error, "LEN requires 1 argument" unless args.length == 1
+      args[0].to_s.length
+    },
+    "LEFT" => ->(args) {
+      raise Error, "LEFT requires 2 arguments" unless args.length == 2
+      args[0].to_s[0, args[1].to_i]
+    },
+    "RIGHT" => ->(args) {
+      raise Error, "RIGHT requires 2 arguments" unless args.length == 2
+      text = args[0].to_s
+      count = args[1].to_i
+      count > text.length ? text : text[-count..]
+    },
+    "REPLACE" => ->(args) {
+      raise Error, "REPLACE requires 3 arguments" unless args.length == 3
+      args[0].to_s.gsub(args[1].to_s, args[2].to_s)
+    },
+    "CONTAINS" => ->(args) {
+      raise Error, "CONTAINS requires 2 arguments" unless args.length == 2
+      args[0].to_s.include?(args[1].to_s)
+    },
+    "CONCAT" => ->(args) {
+      raise Error, "CONCAT requires at least 1 argument" if args.empty?
+      args.map(&:to_s).join
+    },
+
+    # Logical functions
+    "AND" => ->(args) {
+      raise Error, "AND requires at least 2 arguments" unless args.length >= 2
+      args.all? { |a| FormulaEvaluator.truthy?(a) }
+    },
+    "OR" => ->(args) {
+      raise Error, "OR requires at least 2 arguments" unless args.length >= 2
+      args.any? { |a| FormulaEvaluator.truthy?(a) }
+    },
+    "NOT" => ->(args) {
+      raise Error, "NOT requires 1 argument" unless args.length == 1
+      !FormulaEvaluator.truthy?(args[0])
+    },
+
+    # Math functions
+    "ROUND" => ->(args) {
+      raise Error, "ROUND requires 1 or 2 arguments" unless args.length.in?(1..2)
+      number = args[0].is_a?(Numeric) ? args[0] : args[0].to_f
+      decimals = args.length == 2 ? args[1].to_i : 0
+      number.round(decimals)
+    },
+    "ABS" => ->(args) {
+      raise Error, "ABS requires 1 argument" unless args.length == 1
+      val = args[0].is_a?(Numeric) ? args[0] : args[0].to_f
+      val.abs
+    },
+    "MIN" => ->(args) {
+      raise Error, "MIN requires at least 2 arguments" unless args.length >= 2
+      args.map { |a| a.is_a?(Numeric) ? a : a.to_f }.min
+    },
+    "MAX" => ->(args) {
+      raise Error, "MAX requires at least 2 arguments" unless args.length >= 2
+      args.map { |a| a.is_a?(Numeric) ? a : a.to_f }.max
+    },
+    "SUM" => ->(args) {
+      raise Error, "SUM requires at least 1 argument" if args.empty?
+      args.sum { |a| a.is_a?(Numeric) ? a : a.to_f }
+    },
+
+    # Utility functions
+    "COALESCE" => ->(args) {
+      raise Error, "COALESCE requires at least 1 argument" if args.empty?
+      args.find { |a| FormulaEvaluator.truthy?(a) } || ""
     }
   }.freeze
 
