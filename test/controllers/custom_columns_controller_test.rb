@@ -506,6 +506,17 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_equal expected, column.custom_values.find_by(custom_record: custom_records(:charlie)).value
   end
 
+  test "should get backfill select options" do
+    get backfill_select_options_table_columns_path(@custom_table), params: {
+      options_text: "Alpha\nBravo\nCharlie",
+      field_name: "custom_column[backfill_value]",
+      field_id: "backfill_value_select",
+      frame_id: "backfill_value_select_frame"
+    }
+
+    assert_response :success
+  end
+
   test "should reject fixed backfill value that fails regex validation" do
     assert_no_difference "CustomColumn.count" do
       post table_columns_path(@custom_table), params: {

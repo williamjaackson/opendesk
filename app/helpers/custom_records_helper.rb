@@ -3,9 +3,15 @@ module CustomRecordsHelper
     name = "values[#{column.id}]"
     id = "values_#{column.id}"
     border = errors ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-gray-500 focus:ring-gray-500"
+
+    type_input_tag(column.column_type, name, id, value, border: border, required: required,
+      select_options: column.column_type == "select" ? column.effective_options : [], label: column.name)
+  end
+
+  def type_input_tag(type, name, id, value, border:, required: false, select_options: [], label: nil)
     classes = "block w-full rounded-md border #{border} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
 
-    case column.column_type
+    case type
     when "number"
       text_field_tag name, value, id: id, class: classes, required: required, inputmode: "numeric", pattern: "[0-9]+"
     when "email"
@@ -14,7 +20,7 @@ module CustomRecordsHelper
       checked = value == "1"
       tag.div data: { controller: "checkbox" } do
         hidden_field_tag(name, checked ? "1" : "0", id: id, data: { checkbox_target: "input" }) +
-        tag.div(tabindex: 0, role: "checkbox", "aria-checked": checked.to_s, "aria-label": column.name,
+        tag.div(tabindex: 0, role: "checkbox", "aria-checked": checked.to_s, "aria-label": label,
           data: { action: "click->checkbox#toggle keydown->checkbox#keydown" },
           class: "inline-flex items-center gap-2 cursor-pointer select-none group") {
           tag.span(data: { checkbox_target: "box" },
@@ -23,7 +29,7 @@ module CustomRecordsHelper
               tag.path(d: "M1 5.5L4 8.5L11 1.5", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round")
             }
           } +
-          tag.span(column.name, class: "text-sm font-medium text-gray-700")
+          tag.span(label, class: "text-sm font-medium text-gray-700")
         }
       end
     when "date"
@@ -33,7 +39,7 @@ module CustomRecordsHelper
     when "datetime"
       datetime_local_field_tag name, value, id: id, class: classes, required: required
     when "select"
-      select_dropdown_tag(name, id, value, column.effective_options, border)
+      select_dropdown_tag(name, id, value, select_options, border)
     when "currency"
       currency_input_tag(name, id, value, border)
     else
