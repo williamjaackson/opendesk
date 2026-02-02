@@ -123,6 +123,37 @@ class FormulaEvaluator
     "COALESCE" => ->(args) {
       raise Error, "COALESCE requires at least 1 argument" if args.empty?
       args.find { |a| FormulaEvaluator.truthy?(a) } || ""
+    },
+
+    # Type casting functions
+    "NUMBER" => ->(args) {
+      raise Error, "NUMBER requires 1 argument" unless args.length == 1
+      val = args[0]
+      case val
+      when Numeric then val
+      when TrueClass then 1
+      when FalseClass then 0
+      when NilClass then 0
+      when String
+        return 0 if val.strip.empty?
+        val.include?(".") ? Float(val) : Integer(val)
+      else
+        val.to_f
+      end
+    },
+    "TEXT" => ->(args) {
+      raise Error, "TEXT requires 1 argument" unless args.length == 1
+      val = args[0]
+      case val
+      when nil then ""
+      when true then "true"
+      when false then "false"
+      else val.to_s
+      end
+    },
+    "BOOLEAN" => ->(args) {
+      raise Error, "BOOLEAN requires 1 argument" unless args.length == 1
+      FormulaEvaluator.truthy?(args[0])
     }
   }.freeze
 

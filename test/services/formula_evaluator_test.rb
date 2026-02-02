@@ -355,6 +355,73 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal "", FormulaEvaluator.evaluate('=COALESCE("", 0, FALSE)', {})
   end
 
+  # --- Type casting functions ---
+
+  test "NUMBER from string integer" do
+    assert_equal 42, FormulaEvaluator.evaluate('=NUMBER("42")', {})
+  end
+
+  test "NUMBER from string decimal" do
+    assert_equal 3.14, FormulaEvaluator.evaluate('=NUMBER("3.14")', {})
+  end
+
+  test "NUMBER from boolean" do
+    assert_equal 1, FormulaEvaluator.evaluate("=NUMBER(TRUE)", {})
+    assert_equal 0, FormulaEvaluator.evaluate("=NUMBER(FALSE)", {})
+  end
+
+  test "NUMBER from nil returns 0" do
+    assert_equal 0, FormulaEvaluator.evaluate("=NUMBER({X})", { "X" => nil })
+  end
+
+  test "NUMBER from empty string returns 0" do
+    assert_equal 0, FormulaEvaluator.evaluate('=NUMBER("")', {})
+  end
+
+  test "NUMBER passes through numeric values" do
+    assert_equal 99, FormulaEvaluator.evaluate("=NUMBER(99)", {})
+  end
+
+  test "NUMBER enables arithmetic on string columns" do
+    result = FormulaEvaluator.evaluate("=NUMBER({A}) + NUMBER({B})", { "A" => "10", "B" => "20" })
+    assert_equal 30, result
+  end
+
+  test "TEXT from number" do
+    assert_equal "42", FormulaEvaluator.evaluate("=TEXT(42)", {})
+    assert_equal "3.14", FormulaEvaluator.evaluate("=TEXT(3.14)", {})
+  end
+
+  test "TEXT from boolean" do
+    assert_equal "true", FormulaEvaluator.evaluate("=TEXT(TRUE)", {})
+    assert_equal "false", FormulaEvaluator.evaluate("=TEXT(FALSE)", {})
+  end
+
+  test "TEXT from nil returns empty string" do
+    assert_equal "", FormulaEvaluator.evaluate("=TEXT({X})", { "X" => nil })
+  end
+
+  test "TEXT passes through string values" do
+    assert_equal "hello", FormulaEvaluator.evaluate('=TEXT("hello")', {})
+  end
+
+  test "BOOLEAN from truthy values" do
+    assert_equal true, FormulaEvaluator.evaluate('=BOOLEAN("hello")', {})
+    assert_equal true, FormulaEvaluator.evaluate("=BOOLEAN(1)", {})
+    assert_equal true, FormulaEvaluator.evaluate("=BOOLEAN(TRUE)", {})
+  end
+
+  test "BOOLEAN from falsy values" do
+    assert_equal false, FormulaEvaluator.evaluate('=BOOLEAN("")', {})
+    assert_equal false, FormulaEvaluator.evaluate("=BOOLEAN(0)", {})
+    assert_equal false, FormulaEvaluator.evaluate("=BOOLEAN(FALSE)", {})
+  end
+
+  test "BOOLEAN with column reference" do
+    assert_equal true, FormulaEvaluator.evaluate("=BOOLEAN({Active})", { "Active" => "1" })
+    assert_equal false, FormulaEvaluator.evaluate("=BOOLEAN({Active})", { "Active" => "0" })
+  end
+
   # --- Complex formulas ---
 
   test "nested function calls" do
