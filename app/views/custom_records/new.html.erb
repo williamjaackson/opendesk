@@ -2,7 +2,7 @@
   <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)]] %>
   <%= render "shared/page_heading", title: "New record" %>
 
-  <%= form_with url: table_records_path(@custom_table) do |form| %>
+  <%= form_with url: table_records_path(@custom_table), html: { novalidate: true } do |form| %>
     <% @columns.each do |column| %>
       <div class="mb-4">
         <% unless column.column_type == "boolean" %>

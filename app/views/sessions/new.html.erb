@@ -1,7 +1,7 @@
 <div class="max-w-md mx-auto py-8 px-4">
   <%= render "shared/page_heading", title: "Sign in" %>
 
-  <%= form_with url: session_path do |form| %>
+  <%= form_with url: session_path, html: { novalidate: true } do |form| %>
     <%= render "shared/form_input", form: form, field: :email_address, type: :email_field, options: { required: true, autofocus: true, autocomplete: "username", placeholder: "Enter your email address", value: params[:email_address] } %>
     <%= render "shared/form_input", form: form, field: :password, type: :password_field, options: { required: true, autocomplete: "current-password", placeholder: "Enter your password", maxlength: 72 } %>
 

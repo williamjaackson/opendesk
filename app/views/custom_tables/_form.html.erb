@@ -1,5 +1,5 @@
 <div class="space-y-8">
-  <%= form_with model: @custom_table, url: @custom_table.persisted? ? table_path(@custom_table) : tables_path do |form| %>
+  <%= form_with model: @custom_table, url: @custom_table.persisted? ? table_path(@custom_table) : tables_path, html: { novalidate: true } do |form| %>
     <%= render "shared/form_input", form: form, field: :name, label: "Table name", options: { required: true, autofocus: true, placeholder: "e.g. Contacts, Deals, Projects" } %>
     <%= form.hidden_field :table_group_id %>
     <div class="flex items-center gap-3">

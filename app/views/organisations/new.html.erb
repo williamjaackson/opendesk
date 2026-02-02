@@ -2,7 +2,7 @@
   <%= render "shared/breadcrumbs", crumbs: [["Organisations", organisations_path]] %>
   <%= render "shared/page_heading", title: "New organisation" %>
 
-  <%= form_with model: @organisation do |form| %>
+  <%= form_with model: @organisation, html: { novalidate: true } do |form| %>
     <%= render "shared/form_input", form: form, field: :name, options: { required: true, autofocus: true } %>
 
     <div class="flex items-center gap-3">
