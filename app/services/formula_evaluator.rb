@@ -115,6 +115,16 @@ class FormulaEvaluator
       val = args[0].is_a?(Numeric) ? args[0] : args[0].to_f
       val.abs
     },
+    "FLOOR" => ->(args) {
+      raise Error, "FLOOR requires 1 argument" unless args.length == 1
+      val = args[0].is_a?(Numeric) ? args[0] : args[0].to_f
+      val.floor
+    },
+    "CEIL" => ->(args) {
+      raise Error, "CEIL requires 1 argument" unless args.length == 1
+      val = args[0].is_a?(Numeric) ? args[0] : args[0].to_f
+      val.ceil
+    },
     "MIN" => ->(args) {
       raise Error, "MIN requires at least 2 arguments" unless args.length >= 2
       args.map { |a| a.is_a?(Numeric) ? a : a.to_f }.min

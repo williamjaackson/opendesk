@@ -327,6 +327,16 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal 5, FormulaEvaluator.evaluate("=ABS(5)", {})
   end
 
+  test "FLOOR rounds down" do
+    assert_equal 3, FormulaEvaluator.evaluate("=FLOOR(3.7)", {})
+    assert_equal(-4, FormulaEvaluator.evaluate("=FLOOR(-3.2)", {}))
+  end
+
+  test "CEIL rounds up" do
+    assert_equal 4, FormulaEvaluator.evaluate("=CEIL(3.2)", {})
+    assert_equal(-3, FormulaEvaluator.evaluate("=CEIL(-3.7)", {}))
+  end
+
   test "MIN returns smallest value" do
     assert_equal 1, FormulaEvaluator.evaluate("=MIN(3, 1, 2)", {})
   end
