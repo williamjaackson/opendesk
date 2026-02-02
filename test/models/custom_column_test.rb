@@ -120,4 +120,52 @@ class CustomColumnTest < ActiveSupport::TestCase
     assert_nil column.regex_pattern
     assert_nil column.regex_label
   end
+
+  test "computed column requires formula" do
+    column = custom_tables(:contacts).custom_columns.new(name: "Full Name", column_type: "computed")
+    assert_not column.valid?
+    assert_includes column.errors[:formula], "can't be blank"
+  end
+
+  test "computed column is valid with formula" do
+    column = custom_tables(:contacts).custom_columns.new(name: "Full Name", column_type: "computed", formula: "{First} {Last}")
+    assert column.valid?
+  end
+
+  test "non-computed column rejects formula" do
+    column = custom_columns(:name)
+    column.formula = "{Something}"
+    assert_not column.valid?
+    assert_includes column.errors[:formula], "is only allowed on computed columns"
+  end
+
+  test "computed column forces required to false" do
+    column = custom_tables(:contacts).custom_columns.new(name: "Full Name", column_type: "computed", formula: "{A}", required: true)
+    column.valid?
+    assert_equal false, column.required
+  end
+
+  test "computed column clears regex" do
+    column = custom_tables(:contacts).custom_columns.new(name: "Test", column_type: "computed", formula: "{A}", regex_pattern: "\\d+", regex_label: "Test")
+    column.valid?
+    assert_nil column.regex_pattern
+    assert_nil column.regex_label
+  end
+
+  test "computed column clears options and linked_column_id" do
+    column = custom_tables(:contacts).custom_columns.new(name: "Test", column_type: "computed", formula: "{A}", options: [ "A" ], linked_column_id: custom_columns(:deal_name).id)
+    column.valid?
+    assert_nil column.options
+    assert_nil column.linked_column_id
+  end
+
+  test "computed? returns true for computed columns" do
+    column = CustomColumn.new(column_type: "computed")
+    assert column.computed?
+  end
+
+  test "computed? returns false for non-computed columns" do
+    column = CustomColumn.new(column_type: "text")
+    assert_not column.computed?
+  end
 end

@@ -10,11 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_02_021313) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_02_052350) do
   create_table "custom_columns", force: :cascade do |t|
     t.string "column_type", null: false
     t.datetime "created_at", null: false
     t.integer "custom_table_id", null: false
+    t.text "formula"
     t.integer "linked_column_id"
     t.string "name", null: false
     t.json "options"
@@ -22,6 +23,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_02_021313) do
     t.string "regex_label"
     t.string "regex_pattern"
     t.boolean "required", default: false, null: false
+    t.string "result_type"
     t.boolean "show_on_preview", default: true
     t.datetime "updated_at", null: false
     t.index ["custom_table_id", "position"], name: "index_custom_columns_on_custom_table_id_and_position"

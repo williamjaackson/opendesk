@@ -1,0 +1,359 @@
+<div class="max-w-6xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+  <div class="lg:grid lg:grid-cols-[220px_1fr] lg:gap-12">
+
+    <%# ── Sidebar TOC ── %>
+    <aside class="hidden lg:block">
+      <nav class="sticky top-8">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">On this page</p>
+        <ul class="space-y-1.5 text-sm">
+          <li><a href="#modes" class="text-gray-500 hover:text-gray-900 transition-colors">Modes</a></li>
+          <li><a href="#references" class="text-gray-500 hover:text-gray-900 transition-colors">Column References</a></li>
+          <li><a href="#concatenation" class="text-gray-500 hover:text-gray-900 transition-colors">Concatenation</a></li>
+          <li><a href="#operators" class="text-gray-500 hover:text-gray-900 transition-colors">Operators</a></li>
+          <li>
+            <a href="#functions" class="text-gray-500 hover:text-gray-900 transition-colors">Functions</a>
+            <ul class="mt-1.5 ml-3 space-y-1 text-xs">
+              <li><a href="#fn-text" class="text-gray-400 hover:text-gray-700 transition-colors">Text</a></li>
+              <li><a href="#fn-logic" class="text-gray-400 hover:text-gray-700 transition-colors">Logic</a></li>
+              <li><a href="#fn-math" class="text-gray-400 hover:text-gray-700 transition-colors">Math</a></li>
+              <li><a href="#fn-utility" class="text-gray-400 hover:text-gray-700 transition-colors">Utility</a></li>
+              <li><a href="#fn-casting" class="text-gray-400 hover:text-gray-700 transition-colors">Type Casting</a></li>
+            </ul>
+          </li>
+          <li><a href="#literals" class="text-gray-500 hover:text-gray-900 transition-colors">Literals</a></li>
+          <li><a href="#examples" class="text-gray-500 hover:text-gray-900 transition-colors">Examples</a></li>
+          <li><a href="#errors" class="text-gray-500 hover:text-gray-900 transition-colors">Errors</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+    <%# ── Main Content ── %>
+    <div class="min-w-0">
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-1">Formula Reference</h1>
+        <p class="text-gray-500 text-sm">Computed columns automatically calculate values based on other columns in the same record.</p>
+      </div>
+
+      <div class="space-y-12">
+
+        <%# ── Modes ── %>
+        <section id="modes">
+          <h2 class="text-base font-semibold text-gray-900 mb-3">Modes</h2>
+          <div class="grid sm:grid-cols-2 gap-3">
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <p class="text-sm font-medium text-gray-900 mb-1">Template</p>
+              <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono text-gray-700">{First Name} {Last Name}</code>
+              <p class="text-xs text-gray-500 mt-2">Plain text with column placeholders. Whitespace from blank values is collapsed.</p>
+            </div>
+            <div class="rounded-lg border border-gray-200 bg-white p-4">
+              <p class="text-sm font-medium text-gray-900 mb-1">Formula</p>
+              <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono text-gray-700">=UPPER({Name})</code>
+              <p class="text-xs text-gray-500 mt-2">Prefix with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">=</code> for expressions with functions, operators, and logic.</p>
+            </div>
+          </div>
+        </section>
+
+        <%# ── Column References ── %>
+        <section id="references">
+          <h2 class="text-base font-semibold text-gray-900 mb-3">Column References</h2>
+          <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+            <div class="px-4 py-3 flex items-start gap-4">
+              <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono text-gray-700 shrink-0">{Column Name}</code>
+              <p class="text-sm text-gray-600">Reference a column by its exact name.</p>
+            </div>
+            <div class="px-4 py-3 flex items-start gap-4">
+              <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono text-gray-700 shrink-0">{Column Name}[0]</code>
+              <p class="text-sm text-gray-600">If multiple columns share the same name, use a zero-based positional index.</p>
+            </div>
+          </div>
+        </section>
+
+        <%# ── Concatenation ── %>
+        <section id="concatenation">
+          <h2 class="text-base font-semibold text-gray-900 mb-3">Concatenation</h2>
+          <p class="text-sm text-gray-600 mb-3">Adjacent values are automatically joined together. No operator needed.</p>
+          <div class="rounded-lg border border-gray-200 bg-white overflow-hidden">
+            <div class="divide-y divide-gray-100">
+              <div class="grid grid-cols-[1fr_auto] items-center">
+                <div class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">={First} " " {Last}</code></div>
+                <div class="px-4 py-2.5 text-sm text-gray-500">Jane Smith</div>
+              </div>
+              <div class="grid grid-cols-[1fr_auto] items-center">
+                <div class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">={First}" "{Last}</code></div>
+                <div class="px-4 py-2.5 text-sm text-gray-500">Same — whitespace between tokens is optional</div>
+              </div>
+              <div class="grid grid-cols-[1fr_auto] items-center">
+                <div class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">="Hello, " {Name} "!"</code></div>
+                <div class="px-4 py-2.5 text-sm text-gray-500">Hello, Alice!</div>
+              </div>
+            </div>
+          </div>
+          <p class="mt-2 text-xs text-gray-400">The <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">&</code> operator also works if you prefer to be explicit.</p>
+        </section>
+
+        <%# ── Operators ── %>
+        <section id="operators">
+          <h2 class="text-base font-semibold text-gray-900 mb-3">Operators</h2>
+          <p class="text-sm text-gray-500 mb-3">Only available in formula mode.</p>
+          <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+            <div class="px-4 py-2.5 flex items-center gap-4">
+              <div class="flex items-center gap-1.5 shrink-0 w-32">
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">+</code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">-</code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">*</code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">/</code>
+              </div>
+              <p class="text-sm text-gray-600 flex-1">Arithmetic</p>
+              <code class="text-xs text-gray-400 font-mono hidden sm:block">{Price} * {Quantity}</code>
+            </div>
+            <div class="px-4 py-2.5 flex items-center gap-4">
+              <div class="flex items-center gap-1.5 shrink-0 w-32">
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=</code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">!=</code>
+              </div>
+              <p class="text-sm text-gray-600 flex-1">Equality</p>
+              <code class="text-xs text-gray-400 font-mono hidden sm:block">{Status} = "Active"</code>
+            </div>
+            <div class="px-4 py-2.5 flex items-center gap-4">
+              <div class="flex items-center gap-1.5 shrink-0 w-32">
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono"><</code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">></code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono"><=</code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">>=</code>
+              </div>
+              <p class="text-sm text-gray-600 flex-1">Comparisons</p>
+              <code class="text-xs text-gray-400 font-mono hidden sm:block">{Age} >= 18</code>
+            </div>
+          </div>
+        </section>
+
+        <%# ── Functions ── %>
+        <section id="functions">
+          <h2 class="text-base font-semibold text-gray-900 mb-3">Functions</h2>
+          <p class="text-sm text-gray-500 mb-4">Only available in formula mode.</p>
+
+          <%# ── IF (featured) ── %>
+          <div class="rounded-lg border border-gray-200 bg-white overflow-hidden mb-6">
+            <div class="bg-gray-50 px-4 py-2.5 border-b border-gray-200">
+              <code class="font-mono text-sm font-semibold text-gray-900">IF(condition, then)</code>
+              <span class="mx-2 text-gray-300">|</span>
+              <code class="font-mono text-sm font-semibold text-gray-900">IF(condition, then, else)</code>
+            </div>
+            <div class="px-4 py-3 text-sm text-gray-600 space-y-2">
+              <p>Returns <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">then</code> when truthy, otherwise <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">else</code> (or blank).</p>
+              <div class="flex gap-6 text-xs text-gray-500">
+                <p><strong class="text-gray-600">Truthy:</strong> non-empty text, non-zero numbers, TRUE</p>
+                <p><strong class="text-gray-600">Falsy:</strong> blank, 0, FALSE, unchecked</p>
+              </div>
+              <div class="bg-gray-50 rounded-md px-3 py-2 font-mono text-xs text-gray-700 space-y-0.5">
+                <p>=IF({Name}, {Name}, "Unknown")</p>
+                <p>=IF({Age} >= 18, "Adult", "Minor")</p>
+                <p>=IF({Middle}, " " {Middle}) <span class="text-gray-400"><%# two-arg: blank when falsy %></span></p>
+              </div>
+            </div>
+          </div>
+
+          <%# ── Text functions ── %>
+          <div id="fn-text" class="mb-6">
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Text</h3>
+            <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+              <% [
+                ["UPPER(text)", "Converts to uppercase.", '=UPPER({Name})', '"alice" → "ALICE"'],
+                ["LOWER(text)", "Converts to lowercase.", '=LOWER({Name})', '"ALICE" → "alice"'],
+                ["TRIM(text)", "Removes leading and trailing whitespace.", '=TRIM({Notes})', nil],
+                ["LEN(text)", "Returns the character count.", '=LEN({Name})', '"Alice" → 5'],
+                ["LEFT(text, n)", "First N characters.", '=LEFT({Name}, 1)', '"Alice" → "A"'],
+                ["RIGHT(text, n)", "Last N characters.", '=RIGHT({Phone}, 4)', '"555-1234" → "1234"'],
+                ["REPLACE(text, old, new, count?)", "Replaces occurrences. All by default, or first N if count given.", '=REPLACE({Name}, " ", "-")', nil],
+                ["CONTAINS(text, search)", "Returns TRUE if text contains search.", '=IF(CONTAINS({Email}, "@gmail"), "Gmail", "Other")', nil],
+                ["CONCAT(a, b, ...)", "Joins all arguments into one string.", '=CONCAT({First}, " ", {Last})', nil],
+                ["SPLIT(text, delim, index)", "Splits text and returns element at index. Negative index counts from end.", '=SPLIT({Email}, "@", -1)', '"user@co.com" → "co.com"'],
+              ].each do |signature, desc, example, result| %>
+                <div class="px-4 py-3">
+                  <div class="flex items-start justify-between gap-4 mb-1">
+                    <code class="font-mono text-xs font-semibold text-gray-900"><%= signature %></code>
+                  </div>
+                  <p class="text-sm text-gray-500 mb-1.5"><%= desc %></p>
+                  <div class="flex items-center gap-3">
+                    <code class="text-xs font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded"><%= example %></code>
+                    <% if result %>
+                      <span class="text-xs text-gray-400"><%= result %></span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <%# ── Logic functions ── %>
+          <div id="fn-logic" class="mb-6">
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Logic</h3>
+            <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+              <% [
+                ["AND(a, b, ...)", "TRUE if all arguments are truthy.", '=IF(AND({Active}, {Email}), "Ready", "Incomplete")'],
+                ["OR(a, b, ...)", "TRUE if any argument is truthy.", '=IF(OR({Phone}, {Email}), "Contactable", "None")'],
+                ["NOT(value)", "Negates truthiness.", '=IF(NOT({Archived}), "Active", "Archived")'],
+              ].each do |signature, desc, example| %>
+                <div class="px-4 py-3">
+                  <code class="font-mono text-xs font-semibold text-gray-900"><%= signature %></code>
+                  <p class="text-sm text-gray-500 mt-1 mb-1.5"><%= desc %></p>
+                  <code class="text-xs font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded"><%= example %></code>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <%# ── Math functions ── %>
+          <div id="fn-math" class="mb-6">
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Math</h3>
+            <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+              <% [
+                ["ROUND(number)", "Rounds to nearest integer.", "=ROUND(3.7)", "4"],
+                ["ROUND(number, decimals)", "Rounds to N decimal places.", "=ROUND(3.14159, 2)", "3.14"],
+                ["ABS(number)", "Absolute (non-negative) value.", "=ABS(-5)", "5"],
+                ["FLOOR(number)", "Rounds down to nearest integer.", "=FLOOR(3.7)", "3"],
+                ["CEIL(number)", "Rounds up to nearest integer.", "=CEIL(3.2)", "4"],
+                ["MIN(a, b, ...)", "Returns the smallest value.", "=MIN({Price}, {Sale Price})", nil],
+                ["MAX(a, b, ...)", "Returns the largest value.", "=MAX({Score 1}, {Score 2})", nil],
+                ["SUM(a, b, ...)", "Returns the sum of all arguments.", "=SUM({Q1}, {Q2}, {Q3}, {Q4})", nil],
+              ].each do |signature, desc, example, result| %>
+                <div class="px-4 py-3">
+                  <div class="flex items-start justify-between gap-4 mb-1">
+                    <code class="font-mono text-xs font-semibold text-gray-900"><%= signature %></code>
+                  </div>
+                  <p class="text-sm text-gray-500 mb-1.5"><%= desc %></p>
+                  <div class="flex items-center gap-3">
+                    <code class="text-xs font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded"><%= example %></code>
+                    <% if result %>
+                      <span class="text-xs text-gray-400">&rarr; <%= result %></span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <%# ── Utility functions ── %>
+          <div id="fn-utility" class="mb-6">
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Utility</h3>
+            <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+              <div class="px-4 py-3">
+                <code class="font-mono text-xs font-semibold text-gray-900">COALESCE(a, b, ...)</code>
+                <p class="text-sm text-gray-500 mt-1 mb-1.5">Returns the first non-blank value. Useful for fallback defaults.</p>
+                <code class="text-xs font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded">=COALESCE({Nickname}, {First Name}, "Unknown")</code>
+              </div>
+            </div>
+          </div>
+
+          <%# ── Type casting functions ── %>
+          <div id="fn-casting">
+            <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Type Casting</h3>
+            <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+              <% [
+                ["NUMBER(value)", "Converts to a number. Strings are parsed, TRUE → 1, FALSE/blank → 0.", '=NUMBER("42") + 8', "50"],
+                ["TEXT(value)", 'Converts to text. Numbers become strings, booleans become "true"/"false".', '="Order #" TEXT({ID})', nil],
+                ["BOOLEAN(value)", "Converts to TRUE/FALSE using the standard truthiness rules.", "=BOOLEAN({Count})", nil],
+                ["CURRENCY(value)", "Formats the result as currency (rounded to 2 decimal places). The column displays with a $ prefix.", "=CURRENCY({Price} * 1.1)", "$11.00"],
+                ["DATE(value)", "Parses a date string. Also accepts DATE(year, month, day).", '=DATE(2024, 3, 15)', "2024-03-15"],
+                ["TIME(value)", "Parses a time string. Also accepts TIME(hours, minutes).", '=TIME(14, 30)', "2:30 PM"],
+                ["DATETIME(value)", "Parses a datetime string. Also accepts DATETIME(date, time).", '=DATETIME("2024-03-15T14:30")', "15 Mar 2024, 2:30 PM"],
+              ].each do |signature, desc, example, result| %>
+                <div class="px-4 py-3">
+                  <code class="font-mono text-xs font-semibold text-gray-900"><%= signature %></code>
+                  <p class="text-sm text-gray-500 mt-1 mb-1.5"><%= desc %></p>
+                  <div class="flex items-center gap-3">
+                    <code class="text-xs font-mono text-gray-600 bg-gray-50 px-2 py-1 rounded"><%= example %></code>
+                    <% if result %>
+                      <span class="text-xs text-gray-400">&rarr; <%= result %></span>
+                    <% end %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+
+          <p class="mt-3 text-xs text-gray-400">
+            <strong class="text-gray-500">Tip:</strong> Wrapping your formula in CURRENCY, DATE, TIME, or DATETIME automatically sets the column's display format.
+            Without a casting function, the display type is inferred from the result (numbers, booleans, or text).
+          </p>
+        </section>
+
+        <%# ── Literals ── %>
+        <section id="literals">
+          <h2 class="text-base font-semibold text-gray-900 mb-3">Literals</h2>
+          <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+            <div class="px-4 py-2.5 flex items-center gap-4">
+              <span class="text-sm font-medium text-gray-900 w-20">Text</span>
+              <span class="text-sm text-gray-500">Double quotes</span>
+              <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono ml-auto">"hello"</code>
+            </div>
+            <div class="px-4 py-2.5 flex items-center gap-4">
+              <span class="text-sm font-medium text-gray-900 w-20">Number</span>
+              <span class="text-sm text-gray-500">Digits with optional decimal</span>
+              <div class="ml-auto flex gap-2">
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">42</code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">3.14</code>
+              </div>
+            </div>
+            <div class="px-4 py-2.5 flex items-center gap-4">
+              <span class="text-sm font-medium text-gray-900 w-20">Boolean</span>
+              <span class="text-sm text-gray-500">TRUE or FALSE</span>
+              <div class="ml-auto flex gap-2">
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">TRUE</code>
+                <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">FALSE</code>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <%# ── Examples ── %>
+        <section id="examples">
+          <h2 class="text-base font-semibold text-gray-900 mb-3">Examples</h2>
+          <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+            <% [
+              ["Full name", "{First Name} {Last Name}"],
+              ["Full name with optional middle", '={First Name} IF({Middle Name}, " " {Middle Name}) " " {Last Name}'],
+              ["Active status label", '=IF({Active}, "Active", "Inactive")'],
+              ["Uppercase when active", '=IF({Active}, UPPER({Name}), LOWER({Name}))'],
+              ["Line total", "={Price} * {Quantity}"],
+              ["Email domain", '=SPLIT({Email}, "@", -1)'],
+              ["First initial + last name", '=UPPER(LEFT({First Name}, 1)) ". " {Last Name}'],
+              ["Capped discount", "=MIN({Discount}, {Price})"],
+              ["Display name with fallback", '=COALESCE({Nickname}, {First Name}, "Unknown")'],
+              ["Completeness check", '=IF(AND({Name}, {Email}, {Phone}), "Complete", "Missing info")'],
+              ["Rounded total with tax", "=ROUND({Price} * {Quantity} * 1.1, 2)"],
+              ["Line total as currency", "=CURRENCY({Price} * {Quantity})"],
+              ["Extract date from datetime", '=IF({Datetime}, DATE({Datetime}), "")'],
+              ["Extract time from datetime", '=IF({Datetime}, TIME({Datetime}), "")'],
+            ].each do |label, formula| %>
+              <div class="px-4 py-2.5 flex items-start gap-4">
+                <span class="text-sm text-gray-500 w-48 shrink-0"><%= label %></span>
+                <code class="text-xs font-mono text-gray-700 bg-gray-50 px-2 py-1 rounded"><%= formula %></code>
+              </div>
+            <% end %>
+          </div>
+        </section>
+
+        <%# ── Errors ── %>
+        <section id="errors">
+          <h2 class="text-base font-semibold text-gray-900 mb-3">Errors</h2>
+          <p class="text-sm text-gray-600 mb-3">When a formula can't be evaluated, the cell shows an error starting with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono text-red-500">#ERROR:</code></p>
+          <div class="rounded-lg border border-gray-200 bg-white divide-y divide-gray-100">
+            <% [
+              ["#ERROR: Division by zero", "Dividing by a column that is zero or blank."],
+              ["#ERROR: Unterminated column reference", "A { without a matching }."],
+              ["#ERROR: Unterminated string", "A double quote without a closing double quote."],
+              ["#ERROR: Unknown function: X", "Using a function name that doesn't exist."],
+            ].each do |error, cause| %>
+              <div class="px-4 py-2.5 flex items-start gap-4">
+                <code class="text-xs font-mono text-red-500 shrink-0"><%= error %></code>
+                <span class="text-sm text-gray-500"><%= cause %></span>
+              </div>
+            <% end %>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -11,6 +11,18 @@
         <span class="block w-full rounded-md border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-500"><%= @custom_column.column_type.capitalize %></span>
       </div>
 
+      <% if @custom_column.computed? %>
+        <% formula_errors = @custom_column.errors[:formula] %>
+        <div class="mb-4">
+          <%= form.label :formula, class: "block text-sm font-medium text-gray-700 mb-1" do %>Formula<span class="text-red-500 ml-0.5">*</span><% end %>
+          <%= form.text_area :formula, rows: 3, placeholder: '{First Name} {Last Name}', class: "block w-full rounded-md border #{formula_errors.any? ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500'} bg-white px-3 py-2 text-sm font-mono focus:outline-none focus:ring-1" %>
+          <p class="mt-1 text-sm text-gray-500">Use <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">{Column Name}</code> to reference values. Prefix with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded">=</code> for formula mode. <%= link_to "View docs", formulas_docs_path, target: "_blank", class: "text-gray-700 underline hover:text-gray-900" %></p>
+          <% formula_errors.each do |error| %>
+            <p class="mt-1 text-sm text-red-600"><%= error %></p>
+          <% end %>
+        </div>
+      <% end %>
+
       <% if @custom_column.column_type == "select" %>
         <div data-controller="select-source" data-select-source-tables-value="<%= @tables_json %>">
           <%= render "shared/radio_group", form: form, field: :select_source, label: "Select options source",
@@ -82,7 +94,7 @@
         </div>
       <% end %>
 
-      <% unless @custom_column.column_type == "boolean" %>
+      <% unless @custom_column.column_type.in?(%w[boolean computed]) %>
         <%= render "shared/checkbox", form: form, field: :required, label: "Required column" %>
       <% end %>
       <%= render "shared/checkbox", form: form, field: :show_on_preview, label: "Show on preview" %>

@@ -1,5 +1,5 @@
 class CustomColumn < ApplicationRecord
-  COLUMN_TYPES = %w[text number decimal email boolean date time datetime select currency colour].freeze
+  COLUMN_TYPES = %w[text number decimal email boolean date time datetime select currency colour computed].freeze
 
   belongs_to :custom_table
   belongs_to :linked_column, class_name: "CustomColumn", optional: true
@@ -11,9 +11,11 @@ class CustomColumn < ApplicationRecord
   validates :column_type, presence: true, inclusion: { in: COLUMN_TYPES, allow_blank: true }
   validate :validate_select_options
   validate :validate_regex_pattern
+  validate :validate_computed_formula
 
   before_validation :clear_options_for_linked_select
   before_validation :clear_regex_for_non_applicable_types
+  before_validation :clear_computed_constraints
 
   after_destroy :cleanup_empty_records
 
@@ -43,6 +45,10 @@ class CustomColumn < ApplicationRecord
 
   def options_text=(text)
     self.options = text.to_s.split("\n").map(&:strip).reject(&:blank?)
+  end
+
+  def computed?
+    column_type == "computed"
   end
 
   private
@@ -102,6 +108,24 @@ class CustomColumn < ApplicationRecord
 
     if regex_label.blank?
       errors.add(:regex_label, "can't be blank")
+    end
+  end
+
+  def clear_computed_constraints
+    return unless computed?
+
+    self.required = false
+    self.regex_pattern = nil
+    self.regex_label = nil
+    self.options = nil
+    self.linked_column_id = nil
+  end
+
+  def validate_computed_formula
+    if computed?
+      errors.add(:formula, "can't be blank") if formula.blank?
+    else
+      errors.add(:formula, "is only allowed on computed columns") if formula.present?
     end
   end
 
