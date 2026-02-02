@@ -289,11 +289,57 @@ class FormulaEvaluator
 
     computed_columns.each do |col|
       result = evaluate(col.formula, values)
-      result_str = result.to_s
+
+      if result.is_a?(TypedResult)
+        inferred_type = result.result_type
+        result_str = format_typed_value(result.value, inferred_type)
+      else
+        inferred_type = infer_type(result)
+        result_str = format_for_storage(result, inferred_type)
+      end
 
       cv = existing_values[col.id] || record.custom_values.build(custom_column: col)
       cv.value = result_str.presence
       cv.save!
+
+      if col.result_type != inferred_type
+        col.update_column(:result_type, inferred_type)
+      end
+    end
+  end
+
+  def self.infer_type(value)
+    case value
+    when Integer then "number"
+    when Float, BigDecimal then "decimal"
+    when TrueClass, FalseClass then "boolean"
+    else "text"
+    end
+  end
+
+  def self.format_typed_value(value, type)
+    case type
+    when "currency"
+      sprintf("%.2f", value)
+    when "date"
+      value.is_a?(Date) ? value.strftime("%Y-%m-%d") : Date.parse(value.to_s).strftime("%Y-%m-%d")
+    when "time"
+      sprintf("%02d:%02d", value[:h], value[:m])
+    when "datetime"
+      date_str = value[:date].strftime("%Y-%m-%d")
+      time_str = sprintf("%02d:%02d", value[:h], value[:m])
+      "#{date_str}T#{time_str}"
+    else
+      value.to_s
+    end
+  end
+
+  def self.format_for_storage(value, type)
+    case type
+    when "boolean" then value ? "1" : "0"
+    when "number" then value.to_i.to_s
+    when "decimal" then value.to_s
+    else value.to_s
     end
   end
 
