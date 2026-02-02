@@ -537,6 +537,11 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal BigDecimal("19.99"), result.value
   end
 
+  test "CURRENCY errors on blank value" do
+    result = FormulaEvaluator.evaluate("=CURRENCY({X})", { "X" => nil })
+    assert result.start_with?("#ERROR:")
+  end
+
   test "DATE from string" do
     result = FormulaEvaluator.evaluate('=DATE("2024-03-15")', {})
     assert_instance_of FormulaEvaluator::TypedResult, result

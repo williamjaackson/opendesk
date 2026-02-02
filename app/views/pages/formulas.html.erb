@@ -322,6 +322,9 @@
               ["Display name with fallback", '=COALESCE({Nickname}, {First Name}, "Unknown")'],
               ["Completeness check", '=IF(AND({Name}, {Email}, {Phone}), "Complete", "Missing info")'],
               ["Rounded total with tax", "=ROUND({Price} * {Quantity} * 1.1, 2)"],
+              ["Line total as currency", "=CURRENCY({Price} * {Quantity})"],
+              ["Extract date from datetime", '=IF({Datetime}, DATE({Datetime}), "")'],
+              ["Extract time from datetime", '=IF({Datetime}, TIME({Datetime}), "")'],
             ].each do |label, formula| %>
               <div class="px-4 py-2.5 flex items-start gap-4">
                 <span class="text-sm text-gray-500 w-48 shrink-0"><%= label %></span>

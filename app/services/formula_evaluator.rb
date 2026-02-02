@@ -26,14 +26,6 @@ class FormulaEvaluator
   end
 
   FUNCTIONS = {
-    "IF" => ->(args) {
-      raise Error, "IF requires 2 or 3 arguments" unless args.length.in?(2..3)
-      if FormulaEvaluator.truthy?(args[0])
-        args[1]
-      else
-        args.length == 3 ? args[2] : ""
-      end
-    },
     "UPPER" => ->(args) {
       raise Error, "UPPER requires 1 argument" unless args.length == 1
       args[0].to_s.upcase
@@ -182,10 +174,10 @@ class FormulaEvaluator
     "CURRENCY" => ->(args) {
       raise Error, "CURRENCY requires 1 argument" unless args.length == 1
       val = args[0]
+      raise Error, "CURRENCY received a blank value" if val.nil? || (val.is_a?(String) && val.strip.empty?)
       num = case val
       when Numeric then val
-      when String then val.strip.empty? ? 0 : Float(val)
-      when NilClass then 0
+      when String then Float(val)
       else val.to_f
       end
       TypedResult.new(value: BigDecimal(num.to_s).round(2), result_type: "currency")
@@ -700,11 +692,8 @@ class FormulaEvaluator
   TYPED_FUNCTIONS = %w[CURRENCY DATE TIME DATETIME].freeze
 
   def evaluate_function(node)
-    func = FUNCTIONS[node.name]
-    raise Error, "Unknown function: #{node.name}" unless func
-
+    # IF must evaluate lazily — only evaluate the branch that's taken
     if node.name == "IF"
-      # IF must evaluate lazily — only evaluate the branch that's taken
       raise Error, "IF requires 2 or 3 arguments" unless node.args.length.in?(2..3)
       condition = evaluate_node(node.args[0])
       condition = condition.value if condition.is_a?(TypedResult)
@@ -714,6 +703,8 @@ class FormulaEvaluator
         node.args.length == 3 ? evaluate_node(node.args[2]) : ""
       end
     else
+      func = FUNCTIONS[node.name]
+      raise Error, "Unknown function: #{node.name}" unless func
       args = node.args.map { |arg| evaluate_node(arg) }
       unwrapped = args.map { |a| a.is_a?(TypedResult) ? a.value : a }
       func.call(unwrapped)
