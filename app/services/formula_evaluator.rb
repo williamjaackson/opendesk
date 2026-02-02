@@ -211,6 +211,7 @@ class FormulaEvaluator
         m = args[1].to_i
       else
         val = args[0].to_s
+        val = val.split("T").last if val.include?("T")
         parts = val.split(":")
         h = parts[0].to_i
         m = parts[1].to_i

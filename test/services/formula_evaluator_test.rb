@@ -551,6 +551,11 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
     assert_equal({ h: 14, m: 30 }, result.value)
   end
 
+  test "TIME extracts time from datetime string" do
+    result = FormulaEvaluator.evaluate('=TIME("2026-03-12T05:30")', {})
+    assert_equal({ h: 5, m: 30 }, result.value)
+  end
+
   test "TIME from hours and minutes" do
     result = FormulaEvaluator.evaluate("=TIME(14, 30)", {})
     assert_equal({ h: 14, m: 30 }, result.value)
