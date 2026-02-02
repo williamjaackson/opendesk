@@ -7,7 +7,7 @@
     <% end %>
   </div>
 
-  <%= button_to organisation_session_path(organisation_id: @organisation.id), method: :post, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" do %>
+  <%= button_to organisation_session_path(organisation_id: @organisation.id), method: :post, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--theme-colour)] text-white text-sm font-medium rounded-md hover:bg-[var(--theme-colour-hover)] transition-colors cursor-pointer select-none" do %>
     <%= lucide_icon("log-in", class: "h-4 w-4") %>
     Start Managing
   <% end %>
