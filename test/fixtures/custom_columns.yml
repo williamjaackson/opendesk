@@ -71,6 +71,13 @@ currency:
   required: false
   position: 10
 
+colour:
+  custom_table: contacts
+  name: Favourite Colour
+  column_type: colour
+  required: false
+  position: 11
+
 deal_name:
   custom_table: deals
   name: Deal Name

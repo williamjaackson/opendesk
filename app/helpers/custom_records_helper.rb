@@ -42,6 +42,8 @@ module CustomRecordsHelper
       select_dropdown_tag(name, id, value, select_options, border)
     when "currency"
       currency_input_tag(name, id, value, border)
+    when "colour"
+      color_field_tag name, value.presence || "#000000", id: id, class: "h-10 w-20 rounded-md border #{border} bg-white p-1 cursor-pointer"
     else
       text_field_tag name, value, id: id, class: classes, required: required
     end
@@ -67,6 +69,9 @@ module CustomRecordsHelper
     when "currency"
       return "—" if raw_value.blank?
       format_currency_for_display(raw_value)
+    when "colour"
+      return "—" if raw_value.blank?
+      format_colour_for_display(raw_value)
     else
       raw_value
     end
@@ -137,6 +142,11 @@ module CustomRecordsHelper
         )
       end
     end
+  end
+
+  def format_colour_for_display(value)
+    swatch = tag.span("", class: "inline-block h-4 w-4 rounded border border-gray-300 align-text-bottom", style: "background-color: #{ERB::Util.html_escape(value)}")
+    swatch + tag.span(value, class: "ml-1.5")
   end
 
   def format_currency_for_display(value)
