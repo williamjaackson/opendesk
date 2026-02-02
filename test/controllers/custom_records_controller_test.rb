@@ -354,4 +354,30 @@ class CustomRecordsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :unprocessable_entity
   end
+
+  test "should evaluate computed columns on create" do
+    computed = @table.custom_columns.create!(name: "Full Name", column_type: "computed", formula: "{Name}", position: 99)
+    post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie" } }
+
+    record = CustomRecord.last
+    assert_equal "Charlie", record.custom_values.find_by(custom_column: computed)&.value
+  end
+
+  test "should evaluate computed columns on update" do
+    computed = @table.custom_columns.create!(name: "Full Name", column_type: "computed", formula: "{Name}", position: 99)
+    FormulaEvaluator.evaluate_record(@record, [computed])
+
+    patch table_record_path(@table, @record), params: { values: { @name_column.id.to_s => "Alice Updated" } }
+    assert_equal "Alice Updated", @record.custom_values.reload.find_by(custom_column: computed)&.value
+  end
+
+  test "should evaluate formula mode computed column" do
+    boolean_column = custom_columns(:boolean)
+    computed = @table.custom_columns.create!(name: "Status", column_type: "computed", formula: '=IF({Active}, UPPER({Name}), "Inactive")', position: 99)
+
+    post table_records_path(@table), params: { values: { @name_column.id.to_s => "Charlie", boolean_column.id.to_s => "1" } }
+
+    record = CustomRecord.last
+    assert_equal "CHARLIE", record.custom_values.find_by(custom_column: computed)&.value
+  end
 end
