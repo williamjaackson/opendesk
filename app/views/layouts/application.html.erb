@@ -23,12 +23,15 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-100" <%= 'data-edit-mode' if edit_mode? %> <%= 'data-requires-edit-mode' if @requires_edit_mode %>>
+  <body class="bg-gray-100" <%= 'data-edit-mode' if edit_mode? %> <%= 'data-requires-edit-mode' if @requires_edit_mode %>
+    <% if Current.organisation&.theme_colour.present? %>
+      style="--theme-colour: <%= Current.organisation.theme_colour %>"
+    <% end %>>
     <% if authenticated? && managing_organisation? %>
-      <div class="bg-gray-900 text-white text-sm">
+      <div class="bg-[var(--theme-colour)] text-white text-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3 h-10">
           <span>Managing <strong><%= Current.organisation.name %></strong></span>
-          <%= button_to organisation_session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 transition-colors cursor-pointer select-none" do %>
+          <%= button_to organisation_session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-white/30 text-white/70 hover:text-white hover:border-white/50 transition-colors cursor-pointer select-none" do %>
             <%= lucide_icon("log-out", class: "h-3.5 w-3.5") %>
             Stop Managing
           <% end %>
