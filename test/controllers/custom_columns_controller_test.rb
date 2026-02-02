@@ -156,7 +156,7 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
       custom_column: { name: "Phone", column_type: "text" }
     }
 
-    assert_equal 12, CustomColumn.last.position
+    assert_equal 13, CustomColumn.last.position
   end
 
   test "should create select column" do

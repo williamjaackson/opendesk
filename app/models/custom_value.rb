@@ -28,6 +28,8 @@ class CustomValue < ApplicationRecord
       errors.add(:value, "is not a valid option") unless custom_column.effective_options.include?(value)
     when "currency"
       errors.add(:value, "must be a valid dollar amount") unless value.match?(/\A\d+\.\d{2}\z/)
+    when "colour"
+      errors.add(:value, "must be a valid hex colour (e.g. #ff0000)") unless value.match?(/\A#[0-9a-fA-F]{6}\z/)
     end
 
     if custom_column.column_type.in?(%w[text number decimal]) && custom_column.regex_pattern.present?

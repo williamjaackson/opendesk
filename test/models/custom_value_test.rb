@@ -303,6 +303,39 @@ class CustomValueTest < ActiveSupport::TestCase
     assert cv.valid?
   end
 
+  test "colour value accepts valid hex" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:colour), value: "#ff0000")
+    assert cv.valid?
+  end
+
+  test "colour value accepts uppercase hex" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:colour), value: "#FF0000")
+    assert cv.valid?
+  end
+
+  test "colour value rejects missing hash" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:colour), value: "ff0000")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid hex colour (e.g. #ff0000)"
+  end
+
+  test "colour value rejects short hex" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:colour), value: "#fff")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid hex colour (e.g. #ff0000)"
+  end
+
+  test "colour value rejects non-hex characters" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:colour), value: "#gggggg")
+    assert_not cv.valid?
+    assert_includes cv.errors[:value], "must be a valid hex colour (e.g. #ff0000)"
+  end
+
+  test "colour value allows blank" do
+    cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:colour), value: "")
+    assert cv.valid?
+  end
+
   test "text value with no regex set passes any value" do
     cv = CustomValue.new(custom_record: @record, custom_column: custom_columns(:name), value: "anything at all")
     assert cv.valid?
