@@ -306,6 +306,7 @@ class FormulaEvaluator
 
     computed_columns.each do |col|
       result = evaluate(col.formula, values)
+      is_error = result.is_a?(String) && result.start_with?("#ERROR:")
 
       if result.is_a?(TypedResult)
         inferred_type = result.result_type
@@ -319,7 +320,7 @@ class FormulaEvaluator
       cv.value = result_str.presence
       cv.save!
 
-      if col.result_type != inferred_type
+      if !is_error && col.result_type != inferred_type
         col.update_column(:result_type, inferred_type)
       end
     end
