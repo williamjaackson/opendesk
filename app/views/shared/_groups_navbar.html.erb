@@ -1,5 +1,5 @@
 <% groups = Current.organisation.table_groups.order(:position) %>
-<% active_group = @table_group || @custom_table&.table_group || groups.first %>
+<% active_group = @table_group || @custom_table&.table_group %>
 
 <div class="flex items-center gap-1 text-sm">
   <div class="flex items-center gap-1"

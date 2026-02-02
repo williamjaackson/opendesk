@@ -8,7 +8,7 @@
     <section>
       <h2 class="text-lg font-semibold text-gray-900 mb-3">Modes</h2>
       <div class="overflow-hidden rounded-lg border border-gray-200">
-        <table class="min-w-full text-sm">
+        <table class="min-w-full text-sm bg-white">
           <thead class="bg-gray-50">
             <tr>
               <th class="px-4 py-2.5 text-left font-medium text-gray-700">Mode</th>
@@ -36,7 +36,7 @@
     <section>
       <h2 class="text-lg font-semibold text-gray-900 mb-3">Column References</h2>
       <div class="overflow-hidden rounded-lg border border-gray-200">
-        <table class="min-w-full text-sm">
+        <table class="min-w-full text-sm bg-white">
           <thead class="bg-gray-50">
             <tr>
               <th class="px-4 py-2.5 text-left font-medium text-gray-700">Syntax</th>
@@ -62,7 +62,7 @@
       <h2 class="text-lg font-semibold text-gray-900 mb-3">Operators</h2>
       <p class="text-sm text-gray-500 mb-3">Only available in formula mode (prefix with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">=</code>).</p>
       <div class="overflow-hidden rounded-lg border border-gray-200">
-        <table class="min-w-full text-sm">
+        <table class="min-w-full text-sm bg-white">
           <thead class="bg-gray-50">
             <tr>
               <th class="px-4 py-2.5 text-left font-medium text-gray-700">Operator</th>
@@ -107,7 +107,7 @@
             <span class="mx-2 text-gray-300">|</span>
             <code class="font-mono text-sm font-semibold text-gray-900">IF(condition, then_value, else_value)</code>
           </div>
-          <div class="px-4 py-3 text-sm text-gray-600 space-y-2">
+          <div class="px-4 py-3 text-sm text-gray-600 space-y-2 bg-white">
             <p>Returns <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">then_value</code> if the condition is truthy, otherwise returns <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">else_value</code> (or blank if omitted).</p>
             <p class="text-gray-500"><strong>Truthy:</strong> non-empty text, non-zero numbers, <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">TRUE</code></p>
             <p class="text-gray-500"><strong>Falsy:</strong> blank/empty text, <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">0</code>, <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">FALSE</code>, unchecked booleans</p>
@@ -126,7 +126,7 @@
           <div class="bg-gray-50 px-4 py-2.5">
             <code class="font-mono text-sm font-semibold text-gray-900">UPPER(text)</code>
           </div>
-          <div class="px-4 py-3 text-sm text-gray-600">
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
             <p>Converts text to uppercase.</p>
             <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
               <p>=UPPER({Name})</p>
@@ -139,7 +139,7 @@
           <div class="bg-gray-50 px-4 py-2.5">
             <code class="font-mono text-sm font-semibold text-gray-900">LOWER(text)</code>
           </div>
-          <div class="px-4 py-3 text-sm text-gray-600">
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
             <p>Converts text to lowercase.</p>
             <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
               <p>=LOWER({Name})</p>
@@ -152,7 +152,7 @@
           <div class="bg-gray-50 px-4 py-2.5">
             <code class="font-mono text-sm font-semibold text-gray-900">SPLIT(text, delimiter, index)</code>
           </div>
-          <div class="px-4 py-3 text-sm text-gray-600">
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
             <p>Splits text by the delimiter and returns the element at the given index. Negative indices count from the end.</p>
             <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
               <p>=SPLIT("a,b,c", ",", 0)</p>
@@ -169,7 +169,7 @@
     <section>
       <h2 class="text-lg font-semibold text-gray-900 mb-3">Literals</h2>
       <div class="overflow-hidden rounded-lg border border-gray-200">
-        <table class="min-w-full text-sm">
+        <table class="min-w-full text-sm bg-white">
           <thead class="bg-gray-50">
             <tr>
               <th class="px-4 py-2.5 text-left font-medium text-gray-700">Type</th>
@@ -202,7 +202,7 @@
     <section>
       <h2 class="text-lg font-semibold text-gray-900 mb-3">Examples</h2>
       <div class="overflow-hidden rounded-lg border border-gray-200">
-        <table class="min-w-full text-sm">
+        <table class="min-w-full text-sm bg-white">
           <thead class="bg-gray-50">
             <tr>
               <th class="px-4 py-2.5 text-left font-medium text-gray-700">Use case</th>
@@ -248,7 +248,7 @@
       <h2 class="text-lg font-semibold text-gray-900 mb-3">Errors</h2>
       <p class="text-sm text-gray-600 mb-3">When a formula can't be evaluated, the cell displays an error message starting with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono text-red-500">#ERROR:</code>.</p>
       <div class="overflow-hidden rounded-lg border border-gray-200">
-        <table class="min-w-full text-sm">
+        <table class="min-w-full text-sm bg-white">
           <thead class="bg-gray-50">
             <tr>
               <th class="px-4 py-2.5 text-left font-medium text-gray-700">Error</th>
