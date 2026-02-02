@@ -188,6 +188,196 @@
             </div>
           </div>
         </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">TRIM(text)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Removes leading and trailing whitespace.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=TRIM({Notes})</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">LEN(text)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns the number of characters in the text.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=LEN({Name})</p>
+              <p class="text-gray-500"># "Alice" &rarr; 5</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">LEFT(text, count)</code>
+            <span class="mx-2 text-gray-300">|</span>
+            <code class="font-mono text-sm font-semibold text-gray-900">RIGHT(text, count)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns the first or last N characters of the text.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p>=LEFT({Name}, 1)</p>
+              <p class="text-gray-500"># "Alice" &rarr; "A"</p>
+              <p class="mt-1">=RIGHT({Phone}, 4)</p>
+              <p class="text-gray-500"># "555-1234" &rarr; "1234"</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">REPLACE(text, old, new)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Replaces all occurrences of <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">old</code> with <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">new</code> in the text.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=REPLACE({Name}, " ", "-")</p>
+              <p class="text-gray-500"># "Jane Smith" &rarr; "Jane-Smith"</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">CONTAINS(text, search)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns TRUE if the text contains the search string, FALSE otherwise. Useful inside IF.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=IF(CONTAINS({Email}, "@gmail"), "Gmail", "Other")</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">CONCAT(value1, value2, ...)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Joins all arguments into a single text value.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=CONCAT({First}, " ", {Last})</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-base font-semibold text-gray-900 mt-6 mb-3">Logic</h3>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">AND(value1, value2, ...)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns TRUE if <strong>all</strong> arguments are truthy.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=IF(AND({Active}, {Email}), "Ready", "Incomplete")</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">OR(value1, value2, ...)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns TRUE if <strong>any</strong> argument is truthy.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=IF(OR({Phone}, {Email}), "Contactable", "No contact")</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">NOT(value)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns TRUE if the value is falsy, FALSE if truthy.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=IF(NOT({Archived}), "Active", "Archived")</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-base font-semibold text-gray-900 mt-6 mb-3">Math</h3>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">ROUND(number)</code>
+            <span class="mx-2 text-gray-300">|</span>
+            <code class="font-mono text-sm font-semibold text-gray-900">ROUND(number, decimals)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Rounds to the nearest integer, or to the specified number of decimal places.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p>=ROUND(3.7)</p>
+              <p class="text-gray-500"># 4</p>
+              <p class="mt-1">=ROUND({Price} * 1.1, 2)</p>
+              <p class="text-gray-500"># 10.50 &rarr; 11.55</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">ABS(number)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns the absolute (non-negative) value.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=ABS({Balance})</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">MIN(value1, value2, ...)</code>
+            <span class="mx-2 text-gray-300">|</span>
+            <code class="font-mono text-sm font-semibold text-gray-900">MAX(value1, value2, ...)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns the smallest or largest value.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p>=MIN({Price}, {Sale Price})</p>
+              <p class="mt-1">=MAX({Score 1}, {Score 2}, {Score 3})</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">SUM(value1, value2, ...)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns the sum of all arguments.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs">
+              <p>=SUM({Q1}, {Q2}, {Q3}, {Q4})</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-base font-semibold text-gray-900 mt-6 mb-3">Utility</h3>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">COALESCE(value1, value2, ...)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Returns the first non-blank value. Useful for fallback defaults.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p>=COALESCE({Nickname}, {First Name})</p>
+              <p class="text-gray-500"># Uses nickname if set, otherwise first name</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -262,7 +452,23 @@
             </tr>
             <tr>
               <td class="px-4 py-2.5 text-gray-600">First initial + last name</td>
-              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=UPPER(SPLIT({First Name}, "", 0)) & ". " & {Last Name}</code></td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=UPPER(LEFT({First Name}, 1)) ". " {Last Name}</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Discount (capped at price)</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=MIN({Discount}, {Price})</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Display name with fallback</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=COALESCE({Nickname}, {First Name}, "Unknown")</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Completeness check</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=IF(AND({Name}, {Email}, {Phone}), "Complete", "Missing info")</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 text-gray-600">Rounded total with tax</td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">=ROUND({Price} * {Quantity} * 1.1, 2)</code></td>
             </tr>
           </tbody>
         </table>
