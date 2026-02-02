@@ -506,6 +506,19 @@ class CustomColumnsControllerTest < ActionDispatch::IntegrationTest
     assert_equal expected, column.custom_values.find_by(custom_record: custom_records(:charlie)).value
   end
 
+  test "should destroy custom values with invalid options after select column update" do
+    column = custom_columns(:select)
+    record = custom_records(:alice)
+    value = record.custom_values.create!(custom_column: column, value: "Active")
+
+    patch table_column_path(@custom_table, column), params: {
+      custom_column: { select_source: "manual", options_text: "Open\nClosed" }
+    }
+
+    assert_redirected_to edit_table_path(@custom_table)
+    assert_nil CustomValue.find_by(id: value.id)
+  end
+
   test "should reject fixed backfill value that fails regex validation" do
     assert_no_difference "CustomColumn.count" do
       post table_columns_path(@custom_table), params: {

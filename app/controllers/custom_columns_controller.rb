@@ -126,6 +126,10 @@ class CustomColumnsController < ApplicationController
 
   def update
     if @custom_column.update(custom_column_params.except(:column_type))
+      if @custom_column.column_type == "select"
+        valid_options = @custom_column.effective_options
+        @custom_column.custom_values.where.not(value: [ nil, "" ]).where.not(value: valid_options).destroy_all
+      end
       redirect_to edit_table_path(@custom_table)
     else
       load_tables_json
