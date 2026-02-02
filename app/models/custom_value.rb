@@ -8,6 +8,7 @@ class CustomValue < ApplicationRecord
 
   def validate_value_format
     return unless value.present?
+    return if custom_column.computed?
 
     case custom_column.column_type
     when "number"
