@@ -253,6 +253,10 @@
                 ["NUMBER(value)", "Converts to a number. Strings are parsed, TRUE → 1, FALSE/blank → 0.", '=NUMBER("42") + 8', "50"],
                 ["TEXT(value)", 'Converts to text. Numbers become strings, booleans become "true"/"false".', '="Order #" TEXT({ID})', nil],
                 ["BOOLEAN(value)", "Converts to TRUE/FALSE using the standard truthiness rules.", "=BOOLEAN({Count})", nil],
+                ["CURRENCY(value)", "Formats the result as currency (rounded to 2 decimal places). The column displays with a $ prefix.", "=CURRENCY({Price} * 1.1)", "$11.00"],
+                ["DATE(value)", "Parses a date string. Also accepts DATE(year, month, day).", '=DATE(2024, 3, 15)', "2024-03-15"],
+                ["TIME(value)", "Parses a time string. Also accepts TIME(hours, minutes).", '=TIME(14, 30)', "2:30 PM"],
+                ["DATETIME(value)", "Parses a datetime string. Also accepts DATETIME(date, time).", '=DATETIME("2024-03-15T14:30")', "15 Mar 2024, 2:30 PM"],
               ].each do |signature, desc, example, result| %>
                 <div class="px-4 py-3">
                   <code class="font-mono text-xs font-semibold text-gray-900"><%= signature %></code>
@@ -267,6 +271,11 @@
               <% end %>
             </div>
           </div>
+
+          <p class="mt-3 text-xs text-gray-400">
+            <strong class="text-gray-500">Tip:</strong> Wrapping your formula in CURRENCY, DATE, TIME, or DATETIME automatically sets the column's display format.
+            Without a casting function, the display type is inferred from the result (numbers, booleans, or text).
+          </p>
         </section>
 
         <%# ── Literals ── %>
