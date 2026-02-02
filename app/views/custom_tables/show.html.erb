@@ -8,8 +8,10 @@
 
   <% if @columns.any? %>
     <%= render "shared/table",
-      columns: @columns.map { |column|
-        { header: column.name, accessor: ->(record) { format_column_value(column, record.custom_values.detect { |v| v.custom_column_id == column.id }&.value) } }
+      columns: @columns.each_with_index.map { |column, i|
+        col = { header: column.name, accessor: ->(record) { format_column_value(column, record.custom_values.detect { |v| v.custom_column_id == column.id }&.value) } }
+        col[:link] = ->(record) { table_record_path(@custom_table, record) } if i == 0
+        col
       },
       rows: @records,
       actions: [ :view ],
