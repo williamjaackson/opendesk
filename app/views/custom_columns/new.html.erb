@@ -86,7 +86,7 @@
         <% backfill_mode = params.dig(:custom_column, :backfill_mode) %>
         <% backfill_enabled = backfill_mode.present? && backfill_mode != "none" %>
         <% selected_type = @custom_column.column_type %>
-        <% select_options = @custom_column.column_type == "select" ? (@custom_column.options_text || "").split("\n").map(&:strip).reject(&:blank?) : [] %>
+        <% select_options = @custom_column.column_type == "select" ? @custom_column.effective_options : [] %>
         <div class="mb-4" data-controller="backfill"
           data-action="column-options:typeChanged@document->backfill#updateFallbackType turbo:frame-load->backfill#frameLoaded"
           data-backfill-select-options-url-value="<%= backfill_select_options_table_columns_path(@custom_table) %>">
