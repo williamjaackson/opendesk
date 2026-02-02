@@ -284,14 +284,23 @@ class FormulaEvaluator
     left
   end
 
+  IMPLICIT_CONCAT_STARTS = %i[column_ref string number boolean function lparen].freeze
+
   def parse_addition
     left = parse_multiplication
 
-    while @pos < @tokens.length && @tokens[@pos].type == :operator && ADDITION_OPS.include?(@tokens[@pos].value)
-      op = @tokens[@pos].value
-      @pos += 1
-      right = parse_multiplication
-      left = BinaryOp.new(op: op, left: left, right: right)
+    loop do
+      if @pos < @tokens.length && @tokens[@pos].type == :operator && ADDITION_OPS.include?(@tokens[@pos].value)
+        op = @tokens[@pos].value
+        @pos += 1
+        right = parse_multiplication
+        left = BinaryOp.new(op: op, left: left, right: right)
+      elsif @pos < @tokens.length && IMPLICIT_CONCAT_STARTS.include?(@tokens[@pos].type)
+        right = parse_multiplication
+        left = BinaryOp.new(op: "&", left: left, right: right)
+      else
+        break
+      end
     end
 
     left

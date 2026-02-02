@@ -4,13 +4,13 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
   # --- Template mode ---
 
   test "template mode replaces column references" do
-    result = FormulaEvaluator.evaluate("{First Name} {Last Name}", { "First Name" => "William", "Last Name" => "Jackson" })
-    assert_equal "William Jackson", result
+    result = FormulaEvaluator.evaluate("{First Name} {Last Name}", { "First Name" => "Jane", "Last Name" => "Smith" })
+    assert_equal "Jane Smith", result
   end
 
   test "template mode collapses whitespace from blank values" do
-    result = FormulaEvaluator.evaluate("{First} {Middle} {Last}", { "First" => "William", "Middle" => nil, "Last" => "Jackson" })
-    assert_equal "William Jackson", result
+    result = FormulaEvaluator.evaluate("{First} {Middle} {Last}", { "First" => "Jane", "Middle" => nil, "Last" => "Smith" })
+    assert_equal "Jane Smith", result
   end
 
   test "template mode strips leading and trailing whitespace" do
@@ -29,9 +29,34 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
 
   # --- Formula mode: string concatenation ---
 
-  test "formula mode concatenation with &" do
-    result = FormulaEvaluator.evaluate('={First} & " " & {Last}', { "First" => "William", "Last" => "Jackson" })
-    assert_equal "William Jackson", result
+  test "formula mode explicit concatenation with &" do
+    result = FormulaEvaluator.evaluate('={First} & " " & {Last}', { "First" => "Jane", "Last" => "Smith" })
+    assert_equal "Jane Smith", result
+  end
+
+  test "formula mode implicit concatenation" do
+    result = FormulaEvaluator.evaluate('={First} " " {Last}', { "First" => "Jane", "Last" => "Smith" })
+    assert_equal "Jane Smith", result
+  end
+
+  test "implicit concatenation with no spaces" do
+    result = FormulaEvaluator.evaluate('={First}" "{Last}', { "First" => "Jane", "Last" => "Smith" })
+    assert_equal "Jane Smith", result
+  end
+
+  test "implicit concatenation with function call" do
+    result = FormulaEvaluator.evaluate('={First} " " UPPER({Last})', { "First" => "Jane", "Last" => "smith" })
+    assert_equal "Jane SMITH", result
+  end
+
+  test "implicit concatenation with IF" do
+    result = FormulaEvaluator.evaluate('={First} IF({Middle}, " " {Middle}) " " {Last}', { "First" => "Jane", "Middle" => "Marie", "Last" => "Smith" })
+    assert_equal "Jane Marie Smith", result
+  end
+
+  test "implicit concatenation with IF blank middle" do
+    result = FormulaEvaluator.evaluate('={First} IF({Middle}, " " {Middle}) " " {Last}', { "First" => "Jane", "Middle" => "", "Last" => "Smith" })
+    assert_equal "Jane Smith", result
   end
 
   # --- Formula mode: arithmetic ---
@@ -197,8 +222,8 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
   # --- Complex formulas ---
 
   test "nested function calls" do
-    result = FormulaEvaluator.evaluate('=UPPER({First} & " " & {Last})', { "First" => "william", "Last" => "jackson" })
-    assert_equal "WILLIAM JACKSON", result
+    result = FormulaEvaluator.evaluate('=UPPER({First} " " {Last})', { "First" => "jane", "Last" => "smith" })
+    assert_equal "JANE SMITH", result
   end
 
   test "IF with UPPER" do
@@ -214,7 +239,7 @@ class FormulaEvaluatorTest < ActiveSupport::TestCase
   # --- Column references with positional index ---
 
   test "formula mode column ref with positional index" do
-    result = FormulaEvaluator.evaluate("={Name}[0] & \" and \" & {Name}[1]", { "Name[0]" => "Alice", "Name[1]" => "Bob" })
+    result = FormulaEvaluator.evaluate('={Name}[0] " and " {Name}[1]', { "Name[0]" => "Alice", "Name[1]" => "Bob" })
     assert_equal "Alice and Bob", result
   end
 

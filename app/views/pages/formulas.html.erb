@@ -57,6 +57,37 @@
       </div>
     </section>
 
+    <%# ── Concatenation ── %>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-3">Concatenation</h2>
+      <p class="text-sm text-gray-600 mb-3">Adjacent values are automatically joined together. No operator needed.</p>
+      <div class="overflow-hidden rounded-lg border border-gray-200">
+        <table class="min-w-full text-sm bg-white">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Formula</th>
+              <th class="px-4 py-2.5 text-left font-medium text-gray-700">Result</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">={First} " " {Last}</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Jane Smith</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">={First}" "{Last}</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Jane Smith (same thing, spaces are optional)</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">="Hello, " {Name} "!"</code></td>
+              <td class="px-4 py-2.5 text-gray-600">Hello, Alice!</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="mt-2 text-xs text-gray-400">The <code class="text-xs bg-gray-100 px-1 py-0.5 rounded font-mono">&</code> operator also works for concatenation if you prefer to be explicit.</p>
+    </section>
+
     <%# ── Operators ── %>
     <section>
       <h2 class="text-lg font-semibold text-gray-900 mb-3">Operators</h2>
@@ -71,11 +102,6 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
-            <tr>
-              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">&</code></td>
-              <td class="px-4 py-2.5 text-gray-600">Text concatenation</td>
-              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">{First} & " " & {Last}</code></td>
-            </tr>
             <tr>
               <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">+</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">-</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">*</code> <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">/</code></td>
               <td class="px-4 py-2.5 text-gray-600">Arithmetic</td>
@@ -117,7 +143,7 @@
               <p class="text-gray-500 mt-2"># Conditional with comparison</p>
               <p>=IF({Age} >= 18, "Adult", "Minor")</p>
               <p class="text-gray-500 mt-2"># Two-argument form (blank when falsy)</p>
-              <p>=IF({Middle Name}, " " & {Middle Name})</p>
+              <p>=IF({Middle Name}, " " {Middle Name})</p>
             </div>
           </div>
         </div>
@@ -216,7 +242,7 @@
             </tr>
             <tr>
               <td class="px-4 py-2.5 text-gray-600">Full name with optional middle</td>
-              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">={First Name} & IF({Middle Name}, " " & {Middle Name}) & " " & {Last Name}</code></td>
+              <td class="px-4 py-2.5"><code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">={First Name} IF({Middle Name}, " " {Middle Name}) " " {Last Name}</code></td>
             </tr>
             <tr>
               <td class="px-4 py-2.5 text-gray-600">Active status label</td>
