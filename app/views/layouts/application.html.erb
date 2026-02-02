@@ -46,7 +46,7 @@
               <%= image_tag "logo.svg", class: "h-5 w-5" %>
               <span class="font-semibold text-gray-900 tracking-tight">OpenDesk</span>
             <% end %>
-            <% if authenticated? && managing_organisation? && controller_name != "pages" %>
+            <% if authenticated? && managing_organisation? %>
               <%= render "shared/groups_navbar" %>
             <% elsif !authenticated? %>
               <div class="flex items-center gap-1 text-sm">
