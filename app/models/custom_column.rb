@@ -1,5 +1,5 @@
 class CustomColumn < ApplicationRecord
-  COLUMN_TYPES = %w[text number email boolean date time datetime select currency].freeze
+  COLUMN_TYPES = %w[text number decimal email boolean date time datetime select currency].freeze
 
   belongs_to :custom_table
   belongs_to :linked_column, class_name: "CustomColumn", optional: true
@@ -76,7 +76,7 @@ class CustomColumn < ApplicationRecord
   end
 
   def clear_regex_for_non_applicable_types
-    unless column_type.in?(%w[text number])
+    unless column_type.in?(%w[text number decimal])
       self.regex_pattern = nil
       self.regex_label = nil
     end
@@ -85,8 +85,8 @@ class CustomColumn < ApplicationRecord
   def validate_regex_pattern
     return if regex_pattern.blank? && regex_label.blank?
 
-    unless column_type.in?(%w[text number])
-      errors.add(:regex_pattern, "is only allowed on text or number columns") if regex_pattern.present?
+    unless column_type.in?(%w[text number decimal])
+      errors.add(:regex_pattern, "is only allowed on text, number, or decimal columns") if regex_pattern.present?
       return
     end
 

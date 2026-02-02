@@ -19,6 +19,13 @@ number:
   required: false
   position: 2
 
+decimal:
+  custom_table: contacts
+  name: Score
+  column_type: decimal
+  required: false
+  position: 11
+
 boolean:
   custom_table: contacts
   name: Active
