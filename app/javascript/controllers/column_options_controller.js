@@ -25,5 +25,7 @@ export default class extends Controller {
     if (this.hasRegexOptionsTarget) {
       this.regexOptionsTarget.classList.toggle("hidden", type !== "text" && type !== "number")
     }
+
+    this.dispatch("typeChanged", { detail: { type } })
   }
 }

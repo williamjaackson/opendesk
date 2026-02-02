@@ -24,6 +24,11 @@ class CustomColumnsController < ApplicationController
     load_backfill_data
   end
 
+  def backfill_select_options
+    @options = (params[:options_text] || "").split("\n").map(&:strip).reject(&:blank?)
+    render layout: false
+  end
+
   def create
     @custom_column = @custom_table.custom_columns.new(custom_column_params)
     max = @custom_table.custom_columns.maximum(:position)

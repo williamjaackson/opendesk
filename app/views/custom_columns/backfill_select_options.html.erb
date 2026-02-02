@@ -1,0 +1,5 @@
+<%= turbo_frame_tag params[:frame_id] do %>
+  <%= type_input_tag("select", params[:field_name], params[:field_id], params[:value],
+    border: "border-gray-300 focus:border-gray-500 focus:ring-gray-500",
+    select_options: @options) %>
+<% end %>

@@ -26,6 +26,7 @@ Rails.application.routes.draw do
       resources :custom_columns, path: "columns", as: :columns, only: [ :new, :create, :edit, :update, :destroy ] do
         collection do
           patch :reorder
+          get :backfill_select_options
         end
       end
       resources :custom_relationships, path: "relationships", as: :relationships, only: [ :new, :create, :edit, :update, :destroy ] do
