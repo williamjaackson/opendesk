@@ -378,6 +378,49 @@
             </div>
           </div>
         </div>
+
+        <h3 class="text-base font-semibold text-gray-900 mt-6 mb-3">Type Casting</h3>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">NUMBER(value)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Converts a value to a number. Strings are parsed, TRUE becomes 1, FALSE and blank become 0.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p>=NUMBER("42") + 8</p>
+              <p class="text-gray-500"># 50</p>
+              <p class="mt-1">=NUMBER({Qty}) * {Price}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">TEXT(value)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Converts a value to text. Numbers become digit strings, booleans become "true"/"false", blank becomes "".</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p>=TEXT(42)</p>
+              <p class="text-gray-500"># "42"</p>
+              <p class="mt-1">="Order #" TEXT({ID})</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="rounded-lg border border-gray-200 overflow-hidden">
+          <div class="bg-gray-50 px-4 py-2.5">
+            <code class="font-mono text-sm font-semibold text-gray-900">BOOLEAN(value)</code>
+          </div>
+          <div class="px-4 py-3 text-sm text-gray-600 bg-white">
+            <p>Converts a value to TRUE or FALSE using the standard truthiness rules.</p>
+            <div class="mt-2 bg-gray-50 rounded px-3 py-2 font-mono text-xs space-y-1">
+              <p>=BOOLEAN({Count})</p>
+              <p class="text-gray-500"># 0 &rarr; FALSE, any other number &rarr; TRUE</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
