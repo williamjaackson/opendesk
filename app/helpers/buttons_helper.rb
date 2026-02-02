@@ -4,7 +4,7 @@ module ButtonsHelper
 
     case variant
     when :primary
-      "#{base} bg-[var(--theme-colour)] text-white hover:bg-[var(--theme-colour-hover)] shadow-sm"
+      "#{base} bg-gray-900 text-white hover:bg-gray-800 shadow-sm"
     when :ghost
       "#{base} bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
     end

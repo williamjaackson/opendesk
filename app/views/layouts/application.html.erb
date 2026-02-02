@@ -25,13 +25,13 @@
 
   <body class="bg-gray-100" <%= 'data-edit-mode' if edit_mode? %> <%= 'data-requires-edit-mode' if @requires_edit_mode %>
     <% if Current.organisation&.theme_colour.present? %>
-      style="--theme-colour: <%= Current.organisation.theme_colour %>; --theme-colour-hover: color-mix(in srgb, <%= Current.organisation.theme_colour %> 85%, black)"
+      style="--theme-colour: <%= Current.organisation.theme_colour %>"
     <% end %>>
     <% if authenticated? && managing_organisation? %>
       <div class="bg-[var(--theme-colour)] text-white text-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3 h-10">
           <span>Managing <strong><%= Current.organisation.name %></strong></span>
-          <%= button_to organisation_session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 transition-colors cursor-pointer select-none" do %>
+          <%= button_to organisation_session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-white/30 text-white/70 hover:text-white hover:border-white/50 transition-colors cursor-pointer select-none" do %>
             <%= lucide_icon("log-out", class: "h-3.5 w-3.5") %>
             Stop Managing
           <% end %>
@@ -60,7 +60,7 @@
             <% if authenticated? %>
               <div data-controller="dropdown" data-action="keydown->dropdown#keydown" class="relative">
                 <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
-                  class="p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--theme-colour)] focus-visible:ring-offset-2 select-none">
+                  class="p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 select-none">
                   <%= lucide_icon("circle-user-round", class: "h-5 w-5 text-gray-600") %>
                 </button>
 
@@ -71,7 +71,7 @@
                       <span>Edit mode</span>
                       <span class="relative inline-block w-9 h-5">
                         <input type="checkbox" class="peer sr-only" <%= "checked" if edit_mode? %> data-action="change->edit-mode#toggle">
-                        <span class="block w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-[var(--theme-colour)] transition-colors"></span>
+                        <span class="block w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-gray-900 transition-colors"></span>
                         <span class="absolute left-0.5 top-0.5 h-4 w-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></span>
                       </span>
                     </label>

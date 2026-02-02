@@ -1,7 +1,4 @@
-<div class="max-w-4xl mx-auto py-8 px-4"
-  <% if @organisation.theme_colour.present? %>
-    style="--theme-colour: <%= @organisation.theme_colour %>; --theme-colour-hover: color-mix(in srgb, <%= @organisation.theme_colour %> 85%, black)"
-  <% end %>>
+<div class="max-w-4xl mx-auto py-8 px-4">
   <%= render "shared/breadcrumbs", crumbs: [["Organisations", organisations_path]] %>
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold text-gray-900"><%= @organisation.name %></h1>
@@ -15,7 +12,7 @@
     <span class="text-sm text-gray-500"><%= @organisation.theme_colour || "#111827" %></span>
   </div>
 
-  <%= button_to organisation_session_path(organisation_id: @organisation.id), method: :post, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-[var(--theme-colour)] text-white text-sm font-medium rounded-md hover:bg-[var(--theme-colour-hover)] transition-colors cursor-pointer select-none" do %>
+  <%= button_to organisation_session_path(organisation_id: @organisation.id), method: :post, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" do %>
     <%= lucide_icon("log-in", class: "h-4 w-4") %>
     Start Managing
   <% end %>
