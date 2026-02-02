@@ -40,7 +40,7 @@ class FormulaEvaluator
       delimiter = args[1].to_s
       index = args[2].to_i
       parts = text.split(delimiter)
-      index < 0 ? parts[index] : parts[index]
+      parts[index] || ""
     },
 
     # String functions
@@ -150,7 +150,11 @@ class FormulaEvaluator
       when NilClass then 0
       when String
         return 0 if val.strip.empty?
-        val.include?(".") ? Float(val) : Integer(val)
+        begin
+          val.include?(".") ? Float(val) : Integer(val)
+        rescue ArgumentError
+          raise Error, "NUMBER: invalid numeric value '#{val}'"
+        end
       else
         val.to_f
       end
@@ -177,7 +181,12 @@ class FormulaEvaluator
       raise Error, "CURRENCY received a blank value" if val.nil? || (val.is_a?(String) && val.strip.empty?)
       num = case val
       when Numeric then val
-      when String then Float(val)
+      when String
+        begin
+          Float(val)
+        rescue ArgumentError
+          raise Error, "CURRENCY: invalid numeric value '#{val}'"
+        end
       else val.to_f
       end
       TypedResult.new(value: BigDecimal(num.to_s).round(2), result_type: "currency")
@@ -216,6 +225,8 @@ class FormulaEvaluator
         h = parts[0].to_i
         m = parts[1].to_i
       end
+      raise Error, "TIME: hours must be 0-23, got #{h}" unless h.between?(0, 23)
+      raise Error, "TIME: minutes must be 0-59, got #{m}" unless m.between?(0, 59)
       TypedResult.new(value: { h: h, m: m }, result_type: "time")
     },
     "DATETIME" => ->(args) {
@@ -240,11 +251,17 @@ class FormulaEvaluator
         else
           val = args[0].to_s
           raise Error, "DATETIME received a blank value" if val.strip.empty?
-          date_part, time_part = val.split("T")
-          date = Date.parse(date_part)
-          parts = time_part.to_s.split(":")
-          h = parts[0].to_i
-          m = parts[1].to_i
+          if val.include?("T")
+            date_part, time_part = val.split("T")
+            date = Date.parse(date_part)
+            parts = time_part.split(":")
+            h = parts[0].to_i
+            m = parts[1].to_i
+          else
+            date = Date.parse(val)
+            h = 0
+            m = 0
+          end
           TypedResult.new(value: { date: date, h: h, m: m }, result_type: "datetime")
         end
       rescue Date::Error => e
