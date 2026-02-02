@@ -58,7 +58,14 @@ module CustomRecordsHelper
       if raw_value.start_with?("#ERROR:")
         return tag.span(raw_value, class: "text-red-500 text-xs")
       end
-      raw_value
+      case column.result_type
+      when "currency" then format_currency_for_display(raw_value)
+      when "time" then format_time_for_display(raw_value)
+      when "datetime" then format_datetime_for_display(raw_value)
+      when "boolean" then raw_value == "1" ? "Yes" : "No"
+      when "colour" then format_colour_for_display(raw_value)
+      else raw_value
+      end
     when "boolean"
       return "—" if raw_value.nil?
       raw_value == "1" ? "Yes" : "No"
