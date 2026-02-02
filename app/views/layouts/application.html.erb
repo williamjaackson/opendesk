@@ -28,7 +28,7 @@
       <div class="bg-gray-900 text-white text-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3 h-10">
           <span>Managing <strong><%= Current.organisation.name %></strong></span>
-          <%= button_to organisation_session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 transition-colors cursor-pointer" do %>
+          <%= button_to organisation_session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md border border-gray-600 text-gray-300 hover:text-white hover:border-gray-400 transition-colors cursor-pointer select-none" do %>
             <%= lucide_icon("log-out", class: "h-3.5 w-3.5") %>
             Stop Managing
           <% end %>
@@ -39,7 +39,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
           <div class="flex items-center gap-8">
-            <%= link_to root_path, class: "flex items-center gap-1.5" do %>
+            <%= link_to root_path, class: "flex items-center gap-1.5 select-none" do %>
               <%= image_tag "logo.svg", class: "h-5 w-5" %>
               <span class="font-semibold text-gray-900 tracking-tight">OpenDesk</span>
             <% end %>
@@ -47,9 +47,9 @@
               <%= render "shared/groups_navbar" %>
             <% elsif !authenticated? %>
               <div class="flex items-center gap-1 text-sm">
-                <%= link_to "Home", root_path, class: "px-3 py-2 rounded-md font-medium text-gray-900 bg-gray-100" %>
-                <%= link_to "About", "#", class: "px-3 py-2 rounded-md font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors" %>
-                <%= link_to "Pricing", "#", class: "px-3 py-2 rounded-md font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors" %>
+                <%= link_to "Home", root_path, class: "px-3 py-2 rounded-md font-medium text-gray-900 bg-gray-100 select-none" %>
+                <%= link_to "About", "#", class: "px-3 py-2 rounded-md font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors select-none" %>
+                <%= link_to "Pricing", "#", class: "px-3 py-2 rounded-md font-medium text-gray-500 hover:text-gray-900 hover:bg-gray-50 transition-colors select-none" %>
               </div>
             <% end %>
           </div>
@@ -57,14 +57,14 @@
             <% if authenticated? %>
               <div data-controller="dropdown" data-action="keydown->dropdown#keydown" class="relative">
                 <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
-                  class="p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2">
+                  class="p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 select-none">
                   <%= lucide_icon("circle-user-round", class: "h-5 w-5 text-gray-600") %>
                 </button>
 
                 <div data-dropdown-target="menu" class="hidden absolute right-0 z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white shadow-lg">
                   <div class="py-1">
                     <label data-controller="edit-mode" data-edit-mode-url-value="<%= edit_mode_path %>"
-                      class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                      class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none">
                       <span>Edit mode</span>
                       <span class="relative inline-block w-9 h-5">
                         <input type="checkbox" class="peer sr-only" <%= "checked" if edit_mode? %> data-action="change->edit-mode#toggle">
@@ -73,7 +73,7 @@
                       </span>
                     </label>
                     <div class="border-t border-gray-200"></div>
-                    <%= button_to session_path, method: :delete, class: "flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer" do %>
+                    <%= button_to session_path, method: :delete, class: "flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none" do %>
                       <%= lucide_icon("log-out", class: "h-4 w-4") %>
                       Sign out
                     <% end %>

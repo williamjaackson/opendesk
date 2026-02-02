@@ -13,7 +13,7 @@
     <div class="relative">
       <input type="text" readonly data-action="click->dropdown#toggle" data-dropdown-target="button"
         placeholder="<%= placeholder %>" value="<%= selected_option ? selected_option[0] : '' %>"
-        class="block w-full rounded-md border <%= errors.any? ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' %> bg-white px-3 py-2 pr-8 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 cursor-pointer" />
+        class="block w-full rounded-md border <%= errors.any? ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-gray-500 focus:ring-gray-500' %> bg-white px-3 py-2 pr-8 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 cursor-pointer select-none" />
       <%= lucide_icon("chevron-down", class: "absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none") %>
     </div>
 
@@ -27,7 +27,7 @@
       <div class="py-1">
       <% options.each do |option_label, option_value, option_data| %>
         <button type="button" tabindex="-1" data-action="dropdown#select" data-value="<%= option_value %>" data-label="<%= option_label %>"<% (option_data || {}).each do |attr, val| %> <%= attr %>="<%= val %>"<% end %>
-          class="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+          class="flex items-center justify-between w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none">
           <span><%= option_label %></span>
           <span data-check class="<%= 'invisible' unless option_value.to_s == selected.to_s %>">
             <%= lucide_icon("check", class: "h-4 w-4 text-gray-900") %>

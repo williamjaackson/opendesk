@@ -7,7 +7,7 @@
     <div class="flex items-center gap-1">
       <% if pagy.previous %>
         <%= link_to url_for(request.query_parameters.merge(page_param => pagy.previous)),
-            class: "inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors",
+            class: "inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors select-none",
             data: { turbo_frame: frame_id, turbo_action: "advance" },
             aria: { label: "Previous page" } do %>
           <%= lucide_icon("chevron-left", class: "w-4 h-4") %>
@@ -21,7 +21,7 @@
       <% pagy.send(:series).each do |item| %>
         <% if item.is_a?(Integer) %>
           <%= link_to item, url_for(request.query_parameters.merge(page_param => item)),
-            class: "inline-flex items-center justify-center w-8 h-8 rounded-md text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors",
+            class: "inline-flex items-center justify-center w-8 h-8 rounded-md text-sm text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors select-none",
             data: { turbo_frame: frame_id, turbo_action: "advance" } %>
         <% elsif item.is_a?(String) %>
           <span class="inline-flex items-center justify-center w-8 h-8 rounded-md text-sm font-medium text-gray-900 bg-gray-100"><%= item %></span>
@@ -32,7 +32,7 @@
 
       <% if pagy.next %>
         <%= link_to url_for(request.query_parameters.merge(page_param => pagy.next)),
-            class: "inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors",
+            class: "inline-flex items-center justify-center w-8 h-8 rounded-md text-gray-500 hover:text-gray-900 hover:bg-gray-100 transition-colors select-none",
             data: { turbo_frame: frame_id, turbo_action: "advance" },
             aria: { label: "Next page" } do %>
           <%= lucide_icon("chevron-right", class: "w-4 h-4") %>

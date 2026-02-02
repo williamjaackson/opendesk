@@ -53,7 +53,7 @@
               <%= form.hidden_field link_field, data: { dropdown_target: "input" } %>
 
               <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
-                class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer">
+                class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none">
                 <%= lucide_icon("plus", class: "h-4 w-4") %>
                 Link record
               </button>
@@ -67,7 +67,7 @@
                   <div class="py-1">
                     <% section.available_records.each do |r| %>
                       <button type="button" data-action="dropdown#select" data-value="<%= r.id %>" data-label="<%= r.display_name %>"
-                        class="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer">
+                        class="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none">
                         <span><%= r.display_name %></span>
                       </button>
                     <% end %>
