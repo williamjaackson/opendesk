@@ -1,6 +1,6 @@
 module ButtonsHelper
   def button_classes(variant = :primary)
-    base = "px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer"
+    base = "px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer select-none"
 
     case variant
     when :primary
