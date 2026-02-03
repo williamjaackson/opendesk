@@ -5,7 +5,8 @@ let globalDialog = null
 let pendingForm = null
 
 function getOrCreateDialog() {
-  if (globalDialog) return globalDialog
+  // Check if dialog still exists in DOM (Turbo may have removed it)
+  if (globalDialog && globalDialog.isConnected) return globalDialog
 
   globalDialog = document.createElement("dialog")
   globalDialog.className = "backdrop:bg-gray-900/50 bg-transparent p-0 m-auto rounded-lg"
