@@ -6,13 +6,15 @@
     <section class="bg-white rounded-lg border border-gray-200 p-6">
       <h2 class="text-sm font-medium text-gray-900 mb-4">Export records</h2>
 
-      <%= form_with url: export_table_path(@custom_table), method: :get, data: { turbo: false } do |form| %>
+      <%= form_with url: export_table_path(@custom_table), method: :get, data: { turbo: false, controller: "export-preview" } do |form| %>
         <div class="mb-4">
           <p class="text-sm text-gray-600 mb-3">Select columns to include in the export:</p>
           <div class="space-y-2">
             <% @columns.each do |column| %>
               <label class="flex items-center gap-2 cursor-pointer">
                 <input type="checkbox" name="columns[]" value="<%= column.id %>" checked
+                  data-export-preview-target="checkbox"
+                  data-action="change->export-preview#toggle"
                   class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-500">
                 <span class="text-sm text-gray-700"><%= column.name %></span>
                 <% if column.computed? %>
@@ -30,19 +32,25 @@
               <thead class="bg-gray-50">
                 <tr>
                   <% @columns.each do |column| %>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500"><%= column.name %></th>
+                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-500"
+                        data-export-preview-target="headerCell"
+                        data-column-id="<%= column.id %>"><%= column.name %></th>
                   <% end %>
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr>
                   <% @columns.each do |column| %>
-                    <td class="px-3 py-2 text-gray-400 italic"><%= sample_value_for_type(column.column_type) %></td>
+                    <td class="px-3 py-2 text-gray-400 italic"
+                        data-export-preview-target="dataCell"
+                        data-column-id="<%= column.id %>"><%= sample_value_for_type(column.column_type) %></td>
                   <% end %>
                 </tr>
                 <tr>
                   <% @columns.each do |column| %>
-                    <td class="px-3 py-2 text-gray-400 italic"><%= sample_value_for_type(column.column_type, variant: 2) %></td>
+                    <td class="px-3 py-2 text-gray-400 italic"
+                        data-export-preview-target="dataCell"
+                        data-column-id="<%= column.id %>"><%= sample_value_for_type(column.column_type, variant: 2) %></td>
                   <% end %>
                 </tr>
               </tbody>
