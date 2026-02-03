@@ -187,22 +187,7 @@ class CustomRecordsController < ApplicationController
     linked_record_ids = all_links.map { |l| is_source ? l.target_record_id : l.source_record_id }
     display_columns = target_table.custom_columns.where(show_on_preview: true).order(:position)
 
-    taken_ids = if rel.kind == "one_to_one"
-      is_source ? rel.custom_record_links.pluck(:target_record_id) : rel.custom_record_links.pluck(:source_record_id)
-    elsif rel.kind == "one_to_many" && is_source
-      rel.custom_record_links.pluck(:target_record_id)
-    elsif rel.kind == "many_to_one" && !is_source
-      rel.custom_record_links.pluck(:source_record_id)
-    else
-      []
-    end
-
-    exclude_ids = (linked_record_ids + taken_ids).uniq
-    if self_referential
-      exclude_ids << @custom_record.id
-    end
-    available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column).limit(100)
-
+    # Calculate accepts_more first to avoid expensive queries when dropdown won't show
     accepts_more = if rel.kind == "one_to_one"
       all_links.empty?
     elsif rel.kind == "one_to_many" && !is_source
@@ -211,6 +196,26 @@ class CustomRecordsController < ApplicationController
       all_links.empty?
     else
       true
+    end
+
+    # Only load available records if the dropdown will be shown
+    if accepts_more
+      taken_ids = if rel.kind == "one_to_one"
+        is_source ? rel.custom_record_links.pluck(:target_record_id) : rel.custom_record_links.pluck(:source_record_id)
+      elsif rel.kind == "one_to_many" && is_source
+        rel.custom_record_links.pluck(:target_record_id)
+      elsif rel.kind == "many_to_one" && !is_source
+        rel.custom_record_links.pluck(:source_record_id)
+      else
+        []
+      end
+
+      exclude_ids = (linked_record_ids + taken_ids).uniq
+      exclude_ids << @custom_record.id if self_referential
+      available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column).limit(100)
+    else
+      exclude_ids = []
+      available_records = []
     end
 
     search_param = :"rq_#{rel.id}_#{suffix}"
@@ -260,19 +265,26 @@ class CustomRecordsController < ApplicationController
     linked_record_ids = all_links.map { |l| l.source_record_id == @custom_record.id ? l.target_record_id : l.source_record_id }
     display_columns = target_table.custom_columns.where(show_on_preview: true).order(:position)
 
-    exclude_ids = linked_record_ids + [ @custom_record.id ]
-
-    if rel.kind == "one_to_one"
-      taken_ids = rel.custom_record_links.pluck(:source_record_id, :target_record_id).flatten.uniq
-      exclude_ids = (exclude_ids + taken_ids).uniq
-    end
-
-    available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column).limit(100)
-
+    # Calculate accepts_more first to avoid expensive queries when dropdown won't show
     accepts_more = if rel.kind == "one_to_one"
       all_links.empty?
     else
       true
+    end
+
+    # Only load available records if the dropdown will be shown
+    if accepts_more
+      exclude_ids = linked_record_ids + [ @custom_record.id ]
+
+      if rel.kind == "one_to_one"
+        taken_ids = rel.custom_record_links.pluck(:source_record_id, :target_record_id).flatten.uniq
+        exclude_ids = (exclude_ids + taken_ids).uniq
+      end
+
+      available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column).limit(100)
+    else
+      exclude_ids = []
+      available_records = []
     end
 
     search_param = :"rq_#{rel.id}_#{suffix}"
