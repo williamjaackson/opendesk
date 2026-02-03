@@ -13,6 +13,10 @@ body:not([data-edit-mode]) [data-edit-only] {
   display: none !important;
 }
 
+body[data-edit-mode] [data-hide-on-edit-mode] {
+  display: none !important;
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
