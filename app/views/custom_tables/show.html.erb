@@ -1,9 +1,19 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold text-gray-900"><%= @custom_table.name %></h1>
-    <%= link_to edit_table_path(@custom_table), data: { builder_only: true }, class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors select-none" do %>
-      <%= lucide_icon("settings", class: "h-4 w-4") %>
-    <% end %>
+    <div class="flex items-center gap-2">
+      <%= link_to export_table_path(@custom_table, format: :csv), class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-100 transition-colors select-none" do %>
+        <%= lucide_icon("download", class: "h-4 w-4") %>
+        <span>Export</span>
+      <% end %>
+      <%= link_to new_table_csv_import_path(@custom_table), class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-100 transition-colors select-none" do %>
+        <%= lucide_icon("upload", class: "h-4 w-4") %>
+        <span>Import</span>
+      <% end %>
+      <%= link_to edit_table_path(@custom_table), data: { builder_only: true }, class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors select-none" do %>
+        <%= lucide_icon("settings", class: "h-4 w-4") %>
+      <% end %>
+    </div>
   </div>
 
   <% if @columns.any? %>
