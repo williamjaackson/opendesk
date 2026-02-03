@@ -1,0 +1,42 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Import CSV", nil]] %>
+  <%= render "shared/page_heading", title: "Import CSV" %>
+
+  <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+    <div class="mb-4">
+      <h2 class="text-sm font-medium text-gray-900 mb-2">Before importing</h2>
+      <ul class="text-sm text-gray-600 space-y-1">
+        <li>Your CSV should have column headers in the first row</li>
+        <li>You'll be able to map CSV columns to table columns after uploading</li>
+        <li>Large files (500+ rows) will be processed in the background</li>
+      </ul>
+    </div>
+
+    <div class="flex items-center gap-2 text-sm text-gray-500">
+      <%= lucide_icon("download", class: "h-4 w-4") %>
+      <span>Need a starting point?</span>
+      <%= link_to "Download template CSV", template_table_path(@custom_table, format: :csv), class: "text-gray-900 underline hover:text-gray-700" %>
+    </div>
+  </div>
+
+  <%= form_with model: @csv_import, url: table_csv_imports_path(@custom_table), html: { novalidate: true } do |form| %>
+    <% file_errors = @csv_import.errors[:file] %>
+    <div class="mb-6">
+      <%= form.label :file, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+        CSV file<span class="text-red-500 ml-0.5">*</span>
+      <% end %>
+      <div class="flex items-center gap-3">
+        <%= form.file_field :file, accept: ".csv,text/csv", required: true,
+          class: "block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200 file:cursor-pointer cursor-pointer #{file_errors.any? ? 'border border-red-300 rounded-md' : ''}" %>
+      </div>
+      <% file_errors.each do |error| %>
+        <p class="mt-1 text-sm text-red-600"><%= error %></p>
+      <% end %>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", label: "Upload and continue", form: form %>
+      <%= render "shared/button", style: "ghost", label: "Cancel", href: table_path(@custom_table) %>
+    </div>
+  <% end %>
+</div>
