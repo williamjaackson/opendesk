@@ -15,51 +15,55 @@ class RelationshipImporter
 
     result = { created: 0, skipped: 0, errors: [] }
 
-    csv.each.with_index(2) do |row, row_number|
-      source_name = row[0]&.strip
-      target_name = row[1]&.strip
+    # Match columns by header name (singularized table names)
+    current_table_header = @custom_table.name.singularize
+    other_table_header = @other_table.name.singularize
 
-      if source_name.blank? || target_name.blank?
-        result[:errors] << { row: row_number, message: "Missing source or target name" }
+    csv.each.with_index(2) do |row, row_number|
+      current_table_name = row[current_table_header]&.strip
+      other_table_name = row[other_table_header]&.strip
+
+      if current_table_name.blank? || other_table_name.blank?
+        result[:errors] << { row: row_number, message: "Missing #{current_table_header} or #{other_table_header} name" }
         next
       end
 
       # Find records by display name
-      source_record = find_record_by_display_name(@custom_table, source_name)
-      target_record = find_record_by_display_name(@other_table, target_name)
+      current_record = find_record_by_display_name(@custom_table, current_table_name)
+      other_record = find_record_by_display_name(@other_table, other_table_name)
 
-      if source_record.nil?
-        result[:errors] << { row: row_number, message: "No record found matching '#{source_name}' in #{@custom_table.name}" }
+      if current_record.nil?
+        result[:errors] << { row: row_number, message: "No record found matching '#{current_table_name}' in #{@custom_table.name}" }
         next
       end
 
-      if target_record.nil?
-        result[:errors] << { row: row_number, message: "No record found matching '#{target_name}' in #{@other_table.name}" }
+      if other_record.nil?
+        result[:errors] << { row: row_number, message: "No record found matching '#{other_table_name}' in #{@other_table.name}" }
         next
       end
 
-      if source_record.is_a?(Array)
-        result[:errors] << { row: row_number, message: "Multiple records match '#{source_name}' in #{@custom_table.name}" }
+      if current_record.is_a?(Array)
+        result[:errors] << { row: row_number, message: "Multiple records match '#{current_table_name}' in #{@custom_table.name}" }
         next
       end
 
-      if target_record.is_a?(Array)
-        result[:errors] << { row: row_number, message: "Multiple records match '#{target_name}' in #{@other_table.name}" }
+      if other_record.is_a?(Array)
+        result[:errors] << { row: row_number, message: "Multiple records match '#{other_table_name}' in #{@other_table.name}" }
         next
       end
 
-      # Create the link (swap source/target if we're coming from the target side)
+      # Create the link - determine source/target based on relationship direction
       if @is_source
         link = CustomRecordLink.new(
           custom_relationship: @relationship,
-          source_record: source_record,
-          target_record: target_record
+          source_record: current_record,
+          target_record: other_record
         )
       else
         link = CustomRecordLink.new(
           custom_relationship: @relationship,
-          source_record: target_record,
-          target_record: source_record
+          source_record: other_record,
+          target_record: current_record
         )
       end
 
