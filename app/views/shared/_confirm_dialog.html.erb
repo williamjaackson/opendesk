@@ -1,7 +1,7 @@
 <%# locals: (message:, button_text: "Delete", button_class: nil) %>
 <% button_class ||= "inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2 transition-colors cursor-pointer select-none" %>
 <dialog data-confirm-target="dialog" data-action="click->confirm#backdropClick"
-  class="backdrop:bg-gray-900/50 bg-transparent p-0 m-auto rounded-lg">
+  class="open:flex open:items-center open:justify-center open:fixed open:inset-0 backdrop:bg-gray-900/50 bg-transparent p-0 m-0 max-w-none max-h-none w-screen h-screen">
   <div class="bg-white rounded-lg shadow-xl border border-gray-200 w-96 overflow-hidden">
     <div class="px-5 py-4">
       <h3 class="text-base font-semibold text-gray-900 mb-2">Confirm action</h3>
