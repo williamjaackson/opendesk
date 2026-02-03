@@ -9,7 +9,7 @@ function getOrCreateDialog() {
   if (globalDialog && globalDialog.isConnected) return globalDialog
 
   globalDialog = document.createElement("dialog")
-  globalDialog.className = "backdrop:bg-gray-900/50 bg-transparent p-0 m-auto rounded-lg"
+  globalDialog.className = "open:flex open:items-center open:justify-center open:fixed open:inset-0 backdrop:bg-gray-900/50 bg-transparent p-0 m-0 max-w-none max-h-none w-screen h-screen"
   globalDialog.innerHTML = `
     <div class="bg-white rounded-lg shadow-xl border border-gray-200 w-96 overflow-hidden">
       <div class="px-5 py-4">
