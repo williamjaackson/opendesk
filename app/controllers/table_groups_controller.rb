@@ -29,9 +29,7 @@ class TableGroupsController < ApplicationController
     if @table_group.save
       redirect_to groups_path
     else
-      @table_groups = Current.organisation.table_groups.order(:position)
-      @pagy, @table_groups = pagy(@table_groups)
-      render :index, status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
 
