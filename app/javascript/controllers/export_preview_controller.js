@@ -1,23 +1,45 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["checkbox", "headerCell", "dataCell"]
+  static targets = ["checkbox", "box", "headerCell", "dataCell"]
 
   toggle(event) {
-    const columnId = event.target.value
-    const isChecked = event.target.checked
+    const wrapper = event.currentTarget
+    const checkbox = wrapper.querySelector("[data-export-preview-target='checkbox']")
+    const box = wrapper.querySelector("[data-export-preview-target='box']")
+    const columnId = checkbox.value
 
-    // Find all header and data cells for this column
+    // Toggle checkbox state
+    const isChecked = checkbox.value !== "0"
+    const newChecked = !isChecked
+    checkbox.value = newChecked ? columnId : "0"
+    checkbox.disabled = !newChecked
+
+    // Update visual state
+    box.classList.toggle("bg-gray-900", newChecked)
+    box.classList.toggle("bg-white", !newChecked)
+    box.classList.toggle("border-gray-900", newChecked)
+    box.classList.toggle("border-gray-300", !newChecked)
+    box.querySelector("[data-checkmark]").classList.toggle("invisible", !newChecked)
+
+    // Update preview table
     this.headerCellTargets.forEach(cell => {
       if (cell.dataset.columnId === columnId) {
-        cell.classList.toggle("hidden", !isChecked)
+        cell.classList.toggle("hidden", !newChecked)
       }
     })
 
     this.dataCellTargets.forEach(cell => {
       if (cell.dataset.columnId === columnId) {
-        cell.classList.toggle("hidden", !isChecked)
+        cell.classList.toggle("hidden", !newChecked)
       }
     })
+  }
+
+  keydown(event) {
+    if (event.key === " " || event.key === "Enter") {
+      event.preventDefault()
+      this.toggle(event)
+    }
   }
 }

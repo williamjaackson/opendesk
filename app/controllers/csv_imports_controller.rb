@@ -6,6 +6,7 @@ class CsvImportsController < ApplicationController
 
   def new
     @csv_import = @custom_table.csv_imports.new
+    @columns = @custom_table.custom_columns.where.not(column_type: "computed").order(:position)
   end
 
   def create
@@ -15,6 +16,7 @@ class CsvImportsController < ApplicationController
       @csv_import.update!(status: "mapping")
       redirect_to table_csv_import_path(@custom_table, @csv_import)
     else
+      @columns = @custom_table.custom_columns.where.not(column_type: "computed").order(:position)
       render :new, status: :unprocessable_entity
     end
   end

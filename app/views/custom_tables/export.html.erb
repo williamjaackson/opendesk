@@ -11,16 +11,21 @@
           <p class="text-sm text-gray-600 mb-3">Select columns to include in the export:</p>
           <div class="space-y-2">
             <% @columns.each do |column| %>
-              <label class="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" name="columns[]" value="<%= column.id %>" checked
-                  data-export-preview-target="checkbox"
-                  data-action="change->export-preview#toggle"
-                  class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-500">
-                <span class="text-sm text-gray-700"><%= column.name %></span>
+              <div tabindex="0" role="checkbox" aria-checked="true" aria-label="<%= column.name %>"
+                data-action="click->export-preview#toggle keydown->export-preview#keydown"
+                class="inline-flex items-center gap-2 cursor-pointer select-none group">
+                <input type="hidden" name="columns[]" value="<%= column.id %>" data-export-preview-target="checkbox">
+                <span data-export-preview-target="box"
+                  class="flex shrink-0 items-center justify-center h-5 w-5 rounded border transition-colors bg-gray-900 border-gray-900 group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
+                  <svg data-checkmark viewBox="0 0 12 10" fill="none" class="h-3 w-3 text-white">
+                    <path d="M1 5.5L4 8.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </span>
+                <span class="text-sm font-medium text-gray-700"><%= column.name %></span>
                 <% if column.computed? %>
                   <span class="text-xs text-gray-400">(computed)</span>
                 <% end %>
-              </label>
+              </div>
             <% end %>
           </div>
         </div>
