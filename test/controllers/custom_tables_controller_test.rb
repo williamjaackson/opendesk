@@ -96,7 +96,6 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should export table as CSV" do
-    disable_builder_mode
     get export_table_path(custom_tables(:contacts), format: :csv)
     assert_response :success
     assert_equal "text/csv; charset=utf-8", response.headers["Content-Type"]
@@ -104,10 +103,21 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should download template CSV" do
-    disable_builder_mode
     get template_table_path(custom_tables(:contacts), format: :csv)
     assert_response :success
     assert_equal "text/csv; charset=utf-8", response.headers["Content-Type"]
     assert_match /attachment.*contacts-template\.csv/, response.headers["Content-Disposition"]
+  end
+
+  test "should require builder mode for export" do
+    disable_builder_mode
+    get export_table_path(custom_tables(:contacts), format: :csv)
+    assert_redirected_to root_path
+  end
+
+  test "should require builder mode for template" do
+    disable_builder_mode
+    get template_table_path(custom_tables(:contacts), format: :csv)
+    assert_redirected_to root_path
   end
 end

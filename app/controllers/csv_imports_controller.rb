@@ -1,5 +1,6 @@
 class CsvImportsController < ApplicationController
   before_action :require_organisation
+  before_action :require_builder_mode
   before_action :set_custom_table
   before_action :set_csv_import, only: [ :show, :update, :destroy ]
 

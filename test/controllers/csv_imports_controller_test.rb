@@ -4,6 +4,7 @@ class CsvImportsControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in_as users(:one)
     manage_organisation organisations(:one)
+    enable_builder_mode
     @table = custom_tables(:contacts)
   end
 
@@ -71,6 +72,12 @@ class CsvImportsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to table_path(@table)
+  end
+
+  test "should require builder mode" do
+    disable_builder_mode
+    get new_table_csv_import_path(@table)
+    assert_redirected_to root_path
   end
 
   private
