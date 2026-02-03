@@ -36,11 +36,11 @@
         <h2 class="text-lg font-semibold text-gray-900 mb-1">Column mapping</h2>
         <p class="text-sm text-gray-500 mb-4">Choose how to handle each column from your CSV file.</p>
 
-        <div class="border border-gray-200 rounded-md divide-y divide-gray-200">
-          <% @headers.each_with_index do |header, index| %>
+        <div class="space-y-3">
+          <% @headers.each do |header| %>
             <% matching_column = @columns.find { |c| c.name.downcase == header.downcase } %>
             <% default_action = matching_column ? "existing" : "skip" %>
-            <div class="p-4 <%= index.even? ? 'bg-white' : 'bg-gray-50/50' %>" data-import-mapping-target="row">
+            <div class="p-4 bg-white border border-gray-200 rounded-lg" data-import-mapping-target="row">
               <div class="flex items-start gap-6">
                 <div class="w-48 shrink-0">
                   <span class="text-sm font-medium text-gray-900"><%= header %></span>
@@ -138,9 +138,8 @@
         </div>
       </section>
 
-      <div class="flex items-center gap-3">
+      <div class="mt-6">
         <%= render "shared/button", label: "Start import", icon: "play", form: form %>
-        <%= render "shared/button", style: "ghost", label: "Cancel", href: table_csv_import_path(@custom_table, @csv_import), data: { turbo_method: :delete, turbo_confirm: "Cancel this import?" } %>
       </div>
     <% end %>
   </div>

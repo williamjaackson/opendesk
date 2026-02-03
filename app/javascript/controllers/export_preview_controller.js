@@ -7,12 +7,12 @@ export default class extends Controller {
     const wrapper = event.currentTarget
     const checkbox = wrapper.querySelector("[data-export-preview-target='checkbox']")
     const box = wrapper.querySelector("[data-export-preview-target='box']")
-    const columnId = checkbox.value
+    const columnId = wrapper.dataset.columnId
 
     // Toggle checkbox state
-    const isChecked = checkbox.value !== "0"
+    const isChecked = !checkbox.disabled
     const newChecked = !isChecked
-    checkbox.value = newChecked ? columnId : "0"
+    checkbox.value = newChecked ? columnId : ""
     checkbox.disabled = !newChecked
 
     // Update visual state

@@ -11,16 +11,17 @@
         <div class="space-y-2 mb-6">
           <% @columns.each do |column| %>
             <div tabindex="0" role="checkbox" aria-checked="true" aria-label="<%= column.name %>"
+              data-column-id="<%= column.id %>"
               data-action="click->export-preview#toggle keydown->export-preview#keydown"
               class="flex items-center gap-2 cursor-pointer select-none group">
               <input type="hidden" name="columns[]" value="<%= column.id %>" data-export-preview-target="checkbox">
               <span data-export-preview-target="box"
-                class="flex shrink-0 items-center justify-center h-4 w-4 rounded border transition-colors bg-gray-900 border-gray-900 group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
-                <svg data-checkmark viewBox="0 0 12 10" fill="none" class="h-2.5 w-2.5 text-white">
+                class="flex shrink-0 items-center justify-center h-5 w-5 rounded border transition-colors bg-gray-900 border-gray-900 group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
+                <svg data-checkmark viewBox="0 0 12 10" fill="none" class="h-3 w-3 text-white">
                   <path d="M1 5.5L4 8.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
               </span>
-              <span class="text-sm text-gray-700"><%= column.name %></span>
+              <span class="text-sm font-medium text-gray-700"><%= column.name %></span>
               <% if column.computed? %>
                 <span class="text-xs text-gray-400">(computed)</span>
               <% end %>
@@ -34,6 +35,7 @@
             <table class="min-w-full divide-y divide-gray-200 text-sm">
               <thead class="bg-gray-50">
                 <tr>
+                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500">ID</th>
                   <% @columns.each do |column| %>
                     <th class="px-3 py-2 text-left text-xs font-medium text-gray-500"
                         data-export-preview-target="headerCell"
@@ -43,6 +45,7 @@
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
                 <tr>
+                  <td class="px-3 py-2 text-gray-400 italic">1</td>
                   <% @columns.each do |column| %>
                     <td class="px-3 py-2 text-gray-400 italic"
                         data-export-preview-target="dataCell"
@@ -50,6 +53,7 @@
                   <% end %>
                 </tr>
                 <tr>
+                  <td class="px-3 py-2 text-gray-400 italic">2</td>
                   <% @columns.each do |column| %>
                     <td class="px-3 py-2 text-gray-400 italic"
                         data-export-preview-target="dataCell"
@@ -75,43 +79,38 @@
         <h2 class="text-lg font-semibold text-gray-900 mb-1">Export relationships</h2>
         <p class="text-sm text-gray-500 mb-4">Relationship data is exported separately. Each CSV contains the linked record names.</p>
 
-        <div class="border border-gray-200 rounded-md divide-y divide-gray-200">
-          <% @relationships.each_with_index do |relationship, index| %>
+        <div class="space-y-3">
+          <% @relationships.each do |relationship| %>
             <% is_source = relationship.source_table_id == @custom_table.id %>
             <% rel_name = is_source ? relationship.name : relationship.inverse_name %>
             <% other_table = is_source ? relationship.target_table : relationship.source_table %>
-            <div class="p-4 <%= index.even? ? 'bg-white' : 'bg-gray-50/50' %>">
-              <div class="flex items-start justify-between gap-4">
-                <div class="min-w-0">
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="text-sm font-medium text-gray-900"><%= rel_name %></span>
-                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
-                      <%= relationship_kind_label(relationship.kind) %>
-                    </span>
-                  </div>
-                  <p class="text-xs text-gray-500">
-                    <%= @custom_table.name %> → <%= other_table.name %>
-                    <% if relationship.name != relationship.inverse_name %>
-                      <span class="mx-1">·</span>
-                      Inverse: <span class="font-medium"><%= is_source ? relationship.inverse_name : relationship.name %></span>
-                    <% end %>
-                  </p>
+            <div class="flex items-center justify-between gap-4 p-4 bg-white border border-gray-200 rounded-lg">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium text-gray-900"><%= rel_name %></span>
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                    <%= relationship_kind_label(relationship.kind) %>
+                  </span>
                 </div>
-                <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
-                  data: { turbo: false },
-                  class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none shrink-0" do %>
-                  <%= lucide_icon("download", class: "h-4 w-4") %>
-                  Download
-                <% end %>
+                <p class="text-xs text-gray-500 mt-0.5">
+                  <%= @custom_table.name %> → <%= other_table.name %>
+                  <% if relationship.name != relationship.inverse_name %>
+                    <span class="mx-1">·</span>
+                    Inverse: <%= is_source ? relationship.inverse_name : relationship.name %>
+                  <% end %>
+                </p>
               </div>
+              <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
+                data: { turbo: false },
+                class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none shrink-0" do %>
+                <%= lucide_icon("download", class: "h-4 w-4") %>
+                Download
+              <% end %>
             </div>
           <% end %>
         </div>
       </section>
     <% end %>
 
-    <div class="flex items-center gap-3">
-      <%= render "shared/button", style: "ghost", label: "Cancel", href: edit_table_path(@custom_table) %>
-    </div>
   </div>
 </div>
