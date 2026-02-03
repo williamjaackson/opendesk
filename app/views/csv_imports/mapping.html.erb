@@ -104,11 +104,12 @@
                   <% if @columns.any? %>
                     <div data-import-mapping-target="existingOptions" class="<%= default_action == 'existing' ? '' : 'hidden' %> max-w-xs">
                       <% column_options = @columns.map { |c| ["#{c.name} (#{c.column_type})", c.id] } %>
-                      <%= render "shared/inline_dropdown",
+                      <%= render "shared/dropdown",
                         name: "mapping[#{header}][column_id]",
                         options: column_options,
                         selected: matching_column&.id,
-                        placeholder: "Select column..." %>
+                        placeholder: "Select column...",
+                        inline: true %>
                     </div>
                   <% end %>
 
@@ -133,11 +134,12 @@
                           ["Currency", "currency"],
                           ["Colour", "colour"]
                         ] %>
-                        <%= render "shared/inline_dropdown",
+                        <%= render "shared/dropdown",
                           name: "mapping[#{header}][type]",
                           options: type_options,
                           selected: "text",
-                          placeholder: "Select type..." %>
+                          placeholder: "Select type...",
+                          inline: true %>
                       </div>
                     </div>
                   </div>
