@@ -2,7 +2,7 @@ class OrganisationSessionsController < ApplicationController
   def create
     organisation = Current.user.organisations.find(params[:organisation_id])
     session[:organisation_id] = organisation.id
-    session.delete(:edit_mode)
+    session.delete(:builder_mode)
     redirect_to root_path
   end
 

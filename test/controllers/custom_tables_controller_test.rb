@@ -4,7 +4,7 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
   setup do
     sign_in_as users(:one)
     manage_organisation organisations(:one)
-    enable_edit_mode
+    enable_builder_mode
   end
 
   test "should get new" do

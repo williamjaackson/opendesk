@@ -18,12 +18,12 @@ module SessionTestHelper
     post organisation_session_path, params: { organisation_id: organisation.id }
   end
 
-  def enable_edit_mode
-    patch edit_mode_path unless session[:edit_mode]
+  def enable_builder_mode
+    patch builder_mode_path unless session[:builder_mode]
   end
 
-  def disable_edit_mode
-    patch edit_mode_path if session[:edit_mode]
+  def disable_builder_mode
+    patch builder_mode_path if session[:builder_mode]
   end
 
   def stop_managing_organisation

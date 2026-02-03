@@ -1,6 +1,6 @@
 class CustomTablesController < ApplicationController
   before_action :require_organisation
-  before_action :require_edit_mode, except: [ :show ]
+  before_action :require_builder_mode, except: [ :show ]
 
   def show
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])

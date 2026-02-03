@@ -1,7 +1,7 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold text-gray-900"><%= @custom_table.name %></h1>
-    <%= link_to edit_table_path(@custom_table), data: { edit_only: true }, class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors select-none" do %>
+    <%= link_to edit_table_path(@custom_table), data: { builder_only: true }, class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors select-none" do %>
       <%= lucide_icon("settings", class: "h-4 w-4") %>
     <% end %>
   </div>
@@ -19,12 +19,12 @@
       search_url: table_path(@custom_table),
       create_url: new_table_record_path(@custom_table),
       create_label: "Add record",
-      create_edit_only: @custom_table.protected?,
+      create_builder_only: @custom_table.protected?,
       pagy: @pagy %>
   <% else %>
     <div class="rounded-lg border border-gray-200 bg-white px-6 py-12 text-center">
       <h2 class="text-base font-medium text-gray-900 mb-1">This table needs columns</h2>
-      <p class="text-sm text-gray-400 max-w-sm mx-auto">You can't add records until you've defined at least one column. Turn on edit mode to configure your table.</p>
+      <p class="text-sm text-gray-400 max-w-sm mx-auto">You can't add records until you've defined at least one column. Turn on builder mode to configure your table.</p>
     </div>
   <% end %>
 </div>

@@ -42,7 +42,7 @@
       </div>
       <div>
         <% if section.accepts_more %>
-          <% link_button_wrapper = @custom_table.protected? ? "data-edit-only" : nil %>
+          <% link_button_wrapper = @custom_table.protected? ? "data-builder-only" : nil %>
           <span <%= link_button_wrapper %>>
           <%= form_with model: CustomRecordLink.new, url: record_links_path, data: { turbo_frame: reload_frame_id } do |form| %>
             <%= form.hidden_field :custom_relationship_id, value: section.relationship.id %>
@@ -99,7 +99,7 @@
         destroy_label: "Unlink",
         destroy_confirm: "Unlink this record?",
         destroy_frame: reload_frame_id,
-        destroy_edit_only: @custom_table.protected?,
+        destroy_builder_only: @custom_table.protected?,
         frame_id: nil,
         pagination_frame: table_frame_id,
         pagy: section.pagy,

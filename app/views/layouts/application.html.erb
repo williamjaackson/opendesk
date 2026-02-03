@@ -23,7 +23,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-100" <%= 'data-edit-mode' if edit_mode? %> <%= 'data-requires-edit-mode' if @requires_edit_mode %>
+  <body class="bg-gray-100" <%= 'data-builder-mode' if builder_mode? %> <%= 'data-requires-builder-mode' if @requires_builder_mode %>
     <% if Current.organisation&.theme_colour.present? %>
       style="--theme-colour: <%= Current.organisation.theme_colour %>"
     <% end %>>
@@ -58,7 +58,7 @@
           </div>
           <div class="flex items-center gap-3">
             <% if authenticated? && managing_organisation? && controller_name == "table_groups" && action_name == "show" %>
-              <div data-hide-on-edit-mode>
+              <div data-hide-in-builder-mode>
                 <%= render "shared/arrow_hint", label: "click here", direction: "right" %>
               </div>
             <% end %>
@@ -72,11 +72,11 @@
                 <div data-dropdown-target="menu" class="hidden absolute right-0 z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white shadow-lg">
                   <div class="py-1">
                     <% if managing_organisation? %>
-                      <label data-controller="edit-mode" data-edit-mode-url-value="<%= edit_mode_path %>"
+                      <label data-controller="builder-mode" data-builder-mode-url-value="<%= builder_mode_path %>"
                         class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none">
-                        <span>Edit mode</span>
+                        <span>Builder mode</span>
                         <span class="relative inline-block w-9 h-5">
-                          <input type="checkbox" class="peer sr-only" <%= "checked" if edit_mode? %> data-action="change->edit-mode#toggle">
+                          <input type="checkbox" class="peer sr-only" <%= "checked" if builder_mode? %> data-action="change->builder-mode#toggle">
                           <span class="block w-9 h-5 bg-gray-200 rounded-full peer-checked:bg-gray-900 transition-colors"></span>
                           <span class="absolute left-0.5 top-0.5 h-4 w-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-4"></span>
                         </span>
@@ -103,14 +103,14 @@
     <% if @custom_table&.protected? %>
       <div class="bg-amber-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-2 h-9 text-sm text-amber-700">
-          <span data-edit-only>
+          <span data-builder-only>
             <%= lucide_icon("lock-open", class: "h-4 w-4") %>
           </span>
-          <span data-hide-on-edit-mode>
+          <span data-hide-in-builder-mode>
             <%= lucide_icon("lock", class: "h-4 w-4") %>
           </span>
-          <span data-edit-only>This table is protected — edit mode is bypassing protection</span>
-          <span data-hide-on-edit-mode>This table is protected and read-only</span>
+          <span data-builder-only>This table is protected — builder mode is bypassing protection</span>
+          <span data-hide-in-builder-mode>This table is protected and read-only</span>
         </div>
       </div>
     <% end %>

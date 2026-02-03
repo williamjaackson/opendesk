@@ -17,7 +17,7 @@ export default class extends Controller {
       draggable: "[data-sortable-id]",
       handle: this.hasHandleValue ? this.handleValue : undefined,
       forceFallback: this.fallbackValue,
-      disabled: !this.editMode,
+      disabled: !this.builderMode,
       setData: (dataTransfer, dragEl) => {
         dataTransfer.setData("application/x-sortable-id", dragEl.dataset.sortableId)
       },
@@ -26,9 +26,9 @@ export default class extends Controller {
     })
 
     this.observer = new MutationObserver(() => {
-      this.sortable.option("disabled", !this.editMode)
+      this.sortable.option("disabled", !this.builderMode)
     })
-    this.observer.observe(document.body, { attributes: true, attributeFilter: ["data-edit-mode"] })
+    this.observer.observe(document.body, { attributes: true, attributeFilter: ["data-builder-mode"] })
   }
 
   disconnect() {
@@ -36,8 +36,8 @@ export default class extends Controller {
     this.sortable.destroy()
   }
 
-  get editMode() {
-    return document.body.hasAttribute("data-edit-mode")
+  get builderMode() {
+    return document.body.hasAttribute("data-builder-mode")
   }
 
   onStart(evt) {

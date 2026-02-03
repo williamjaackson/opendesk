@@ -14,7 +14,7 @@
             <%= link_to table_path(table),
               data: { sortable_id: table.id },
               class: "inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md whitespace-nowrap transition-colors select-none #{active ? 'text-gray-900 bg-gray-200' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'}" do %>
-              <span data-edit-only>
+              <span data-builder-only>
                 <%= lucide_icon("grip-vertical", class: "h-3 w-3 text-gray-400 flex-shrink-0") %>
               </span>
               <%= table.name %>
@@ -25,7 +25,7 @@
           <% end %>
         </div>
       </div>
-      <div data-edit-only class="flex-shrink-0 pl-3 ml-3">
+      <div data-builder-only class="flex-shrink-0 pl-3 ml-3">
         <div class="relative flex justify-center w-7">
           <%= link_to new_table_path(group: active_group&.slug), class: "inline-flex items-center justify-center w-7 h-7 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors select-none" do %>
             <%= lucide_icon("plus", class: "h-4 w-4") %>
