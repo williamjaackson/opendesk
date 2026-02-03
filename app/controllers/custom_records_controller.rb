@@ -184,7 +184,7 @@ class CustomRecordsController < ApplicationController
     if self_referential
       exclude_ids << @custom_record.id
     end
-    available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column)
+    available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column).limit(100)
 
     accepts_more = if rel.kind == "one_to_one"
       all_links.empty?
@@ -249,7 +249,7 @@ class CustomRecordsController < ApplicationController
       exclude_ids = (exclude_ids + taken_ids).uniq
     end
 
-    available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column)
+    available_records = target_table.custom_records.where.not(id: exclude_ids).includes(custom_values: :custom_column).limit(100)
 
     accepts_more = if rel.kind == "one_to_one"
       all_links.empty?
