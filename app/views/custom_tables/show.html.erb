@@ -17,7 +17,7 @@
       actions: [ :view ],
       view_path: ->(record) { table_record_path(@custom_table, record) },
       search_url: table_path(@custom_table),
-      create_url: new_table_record_path(@custom_table),
+      create_url: (@custom_table.protected? && !edit_mode?) ? nil : new_table_record_path(@custom_table),
       create_label: "Add record",
       pagy: @pagy %>
   <% else %>
