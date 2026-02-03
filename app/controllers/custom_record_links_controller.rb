@@ -1,5 +1,6 @@
 class CustomRecordLinksController < ApplicationController
   before_action :require_organisation
+  before_action :require_unprotected_or_edit_mode
 
   def create
     @link = CustomRecordLink.new(custom_record_link_params)
@@ -24,6 +25,16 @@ class CustomRecordLinksController < ApplicationController
 
   def require_organisation
     redirect_to organisations_path unless Current.organisation
+  end
+
+  def require_unprotected_or_edit_mode
+    relationship = CustomRelationship.find_by(id: params.dig(:custom_record_link, :custom_relationship_id)) ||
+                   CustomRecordLink.find_by(id: params[:id])&.custom_relationship
+    return unless relationship
+
+    table = relationship.source_table
+    return unless table.protected?
+    redirect_back fallback_location: root_path, alert: "This table is protected" unless edit_mode?
   end
 
   def custom_record_link_params
