@@ -34,7 +34,7 @@ class CsvImport < ApplicationRecord
   end
 
   def add_error(row_number, message)
-    self.errors_log ||= []
+    self.errors_log = [] unless errors_log.is_a?(Array)
     self.errors_log << { row: row_number, message: message }
     self.error_count += 1
   end

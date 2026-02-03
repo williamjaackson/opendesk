@@ -41,7 +41,7 @@ class CsvExporterTest < ActiveSupport::TestCase
   end
 
   test "generate_template marks computed columns" do
-    column = @table.custom_columns.create!(
+    @table.custom_columns.create!(
       name: "Full Name",
       column_type: "computed",
       formula: "{Name}",

@@ -39,14 +39,12 @@ class CsvImportsController < ApplicationController
       importer = CsvImporter.new(@csv_import)
       row_count = importer.count_rows
 
-      # Create any new columns first
       importer.create_columns_from_mapping!
+      @csv_import.update!(status: "processing")
 
       if row_count > 500
-        @csv_import.update!(status: "processing")
         CsvImportJob.perform_later(@csv_import.id)
       else
-        @csv_import.update!(status: "processing")
         importer.import_all
       end
 

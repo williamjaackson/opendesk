@@ -7,6 +7,8 @@ class CsvImportJob < ApplicationJob
 
     importer = CsvImporter.new(csv_import)
     importer.import_all
+  rescue ActiveRecord::RecordNotFound
+    # Import was deleted while job was queued
   rescue StandardError => e
     csv_import.update!(status: "failed", errors_log: [ { row: 0, message: e.message } ])
     raise
