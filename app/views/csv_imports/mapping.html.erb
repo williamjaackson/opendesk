@@ -3,9 +3,9 @@
   <%= render "shared/page_heading", title: "Map columns" %>
 
   <div class="space-y-8">
-    <% if @preview_rows.any? %>
-      <section>
-        <h2 class="text-lg font-semibold text-gray-900 mb-1">Your data</h2>
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-1">Your data</h2>
+      <% if @preview_rows.any? %>
         <p class="text-sm text-gray-500 mb-4">Preview of the first <%= @preview_rows.size %> rows from your file.</p>
 
         <div class="overflow-x-auto border border-gray-200 rounded-md">
@@ -28,8 +28,10 @@
             </tbody>
           </table>
         </div>
-      </section>
-    <% end %>
+      <% else %>
+        <p class="text-sm text-gray-500">No data rows in file.</p>
+      <% end %>
+    </section>
 
     <%= form_with url: table_csv_import_path(@custom_table, @csv_import), method: :patch, html: { novalidate: true }, data: { controller: "import-mapping" } do |form| %>
       <section>
