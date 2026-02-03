@@ -79,6 +79,16 @@
     </section>
 
     <% if edit_mode? %>
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-1">Protection</h2>
+        <p class="text-sm text-gray-500 mb-4">Protected tables are read-only. Records cannot be added, edited, or deleted unless edit mode is enabled.</p>
+
+        <%= button_to toggle_protection_table_path(@custom_table), method: :patch, form: { data: { turbo_frame: "_top" } }, class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border transition-colors cursor-pointer select-none #{@custom_table.protected? ? 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50' : 'border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100'}" do %>
+          <%= lucide_icon(@custom_table.protected? ? "lock-open" : "lock", class: "h-4 w-4") %>
+          <%= @custom_table.protected? ? "Unprotect table" : "Protect table" %>
+        <% end %>
+      </section>
+
       <%= render "shared/danger_zone",
         description: "Deleting this table will permanently remove all its columns and records.",
         path: table_path(@custom_table),

@@ -84,6 +84,12 @@ class CustomTablesController < ApplicationController
     redirect_to root_path
   end
 
+  def toggle_protection
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    @custom_table.update!(protected: !@custom_table.protected?)
+    redirect_to edit_table_path(@custom_table)
+  end
+
   private
 
   def require_organisation

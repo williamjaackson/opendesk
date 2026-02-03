@@ -18,6 +18,9 @@
                 <%= lucide_icon("grip-vertical", class: "h-3 w-3 text-gray-400 flex-shrink-0") %>
               </span>
               <%= table.name %>
+              <% if table.protected? %>
+                <%= lucide_icon("lock", class: "h-3 w-3 flex-shrink-0 #{active ? 'text-amber-500' : 'text-gray-400'}") %>
+              <% end %>
             <% end %>
           <% end %>
         </div>

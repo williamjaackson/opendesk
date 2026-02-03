@@ -23,6 +23,9 @@ Rails.application.routes.draw do
     patch "/reorder-tables", to: "custom_tables#reorder", as: :reorder_tables
 
     resources :custom_tables, path: "/", param: :slug, as: :table, only: [ :show, :edit, :update, :destroy ] do
+      member do
+        patch :toggle_protection
+      end
       resources :custom_columns, path: "columns", as: :columns, only: [ :new, :create, :edit, :update, :destroy ] do
         collection do
           patch :reorder
