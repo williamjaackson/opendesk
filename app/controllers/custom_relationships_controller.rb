@@ -1,8 +1,8 @@
 class CustomRelationshipsController < ApplicationController
   before_action :require_organisation
-  before_action :require_builder_mode
+  before_action :require_builder_mode, except: [ :export ]
   before_action :set_custom_table
-  before_action :set_custom_relationship, only: [ :edit, :update, :destroy ]
+  before_action :set_custom_relationship, only: [ :edit, :update, :destroy, :export, :import, :process_import ]
 
   def reorder
     ids = params[:ids].map(&:to_i)
@@ -52,6 +52,38 @@ class CustomRelationshipsController < ApplicationController
     redirect_to edit_table_path(@custom_table)
   end
 
+  def export
+    exporter = CsvExporter.new(@custom_table)
+    rel_name = @custom_relationship.source_table_id == @custom_table.id ? @custom_relationship.name : @custom_relationship.inverse_name
+
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    response.headers["Content-Disposition"] = "attachment; filename=\"#{@custom_table.slug}-#{rel_name.parameterize}-links.csv\""
+
+    self.response_body = exporter.generate_relationship(@custom_relationship)
+  end
+
+  def import
+    @other_table = @custom_relationship.source_table_id == @custom_table.id ? @custom_relationship.target_table : @custom_relationship.source_table
+  end
+
+  def process_import
+    @other_table = @custom_relationship.source_table_id == @custom_table.id ? @custom_relationship.target_table : @custom_relationship.source_table
+
+    unless params[:file].present?
+      flash.now[:alert] = "Please select a file to upload"
+      return render :import, status: :unprocessable_entity
+    end
+
+    importer = RelationshipImporter.new(@custom_table, @custom_relationship, params[:file])
+    @result = importer.import
+
+    if @result[:errors].empty?
+      redirect_to data_table_path(@custom_table), notice: "Successfully imported #{@result[:created]} links"
+    else
+      render :import_results
+    end
+  end
+
   private
 
   def require_organisation
@@ -63,7 +95,7 @@ class CustomRelationshipsController < ApplicationController
   end
 
   def set_custom_relationship
-    @custom_relationship = @custom_table.source_relationships.find(params[:id])
+    @custom_relationship = @custom_table.all_relationships.find(params[:id])
   end
 
   def custom_relationship_params

@@ -27,9 +27,6 @@ Rails.application.routes.draw do
         patch :toggle_protection
         get :data
         get :export
-        get :export_relationship
-        get :import_relationship
-        post :import_relationship, action: :process_relationship_import
         get :template
       end
       resources :custom_columns, path: "columns", as: :columns, only: [ :new, :create, :edit, :update, :destroy ] do
@@ -39,6 +36,11 @@ Rails.application.routes.draw do
         end
       end
       resources :custom_relationships, path: "relationships", as: :relationships, only: [ :new, :create, :edit, :update, :destroy ] do
+        member do
+          get :export
+          get :import
+          post :import, action: :process_import
+        end
         collection do
           patch :reorder
         end
