@@ -25,6 +25,7 @@ Rails.application.routes.draw do
     resources :custom_tables, path: "/", param: :slug, as: :table, only: [ :show, :edit, :update, :destroy ] do
       member do
         patch :toggle_protection
+        get :data
         get :export
         get :export_relationship
         get :import_relationship

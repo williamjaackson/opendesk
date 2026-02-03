@@ -130,6 +130,12 @@ class CustomTablesController < ApplicationController
     self.response_body = exporter.generate_template
   end
 
+  def data
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    @columns = @custom_table.custom_columns.order(:position)
+    @relationships = @custom_table.all_relationships.includes(:source_table, :target_table)
+  end
+
   def import_relationship
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
     @relationship = CustomRelationship.find(params[:relationship_id])
@@ -150,7 +156,7 @@ class CustomTablesController < ApplicationController
     @result = importer.import
 
     if @result[:errors].empty?
-      redirect_to export_table_path(@custom_table), notice: "Successfully imported #{@result[:created]} links"
+      redirect_to data_table_path(@custom_table), notice: "Successfully imported #{@result[:created]} links"
     else
       render :import_relationship_results
     end

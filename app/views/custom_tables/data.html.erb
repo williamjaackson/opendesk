@@ -1,0 +1,65 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Data", nil]] %>
+  <%= render "shared/page_heading", title: "Import & Export" %>
+
+  <div class="space-y-8">
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-1">Records</h2>
+      <p class="text-sm text-gray-500 mb-4">Export table data to CSV or import records from a CSV file.</p>
+
+      <div class="flex items-center gap-3">
+        <%= link_to export_table_path(@custom_table),
+          class: "inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
+          <%= lucide_icon("download", class: "h-4 w-4") %>
+          Export
+        <% end %>
+        <%= link_to new_table_csv_import_path(@custom_table),
+          class: "inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
+          <%= lucide_icon("upload", class: "h-4 w-4") %>
+          Import
+        <% end %>
+      </div>
+    </section>
+
+    <% if @relationships.any? %>
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-1">Relationships</h2>
+        <p class="text-sm text-gray-500 mb-4">Export or import links between records. Each relationship is handled separately.</p>
+
+        <div class="space-y-3">
+          <% @relationships.each do |relationship| %>
+            <% is_source = relationship.source_table_id == @custom_table.id %>
+            <% rel_name = is_source ? relationship.name : relationship.inverse_name %>
+            <% other_table = is_source ? relationship.target_table : relationship.source_table %>
+            <div class="flex items-center justify-between gap-4 p-4 bg-white border border-gray-200 rounded-lg">
+              <div class="min-w-0">
+                <div class="flex items-center gap-2">
+                  <span class="text-sm font-medium text-gray-900"><%= rel_name %></span>
+                  <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                    <%= relationship_kind_label(relationship.kind) %>
+                  </span>
+                </div>
+                <p class="text-xs text-gray-500 mt-0.5">
+                  <%= @custom_table.name %> → <%= other_table.name %>
+                </p>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
+                  data: { turbo: false },
+                  class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
+                  <%= lucide_icon("download", class: "h-4 w-4") %>
+                  Export
+                <% end %>
+                <%= link_to import_relationship_table_path(@custom_table, relationship_id: relationship.id),
+                  class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
+                  <%= lucide_icon("upload", class: "h-4 w-4") %>
+                  Import
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+  </div>
+</div>

@@ -100,19 +100,12 @@
                   <% end %>
                 </p>
               </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
-                  data: { turbo: false },
-                  class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
-                  <%= lucide_icon("download", class: "h-4 w-4") %>
-                  Download
-                <% end %>
-                <%= link_to import_relationship_table_path(@custom_table, relationship_id: relationship.id),
-                  class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
-                  <%= lucide_icon("upload", class: "h-4 w-4") %>
-                  Import
-                <% end %>
-              </div>
+              <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
+                data: { turbo: false },
+                class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none shrink-0" do %>
+                <%= lucide_icon("download", class: "h-4 w-4") %>
+                Download
+              <% end %>
             </div>
           <% end %>
         </div>
