@@ -109,7 +109,7 @@ class CustomTablesController < ApplicationController
 
   def export_relationship
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
-    relationship = CustomRelationship.find(params[:relationship_id])
+    relationship = @custom_table.all_relationships.find(params[:relationship_id])
 
     exporter = CsvExporter.new(@custom_table)
 
@@ -138,13 +138,13 @@ class CustomTablesController < ApplicationController
 
   def import_relationship
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
-    @relationship = CustomRelationship.find(params[:relationship_id])
+    @relationship = @custom_table.all_relationships.find(params[:relationship_id])
     @other_table = @relationship.source_table_id == @custom_table.id ? @relationship.target_table : @relationship.source_table
   end
 
   def process_relationship_import
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
-    @relationship = CustomRelationship.find(params[:relationship_id])
+    @relationship = @custom_table.all_relationships.find(params[:relationship_id])
     @other_table = @relationship.source_table_id == @custom_table.id ? @relationship.target_table : @relationship.source_table
 
     unless params[:file].present?
