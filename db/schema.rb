@@ -10,7 +10,22 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_03_054816) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_03_073921) do
+  create_table "csv_imports", force: :cascade do |t|
+    t.json "column_mapping"
+    t.datetime "created_at", null: false
+    t.integer "custom_table_id", null: false
+    t.string "duplicate_handling", default: "create", null: false
+    t.integer "error_count", default: 0
+    t.json "errors_log"
+    t.integer "processed_rows", default: 0
+    t.string "status", default: "pending", null: false
+    t.integer "success_count", default: 0
+    t.integer "total_rows", default: 0
+    t.datetime "updated_at", null: false
+    t.index ["custom_table_id"], name: "index_csv_imports_on_custom_table_id"
+  end
+
   create_table "custom_columns", force: :cascade do |t|
     t.string "column_type", null: false
     t.datetime "created_at", null: false
@@ -139,6 +154,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_054816) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  add_foreign_key "csv_imports", "custom_tables"
   add_foreign_key "custom_columns", "custom_columns", column: "linked_column_id"
   add_foreign_key "custom_columns", "custom_tables"
   add_foreign_key "custom_record_links", "custom_records", column: "source_record_id"
