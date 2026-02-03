@@ -1,4 +1,14 @@
 module ApplicationHelper
+  def relationship_kind_label(kind)
+    case kind
+    when "one_to_one" then "One to One"
+    when "one_to_many" then "One to Many"
+    when "many_to_one" then "Many to One"
+    when "many_to_many" then "Many to Many"
+    else kind.humanize
+    end
+  end
+
   def sample_value_for_type(column_type, variant: 1)
     case column_type
     when "text"
