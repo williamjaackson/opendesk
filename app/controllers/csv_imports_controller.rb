@@ -23,8 +23,10 @@ class CsvImportsController < ApplicationController
 
   def show
     if @csv_import.mapping?
-      @headers = CsvImporter.new(@csv_import).parse_headers
-      @preview_rows = CsvImporter.new(@csv_import).preview_rows
+      importer = CsvImporter.new(@csv_import)
+      @headers = importer.parse_headers
+      @preview_rows = importer.preview_rows
+      @total_rows = importer.count_rows
       @columns = @custom_table.custom_columns.where.not(column_type: "computed").order(:position)
       render :mapping
     end

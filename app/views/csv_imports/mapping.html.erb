@@ -7,7 +7,7 @@
       <h2 class="text-lg font-semibold text-gray-900 mb-1">Your data</h2>
       <p class="text-sm text-gray-500 mb-4">
         <% if @preview_rows.any? %>
-          Preview of the first <%= @preview_rows.size %> rows from your file.
+          Showing rows 1–<%= @preview_rows.size %> of <%= number_with_delimiter(@total_rows) %>.
         <% else %>
           Your file contains headers but no data rows.
         <% end %>
