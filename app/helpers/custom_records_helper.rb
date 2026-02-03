@@ -1,23 +1,23 @@
 module CustomRecordsHelper
-  def column_value_tag(column, value, required:, errors: false)
+  def column_value_tag(column, value, required:, errors: false, autofocus: false)
     name = "values[#{column.id}]"
     id = "values_#{column.id}"
     border = errors ? "border-red-300 focus:border-red-500 focus:ring-red-500" : "border-gray-300 focus:border-gray-500 focus:ring-gray-500"
 
     type_input_tag(column.column_type, name, id, value, border: border, required: required,
-      select_options: column.column_type == "select" ? column.effective_options : [], label: column.name)
+      select_options: column.column_type == "select" ? column.effective_options : [], label: column.name, autofocus: autofocus)
   end
 
-  def type_input_tag(type, name, id, value, border:, required: false, select_options: [], label: nil)
+  def type_input_tag(type, name, id, value, border:, required: false, select_options: [], label: nil, autofocus: false)
     classes = "block w-full rounded-md border #{border} bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1"
 
     case type
     when "number"
-      text_field_tag name, value, id: id, class: classes, required: required, inputmode: "numeric", pattern: "[0-9]+"
+      text_field_tag name, value, id: id, class: classes, required: required, autofocus: autofocus, inputmode: "numeric", pattern: "[0-9]+"
     when "decimal"
-      text_field_tag name, value, id: id, class: classes, required: required, inputmode: "decimal", pattern: "[0-9]+(\.[0-9]+)?"
+      text_field_tag name, value, id: id, class: classes, required: required, autofocus: autofocus, inputmode: "decimal", pattern: "[0-9]+(\.[0-9]+)?"
     when "email"
-      email_field_tag name, value, id: id, class: classes, required: required
+      email_field_tag name, value, id: id, class: classes, required: required, autofocus: autofocus
     when "boolean"
       checked = value == "1"
       tag.div data: { controller: "checkbox" } do
@@ -35,19 +35,19 @@ module CustomRecordsHelper
         }
       end
     when "date"
-      date_field_tag name, value, id: id, class: classes, required: required
+      date_field_tag name, value, id: id, class: classes, required: required, autofocus: autofocus
     when "time"
-      time_field_tag name, value, id: id, class: classes, required: required
+      time_field_tag name, value, id: id, class: classes, required: required, autofocus: autofocus
     when "datetime"
-      datetime_local_field_tag name, value, id: id, class: classes, required: required
+      datetime_local_field_tag name, value, id: id, class: classes, required: required, autofocus: autofocus
     when "select"
-      select_dropdown_tag(name, id, value, select_options, border)
+      select_dropdown_tag(name, id, value, select_options, border, autofocus: autofocus)
     when "currency"
-      currency_input_tag(name, id, value, border)
+      currency_input_tag(name, id, value, border, autofocus: autofocus)
     when "colour"
-      color_field_tag name, value.presence || "#000000", id: id, class: "h-10 w-20 rounded-md border #{border} bg-white p-1 cursor-pointer"
+      color_field_tag name, value.presence || "#000000", id: id, class: "h-10 w-20 rounded-md border #{border} bg-white p-1 cursor-pointer", autofocus: autofocus
     else
-      text_field_tag name, value, id: id, class: classes, required: required
+      text_field_tag name, value, id: id, class: classes, required: required, autofocus: autofocus
     end
   end
 
@@ -95,7 +95,7 @@ module CustomRecordsHelper
 
   private
 
-  def select_dropdown_tag(name, id, value, options, border)
+  def select_dropdown_tag(name, id, value, options, border, autofocus: false)
     selected_label = options.include?(value) ? value : ""
 
     tag.div(data: { controller: "dropdown", action: "keydown->dropdown#keydown" }, class: "relative") do
@@ -103,6 +103,7 @@ module CustomRecordsHelper
       tag.div(class: "relative") do
         tag.input(
           type: "text", readonly: true, placeholder: "Select...", value: selected_label,
+          autofocus: autofocus || nil,
           data: { action: "click->dropdown#toggle", dropdown_target: "button" },
           class: "block w-full rounded-md border #{border} bg-white px-3 py-2 pr-8 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-1 cursor-pointer"
         ) +
@@ -134,7 +135,7 @@ module CustomRecordsHelper
     end
   end
 
-  def currency_input_tag(name, id, value, border)
+  def currency_input_tag(name, id, value, border, autofocus: false)
     wrapper_border = border.gsub("focus:", "focus-within:")
 
     tag.div(data: { controller: "currency-input" }) do
@@ -143,6 +144,7 @@ module CustomRecordsHelper
         tag.span("$", class: "pl-3 pr-1 text-gray-500 select-none") +
         tag.input(
           type: "text", id: id,
+          autofocus: autofocus || nil,
           data: { currency_input_target: "dollars", action: "input->currency-input#update keydown->currency-input#dollarsKeydown" },
           class: "border-0 bg-transparent py-2 px-0 text-sm focus:outline-none focus:ring-0",
           placeholder: "0", size: 1,
