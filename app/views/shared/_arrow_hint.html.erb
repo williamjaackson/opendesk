@@ -1,0 +1,32 @@
+<%# locals: (label:, direction: "right", animated: true) %>
+<div class="flex items-center gap-2 pointer-events-none">
+  <% if direction == "right" %>
+    <% if label.present? %><span class="text-xs font-medium text-gray-400 whitespace-nowrap"><%= label %></span><% end %>
+    <svg width="40" height="14" viewBox="0 0 40 14" fill="none" aria-hidden="true" class="<%= 'animate-arrow-right' if animated %>">
+      <path d="M0 7 L34 7" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M29 2 L36 7 L29 12" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+  <% elsif direction == "left" %>
+    <svg width="40" height="14" viewBox="0 0 40 14" fill="none" aria-hidden="true" class="<%= 'animate-arrow-left' if animated %>">
+      <path d="M40 7 L6 7" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M11 2 L4 7 L11 12" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    </svg>
+    <% if label.present? %><span class="text-xs font-medium text-gray-400 whitespace-nowrap"><%= label %></span><% end %>
+  <% elsif direction == "up" %>
+    <div class="flex flex-col items-center">
+      <svg width="14" height="40" viewBox="0 0 14 40" fill="none" aria-hidden="true" class="<%= 'animate-arrow-up' if animated %>">
+        <path d="M7 40 L7 6" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M2 11 L7 4 L12 11" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <% if label.present? %><span class="text-xs font-medium text-gray-400 mt-1 whitespace-nowrap"><%= label %></span><% end %>
+    </div>
+  <% elsif direction == "down" %>
+    <div class="flex flex-col items-center">
+      <% if label.present? %><span class="text-xs font-medium text-gray-400 mb-1 whitespace-nowrap"><%= label %></span><% end %>
+      <svg width="14" height="40" viewBox="0 0 14 40" fill="none" aria-hidden="true" class="<%= 'animate-arrow-down' if animated %>">
+        <path d="M7 0 L7 34" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M2 29 L7 36 L12 29" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+  <% end %>
+</div>

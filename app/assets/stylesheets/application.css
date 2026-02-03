@@ -13,6 +13,10 @@ body:not([data-edit-mode]) [data-edit-only] {
   display: none !important;
 }
 
+body[data-edit-mode] [data-hide-on-edit-mode] {
+  display: none !important;
+}
+
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -20,4 +24,40 @@ body:not([data-edit-mode]) [data-edit-only] {
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+@keyframes arrow-bounce-right {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(4px); }
+}
+
+@keyframes arrow-bounce-left {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-4px); }
+}
+
+@keyframes arrow-bounce-up {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes arrow-bounce-down {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+
+.animate-arrow-right {
+  animation: arrow-bounce-right 1.5s ease-in-out infinite;
+}
+
+.animate-arrow-left {
+  animation: arrow-bounce-left 1.5s ease-in-out infinite;
+}
+
+.animate-arrow-up {
+  animation: arrow-bounce-up 1.5s ease-in-out infinite;
+}
+
+.animate-arrow-down {
+  animation: arrow-bounce-down 1.5s ease-in-out infinite;
 }

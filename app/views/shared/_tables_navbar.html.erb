@@ -28,12 +28,8 @@
             <%= lucide_icon("plus", class: "h-4 w-4") %>
           <% end %>
           <% if tables.empty? && controller_name == "table_groups" && action_name == "show" %>
-            <div class="absolute top-full mt-6 left-0 w-7 flex flex-col items-center pointer-events-none">
-              <svg width="14" height="32" viewBox="0 0 14 32" fill="none">
-                <path d="M7 32 L7 6" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round"/>
-                <path d="M2 11 L7 4 L12 11" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-              </svg>
-              <span class="text-xs font-medium text-gray-400 mt-1.5 whitespace-nowrap">click here</span>
+            <div class="absolute top-full mt-6 left-0 w-7 flex justify-center">
+              <%= render "shared/arrow_hint", label: "click here", direction: "up" %>
             </div>
           <% end %>
         </div>

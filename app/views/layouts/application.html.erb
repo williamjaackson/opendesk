@@ -56,7 +56,12 @@
               </div>
             <% end %>
           </div>
-          <div>
+          <div class="flex items-center gap-3">
+            <% if authenticated? && managing_organisation? && controller_name == "table_groups" && action_name == "show" %>
+              <div data-hide-on-edit-mode>
+                <%= render "shared/arrow_hint", label: "click here", direction: "right" %>
+              </div>
+            <% end %>
             <% if authenticated? %>
               <div data-controller="dropdown" data-action="keydown->dropdown#keydown" class="relative">
                 <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
