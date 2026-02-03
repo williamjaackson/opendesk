@@ -5,19 +5,25 @@
   <div class="space-y-8">
     <section>
       <h2 class="text-lg font-semibold text-gray-900 mb-1">Your data</h2>
-      <% if @preview_rows.any? %>
-        <p class="text-sm text-gray-500 mb-4">Preview of the first <%= @preview_rows.size %> rows from your file.</p>
+      <p class="text-sm text-gray-500 mb-4">
+        <% if @preview_rows.any? %>
+          Preview of the first <%= @preview_rows.size %> rows from your file.
+        <% else %>
+          Your file contains headers but no data rows.
+        <% end %>
+      </p>
 
-        <div class="overflow-x-auto border border-gray-200 rounded-md">
-          <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50">
-              <tr>
-                <% @headers.each do |header| %>
-                  <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= header %></th>
-                <% end %>
-              </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+      <div class="overflow-x-auto border border-gray-200 rounded-md">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <% @headers.each do |header| %>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= header %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @preview_rows.any? %>
               <% @preview_rows.each do |row| %>
                 <tr>
                   <% @headers.each do |header| %>
@@ -25,12 +31,14 @@
                   <% end %>
                 </tr>
               <% end %>
-            </tbody>
-          </table>
-        </div>
-      <% else %>
-        <p class="text-sm text-gray-500">No data rows in file.</p>
-      <% end %>
+            <% else %>
+              <tr>
+                <td colspan="<%= @headers.size %>" class="px-3 py-4 text-center text-gray-400 italic">No data</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <%= form_with url: table_csv_import_path(@custom_table, @csv_import), method: :patch, html: { novalidate: true }, data: { controller: "import-mapping" } do |form| %>
