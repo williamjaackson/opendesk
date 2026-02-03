@@ -11,7 +11,12 @@ class RelationshipImporter
 
   def import
     content = @file.read.force_encoding("UTF-8").sub(/\A\xEF\xBB\xBF/, "")
-    csv = CSV.parse(content, headers: true)
+
+    begin
+      csv = CSV.parse(content, headers: true)
+    rescue CSV::MalformedCSVError => e
+      return { created: 0, skipped: 0, errors: [ { row: nil, message: "Invalid CSV: #{e.message}" } ] }
+    end
 
     result = { created: 0, skipped: 0, errors: [] }
 
@@ -19,9 +24,13 @@ class RelationshipImporter
     current_table_header = @custom_table.name.singularize
     other_table_header = @other_table.name.singularize
 
-    # Build lookup hashes upfront for performance
-    current_table_lookup = build_display_name_lookup(@custom_table)
-    other_table_lookup = build_display_name_lookup(@other_table)
+    # Collect unique names from CSV first (only load records we actually need)
+    current_names = csv.map { |row| row[current_table_header]&.strip }.compact.uniq
+    other_names = csv.map { |row| row[other_table_header]&.strip }.compact.uniq
+
+    # Build targeted lookup hashes (only for names in the CSV)
+    current_table_lookup = build_display_name_lookup(@custom_table, current_names)
+    other_table_lookup = build_display_name_lookup(@other_table, other_names)
 
     csv.each.with_index(2) do |row, row_number|
       current_table_name = row[current_table_header]&.strip
@@ -87,18 +96,62 @@ class RelationshipImporter
 
   private
 
-  def build_display_name_lookup(table)
+  def build_display_name_lookup(table, names_to_find)
+    return {} if names_to_find.empty?
+
+    # Query records by their display name (first non-blank column value)
+    # Using SQL for efficiency with large tables
+    sql = <<~SQL
+      SELECT
+        cr.id as record_id,
+        COALESCE(
+          (SELECT cv.value
+           FROM custom_values cv
+           JOIN custom_columns cc ON cc.id = cv.custom_column_id
+           WHERE cv.custom_record_id = cr.id
+             AND cv.value IS NOT NULL
+             AND cv.value != ''
+           ORDER BY cc.position
+           LIMIT 1),
+          CONCAT('Record #', cr.id)
+        ) as display_name
+      FROM custom_records cr
+      WHERE cr.custom_table_id = ?
+    SQL
+
+    results = ActiveRecord::Base.connection.exec_query(
+      ActiveRecord::Base.sanitize_sql([ sql, table.id ])
+    )
+
+    # Build lookup hash, filtering to only names we're looking for
+    names_set = names_to_find.to_set
     lookup = {}
-    table.custom_records.includes(custom_values: :custom_column).find_each do |record|
-      name = record.display_name
-      if lookup.key?(name)
-        # Multiple records with same display name - store as array to indicate ambiguity
-        existing = lookup[name]
-        lookup[name] = existing.is_a?(Array) ? existing + [ record ] : [ existing, record ]
+    record_ids = []
+
+    results.rows.each do |record_id, display_name|
+      next unless names_set.include?(display_name)
+      record_ids << record_id
+
+      if lookup.key?(display_name)
+        existing = lookup[display_name]
+        lookup[display_name] = existing.is_a?(Array) ? existing + [ record_id ] : [ existing, record_id ]
       else
-        lookup[name] = record
+        lookup[display_name] = record_id
       end
     end
+
+    # Load actual record objects for the IDs we found
+    records_by_id = table.custom_records.where(id: record_ids).index_by(&:id)
+
+    # Replace IDs with record objects
+    lookup.transform_values! do |value|
+      if value.is_a?(Array)
+        value.map { |id| records_by_id[id] }
+      else
+        records_by_id[value]
+      end
+    end
+
     lookup
   end
 end
