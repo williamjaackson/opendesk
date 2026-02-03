@@ -45,14 +45,10 @@ class CsvExporter
         other_table.name.singularize
       ])
 
-      # Query all links for this relationship in one query
       links = CustomRecordLink.where(custom_relationship: relationship)
-
-      # Batch load all display names upfront
       all_record_ids = links.pluck(:source_record_id, :target_record_id).flatten.uniq
       display_names = batch_load_display_names(all_record_ids)
 
-      # Stream output - one row per link
       links.find_each do |link|
         if is_source
           current_name = display_names[link.source_record_id]
@@ -93,19 +89,9 @@ class CsvExporter
     end
   end
 
-  def relationship_name_for(table, relationship)
-    if relationship.source_table_id == table.id
-      relationship.name
-    else
-      relationship.inverse_name
-    end
-  end
-
   def batch_load_display_names(record_ids)
     return {} if record_ids.empty?
 
-    # Get first non-blank value per record, ordered by column position
-    # Using a single query with window function for efficiency
     sql = <<~SQL
       SELECT DISTINCT ON (cv.custom_record_id)
         cv.custom_record_id,
@@ -122,7 +108,6 @@ class CsvExporter
       ActiveRecord::Base.sanitize_sql([ sql, record_ids ])
     )
 
-    # Build hash and add fallbacks for records with no values
     names = results.rows.to_h { |row| [ row[0], row[1] ] }
     record_ids.each { |id| names[id] ||= "Record ##{id}" }
     names

@@ -20,15 +20,12 @@ class RelationshipImporter
 
     result = { created: 0, skipped: 0, errors: [] }
 
-    # Match columns by header name (singularized table names)
     current_table_header = @custom_table.name.singularize
     other_table_header = @other_table.name.singularize
 
-    # Collect unique names from CSV first (only load records we actually need)
     current_names = csv.map { |row| row[current_table_header]&.strip }.compact.uniq
     other_names = csv.map { |row| row[other_table_header]&.strip }.compact.uniq
 
-    # Build targeted lookup hashes (only for names in the CSV)
     current_table_lookup = build_display_name_lookup(@custom_table, current_names)
     other_table_lookup = build_display_name_lookup(@other_table, other_names)
 
@@ -41,7 +38,6 @@ class RelationshipImporter
         next
       end
 
-      # Find records by display name
       current_record = current_table_lookup[current_table_name]
       other_record = other_table_lookup[other_table_name]
 
@@ -65,7 +61,6 @@ class RelationshipImporter
         next
       end
 
-      # Create the link - determine source/target based on relationship direction
       if @is_source
         link = CustomRecordLink.new(
           custom_relationship: @relationship,
@@ -99,8 +94,6 @@ class RelationshipImporter
   def build_display_name_lookup(table, names_to_find)
     return {} if names_to_find.empty?
 
-    # Query records by their display name (first non-blank column value)
-    # Using SQL for efficiency with large tables
     sql = <<~SQL
       SELECT
         cr.id as record_id,
@@ -123,7 +116,6 @@ class RelationshipImporter
       ActiveRecord::Base.sanitize_sql([ sql, table.id ])
     )
 
-    # Build lookup hash, filtering to only names we're looking for
     names_set = names_to_find.to_set
     lookup = {}
     record_ids = []
@@ -140,10 +132,8 @@ class RelationshipImporter
       end
     end
 
-    # Load actual record objects for the IDs we found
     records_by_id = table.custom_records.where(id: record_ids).index_by(&:id)
 
-    # Replace IDs with record objects
     lookup.transform_values! do |value|
       if value.is_a?(Array)
         value.map { |id| records_by_id[id] }
