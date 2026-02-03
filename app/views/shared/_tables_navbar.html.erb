@@ -19,7 +19,7 @@
               </span>
               <%= table.name %>
               <% if table.protected? %>
-                <%= lucide_icon("lock", class: "h-3 w-3 text-amber-500 flex-shrink-0") %>
+                <%= lucide_icon("lock", class: "h-3 w-3 flex-shrink-0 #{active ? 'text-amber-500' : 'text-gray-400'}") %>
               <% end %>
             <% end %>
           <% end %>
