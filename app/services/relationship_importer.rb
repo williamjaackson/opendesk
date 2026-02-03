@@ -94,7 +94,7 @@ class RelationshipImporter
       if lookup.key?(name)
         # Multiple records with same display name - store as array to indicate ambiguity
         existing = lookup[name]
-        lookup[name] = existing.is_a?(Array) ? existing + [record] : [existing, record]
+        lookup[name] = existing.is_a?(Array) ? existing + [ record ] : [ existing, record ]
       else
         lookup[name] = record
       end
