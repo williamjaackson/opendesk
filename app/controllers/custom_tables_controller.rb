@@ -92,12 +92,32 @@ class CustomTablesController < ApplicationController
 
   def export
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    @columns = @custom_table.custom_columns.order(:position)
+    @relationships = @custom_table.all_relationships.includes(:source_table, :target_table)
+
+    if params[:columns].present?
+      column_ids = params[:columns].map(&:to_i)
+      selected_columns = @custom_table.custom_columns.where(id: column_ids).order(:position)
+      exporter = CsvExporter.new(@custom_table, columns: selected_columns)
+
+      response.headers["Content-Type"] = "text/csv; charset=utf-8"
+      response.headers["Content-Disposition"] = "attachment; filename=\"#{@custom_table.slug}-export.csv\""
+
+      self.response_body = exporter.generate
+    end
+  end
+
+  def export_relationship
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    relationship = CustomRelationship.find(params[:relationship_id])
+
     exporter = CsvExporter.new(@custom_table)
 
     response.headers["Content-Type"] = "text/csv; charset=utf-8"
-    response.headers["Content-Disposition"] = "attachment; filename=\"#{@custom_table.slug}-export.csv\""
+    rel_name = relationship.source_table_id == @custom_table.id ? relationship.name : relationship.inverse_name
+    response.headers["Content-Disposition"] = "attachment; filename=\"#{@custom_table.slug}-#{rel_name.parameterize}-links.csv\""
 
-    self.response_body = exporter.generate
+    self.response_body = exporter.generate_relationship(relationship)
   end
 
   def template

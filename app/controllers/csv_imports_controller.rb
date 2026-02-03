@@ -23,25 +23,27 @@ class CsvImportsController < ApplicationController
     if @csv_import.mapping?
       @headers = CsvImporter.new(@csv_import).parse_headers
       @preview_rows = CsvImporter.new(@csv_import).preview_rows
-      @columns = @custom_table.custom_columns.order(:position)
-      @relationships = @custom_table.all_relationships
+      @columns = @custom_table.custom_columns.where.not(column_type: "computed").order(:position)
       render :mapping
     end
   end
 
   def update
     if @csv_import.mapping?
-      @csv_import.column_mapping = params[:column_mapping] || {}
-      @csv_import.duplicate_handling = params[:duplicate_handling] if params[:duplicate_handling].present?
+      @csv_import.column_mapping = build_column_mapping
 
-      row_count = CsvImporter.new(@csv_import).count_rows
+      importer = CsvImporter.new(@csv_import)
+      row_count = importer.count_rows
+
+      # Create any new columns first
+      importer.create_columns_from_mapping!
 
       if row_count > 500
         @csv_import.update!(status: "processing")
         CsvImportJob.perform_later(@csv_import.id)
       else
         @csv_import.update!(status: "processing")
-        CsvImporter.new(@csv_import).import_all
+        importer.import_all
       end
 
       redirect_to table_csv_import_path(@custom_table, @csv_import)
@@ -52,7 +54,7 @@ class CsvImportsController < ApplicationController
 
   def destroy
     @csv_import.destroy
-    redirect_to table_path(@custom_table)
+    redirect_to edit_table_path(@custom_table)
   end
 
   private
@@ -71,5 +73,21 @@ class CsvImportsController < ApplicationController
 
   def csv_import_params
     params.require(:csv_import).permit(:file)
+  end
+
+  def build_column_mapping
+    mapping = {}
+    return mapping unless params[:mapping]
+
+    params[:mapping].each do |csv_header, config|
+      action = config[:action]
+      mapping[csv_header] = {
+        "action" => action,
+        "column_id" => action == "existing" ? config[:column_id] : nil,
+        "type" => action == "create" ? config[:type] : nil,
+        "name" => action == "create" ? config[:name] : nil
+      }
+    end
+    mapping
   end
 end

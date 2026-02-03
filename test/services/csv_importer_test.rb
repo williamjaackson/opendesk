@@ -40,7 +40,9 @@ class CsvImporterTest < ActiveSupport::TestCase
   test "import_row creates new record with mapped columns" do
     column = custom_columns(:name)
     csv_import = create_import_with_file("Name\nNewPerson")
-    csv_import.update!(column_mapping: { "Name" => column.id.to_s })
+    csv_import.update!(column_mapping: {
+      "Name" => { "action" => "existing", "column_id" => column.id.to_s }
+    })
     importer = CsvImporter.new(csv_import)
 
     row = { "Name" => "NewPerson" }
@@ -50,48 +52,12 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal "NewPerson", result.record.custom_values.find_by(custom_column: column).value
   end
 
-  test "import_row skips when duplicate_handling is skip and ID exists" do
-    existing_record = custom_records(:alice)
-    csv_import = create_import_with_file("ID,Name\n#{existing_record.id},Updated")
-    csv_import.update!(
-      column_mapping: { "ID" => "__id__", "Name" => custom_columns(:name).id.to_s },
-      duplicate_handling: "skip"
-    )
-    importer = CsvImporter.new(csv_import)
-
-    row = { "ID" => existing_record.id.to_s, "Name" => "Updated" }
-    result = importer.import_row(row)
-
-    assert_not result.success
-    assert_includes result.errors.first, "Skipped"
-  end
-
-  test "import_row updates when duplicate_handling is update and ID exists" do
-    existing_record = custom_records(:alice)
-    column = custom_columns(:name)
-    existing_record.custom_values.find_or_create_by!(custom_column: column) do |cv|
-      cv.value = "Original"
-    end
-
-    csv_import = create_import_with_file("ID,Name\n#{existing_record.id},Updated")
-    csv_import.update!(
-      column_mapping: { "ID" => "__id__", "Name" => column.id.to_s },
-      duplicate_handling: "update"
-    )
-    importer = CsvImporter.new(csv_import)
-
-    row = { "ID" => existing_record.id.to_s, "Name" => "Updated" }
-    result = importer.import_row(row)
-
-    assert result.success
-    existing_record.reload
-    assert_equal "Updated", existing_record.custom_values.find_by(custom_column: column).value
-  end
-
   test "import_row parses boolean values" do
     column = custom_columns(:boolean)
     csv_import = create_import_with_file("Active\nYes")
-    csv_import.update!(column_mapping: { "Active" => column.id.to_s })
+    csv_import.update!(column_mapping: {
+      "Active" => { "action" => "existing", "column_id" => column.id.to_s }
+    })
     importer = CsvImporter.new(csv_import)
 
     row = { "Active" => "Yes" }
@@ -101,12 +67,30 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal "1", result.record.custom_values.find_by(custom_column: column).value
   end
 
+  test "import_row skips columns marked as skip" do
+    column = custom_columns(:name)
+    csv_import = create_import_with_file("Name,Other\nTest,Ignored")
+    csv_import.update!(column_mapping: {
+      "Name" => { "action" => "existing", "column_id" => column.id.to_s },
+      "Other" => { "action" => "skip" }
+    })
+    importer = CsvImporter.new(csv_import)
+
+    row = { "Name" => "Test", "Other" => "Ignored" }
+    result = importer.import_row(row)
+
+    assert result.success
+    assert_equal 1, result.record.custom_values.count
+  end
+
   test "import_all processes all rows" do
     column = custom_columns(:name)
     csv_import = create_import_with_file("Name\nPerson1\nPerson2\nPerson3")
     csv_import.update!(
       status: "processing",
-      column_mapping: { "Name" => column.id.to_s }
+      column_mapping: {
+        "Name" => { "action" => "existing", "column_id" => column.id.to_s }
+      }
     )
     importer = CsvImporter.new(csv_import)
 
@@ -126,7 +110,9 @@ class CsvImporterTest < ActiveSupport::TestCase
     csv_import = create_import_with_file("Email\ninvalid-email\nvalid@example.com")
     csv_import.update!(
       status: "processing",
-      column_mapping: { "Email" => column.id.to_s }
+      column_mapping: {
+        "Email" => { "action" => "existing", "column_id" => column.id.to_s }
+      }
     )
     importer = CsvImporter.new(csv_import)
 
@@ -136,6 +122,25 @@ class CsvImporterTest < ActiveSupport::TestCase
     assert_equal 1, csv_import.error_count
     assert_equal 1, csv_import.success_count
     assert csv_import.errors_log.any? { |e| e["row"] == 2 || e[:row] == 2 }
+  end
+
+  test "create_columns_from_mapping creates new columns" do
+    csv_import = create_import_with_file("NewColumn\nValue")
+    csv_import.update!(column_mapping: {
+      "NewColumn" => { "action" => "create", "name" => "My New Column", "type" => "text" }
+    })
+    importer = CsvImporter.new(csv_import)
+
+    assert_difference -> { @table.custom_columns.count }, 1 do
+      importer.create_columns_from_mapping!
+    end
+
+    new_column = @table.custom_columns.find_by(name: "My New Column")
+    assert_not_nil new_column
+    assert_equal "text", new_column.column_type
+
+    csv_import.reload
+    assert_equal new_column.id, csv_import.column_mapping["NewColumn"]["column_id"]
   end
 
   private

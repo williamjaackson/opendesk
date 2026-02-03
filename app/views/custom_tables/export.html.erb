@@ -1,0 +1,62 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Export", nil]] %>
+  <%= render "shared/page_heading", title: "Export data" %>
+
+  <div class="space-y-6">
+    <section class="bg-white rounded-lg border border-gray-200 p-6">
+      <h2 class="text-sm font-medium text-gray-900 mb-4">Export records</h2>
+
+      <%= form_with url: export_table_path(@custom_table), method: :get, data: { turbo: false } do |form| %>
+        <div class="mb-4">
+          <p class="text-sm text-gray-600 mb-3">Select columns to include in the export:</p>
+          <div class="space-y-2">
+            <% @columns.each do |column| %>
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="columns[]" value="<%= column.id %>" checked
+                  class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-500">
+                <span class="text-sm text-gray-700"><%= column.name %></span>
+                <% if column.computed? %>
+                  <span class="text-xs text-gray-400">(computed)</span>
+                <% end %>
+              </label>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <%= form.submit "Download CSV", class: "inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 transition-colors cursor-pointer select-none" %>
+        </div>
+      <% end %>
+    </section>
+
+    <% if @relationships.any? %>
+      <section class="bg-white rounded-lg border border-gray-200 p-6">
+        <h2 class="text-sm font-medium text-gray-900 mb-4">Export relationships</h2>
+        <p class="text-sm text-gray-600 mb-4">Relationship data is exported separately. Each export contains the IDs of linked records.</p>
+
+        <div class="space-y-3">
+          <% @relationships.each do |relationship| %>
+            <% rel_name = relationship.source_table_id == @custom_table.id ? relationship.name : relationship.inverse_name %>
+            <% other_table = relationship.source_table_id == @custom_table.id ? relationship.target_table : relationship.source_table %>
+            <div class="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+              <div>
+                <span class="text-sm font-medium text-gray-700"><%= rel_name %></span>
+                <span class="text-sm text-gray-400 ml-2">links to <%= other_table.name %></span>
+              </div>
+              <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
+                data: { turbo: false },
+                class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-100 transition-colors" do %>
+                <%= lucide_icon("download", class: "h-4 w-4") %>
+                Export
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </section>
+    <% end %>
+
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", style: "ghost", label: "Back to table settings", href: edit_table_path(@custom_table) %>
+    </div>
+  </div>
+</div>

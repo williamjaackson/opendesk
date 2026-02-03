@@ -83,13 +83,13 @@
         <h2 class="text-lg font-semibold text-gray-900 mb-1">Data</h2>
         <p class="text-sm text-gray-500 mb-4">Export table data to CSV or import records from a CSV file.</p>
         <div class="flex items-center gap-3">
-          <%= link_to export_table_path(@custom_table, format: :csv), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
+          <%= link_to export_table_path(@custom_table), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
             <%= lucide_icon("download", class: "h-4 w-4") %>
-            Export CSV
+            Export
           <% end %>
           <%= link_to new_table_csv_import_path(@custom_table), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
             <%= lucide_icon("upload", class: "h-4 w-4") %>
-            Import CSV
+            Import
           <% end %>
         </div>
       </section>

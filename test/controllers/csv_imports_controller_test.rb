@@ -55,8 +55,7 @@ class CsvImportsControllerTest < ActionDispatch::IntegrationTest
     column = custom_columns(:name)
 
     patch table_csv_import_path(@table, csv_import), params: {
-      column_mapping: { "Name" => column.id.to_s },
-      duplicate_handling: "create"
+      mapping: { "Name" => { action: "existing", column_id: column.id.to_s } }
     }
 
     csv_import.reload
@@ -71,7 +70,7 @@ class CsvImportsControllerTest < ActionDispatch::IntegrationTest
       delete table_csv_import_path(@table, csv_import)
     end
 
-    assert_redirected_to table_path(@table)
+    assert_redirected_to edit_table_path(@table)
   end
 
   test "should require builder mode" do

@@ -6,41 +6,22 @@ class CsvExporterTest < ActiveSupport::TestCase
     @exporter = CsvExporter.new(@table)
   end
 
-  test "headers include ID as first column" do
-    headers = @exporter.headers
-    assert_equal "ID", headers.first
-  end
-
   test "headers include column names" do
     headers = @exporter.headers
     assert_includes headers, "Name"
     assert_includes headers, "Email"
   end
 
-  test "headers include relationship columns with ID and Name" do
-    @table.source_relationships.create!(
-      name: "Assigned Deals",
-      inverse_name: "Assigned Contact",
-      kind: "one_to_many",
-      target_table: custom_tables(:deals)
-    )
-
+  test "headers do not include ID column" do
     headers = @exporter.headers
-    assert_includes headers, "Assigned Deals (ID)"
-    assert_includes headers, "Assigned Deals (Name)"
+    refute_includes headers, "ID"
   end
 
-  test "template_headers marks computed columns" do
-    column = @table.custom_columns.create!(
-      name: "Full Name",
-      column_type: "computed",
-      formula: "{Name}",
-      result_type: "text",
-      position: 100
-    )
-
-    headers = @exporter.template_headers
-    assert_includes headers, "Full Name (computed)"
+  test "can filter to specific columns" do
+    column = custom_columns(:name)
+    exporter = CsvExporter.new(@table, columns: [ column ])
+    headers = exporter.headers
+    assert_equal [ "Name" ], headers
   end
 
   test "generate produces valid CSV with BOM" do
@@ -48,10 +29,9 @@ class CsvExporterTest < ActiveSupport::TestCase
     assert csv_content.start_with?(CsvExporter::UTF8_BOM)
   end
 
-  test "generate includes record IDs" do
-    record = @table.custom_records.first
+  test "generate includes record data" do
     csv_content = @exporter.generate.to_a.join
-    assert_includes csv_content, record.id.to_s
+    assert_includes csv_content, "Alice Smith"
   end
 
   test "generate_template produces headers only" do
@@ -60,12 +40,41 @@ class CsvExporterTest < ActiveSupport::TestCase
     assert_equal 1, lines.count
   end
 
+  test "generate_template marks computed columns" do
+    column = @table.custom_columns.create!(
+      name: "Full Name",
+      column_type: "computed",
+      formula: "{Name}",
+      result_type: "text",
+      position: 100
+    )
+
+    template = @exporter.generate_template.to_a.join
+    assert_includes template, "Full Name (computed)"
+  end
+
   test "formats boolean values as Yes/No" do
     record = custom_records(:alice)
     column = custom_columns(:boolean)
-    record.custom_values.create!(custom_column: column, value: "1")
+    record.custom_values.find_or_create_by!(custom_column: column) do |cv|
+      cv.value = "1"
+    end
 
     csv_content = @exporter.generate.to_a.join
     assert_includes csv_content, "Yes"
+  end
+
+  test "generate_relationship creates CSV with linked records" do
+    relationship = CustomRelationship.create!(
+      name: "Assigned Deals",
+      inverse_name: "Assigned Contact",
+      kind: "one_to_many",
+      source_table: @table,
+      target_table: custom_tables(:deals)
+    )
+
+    csv_content = @exporter.generate_relationship(relationship).to_a.join
+    assert_includes csv_content, "Contact"
+    assert_includes csv_content, "Deal"
   end
 end

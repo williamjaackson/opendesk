@@ -1,13 +1,11 @@
 class CsvImport < ApplicationRecord
   STATUSES = %w[pending mapping processing completed failed].freeze
-  DUPLICATE_HANDLING_OPTIONS = %w[create skip update].freeze
 
   belongs_to :custom_table
 
   has_one_attached :file
 
   validates :status, presence: true, inclusion: { in: STATUSES }
-  validates :duplicate_handling, presence: true, inclusion: { in: DUPLICATE_HANDLING_OPTIONS }
   validates :file, presence: true, on: :create
 
   def pending?
