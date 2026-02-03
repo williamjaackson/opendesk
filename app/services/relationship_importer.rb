@@ -19,6 +19,10 @@ class RelationshipImporter
     current_table_header = @custom_table.name.singularize
     other_table_header = @other_table.name.singularize
 
+    # Build lookup hashes upfront for performance
+    current_table_lookup = build_display_name_lookup(@custom_table)
+    other_table_lookup = build_display_name_lookup(@other_table)
+
     csv.each.with_index(2) do |row, row_number|
       current_table_name = row[current_table_header]&.strip
       other_table_name = row[other_table_header]&.strip
@@ -29,8 +33,8 @@ class RelationshipImporter
       end
 
       # Find records by display name
-      current_record = find_record_by_display_name(@custom_table, current_table_name)
-      other_record = find_record_by_display_name(@other_table, other_table_name)
+      current_record = current_table_lookup[current_table_name]
+      other_record = other_table_lookup[other_table_name]
 
       if current_record.nil?
         result[:errors] << { row: row_number, message: "No record found matching '#{current_table_name}' in #{@custom_table.name}" }
@@ -83,17 +87,18 @@ class RelationshipImporter
 
   private
 
-  def find_record_by_display_name(table, name)
-    # Get all records and check their display names
-    # This is not the most efficient but display_name is computed
-    matches = table.custom_records.includes(custom_values: :custom_column).select do |record|
-      record.display_name == name
+  def build_display_name_lookup(table)
+    lookup = {}
+    table.custom_records.includes(custom_values: :custom_column).find_each do |record|
+      name = record.display_name
+      if lookup.key?(name)
+        # Multiple records with same display name - store as array to indicate ambiguity
+        existing = lookup[name]
+        lookup[name] = existing.is_a?(Array) ? existing + [record] : [existing, record]
+      else
+        lookup[name] = record
+      end
     end
-
-    case matches.size
-    when 0 then nil
-    when 1 then matches.first
-    else matches # Return array to indicate ambiguity
-    end
+    lookup
   end
 end
