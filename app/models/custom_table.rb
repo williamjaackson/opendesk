@@ -6,6 +6,7 @@ class CustomTable < ApplicationRecord
   has_many :custom_records, dependent: :destroy
   has_many :source_relationships, class_name: "CustomRelationship", foreign_key: :source_table_id, dependent: :destroy
   has_many :target_relationships, class_name: "CustomRelationship", foreign_key: :target_table_id, dependent: :destroy
+  has_many :csv_imports, dependent: :destroy
 
   validates :name, presence: true, uniqueness: { scope: :organisation_id }
   validates :slug, presence: true, uniqueness: { scope: :organisation_id }

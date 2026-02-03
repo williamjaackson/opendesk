@@ -90,6 +90,39 @@ class CustomTablesController < ApplicationController
     redirect_to edit_table_path(@custom_table)
   end
 
+  def export
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    @columns = @custom_table.custom_columns.order(:position)
+    @relationships = @custom_table.all_relationships.includes(:source_table, :target_table)
+
+    if params[:columns].present?
+      column_ids = params[:columns].map(&:to_i)
+      selected_columns = @custom_table.custom_columns.where(id: column_ids).order(:position)
+      exporter = CsvExporter.new(@custom_table, columns: selected_columns)
+
+      response.headers["Content-Type"] = "text/csv; charset=utf-8"
+      response.headers["Content-Disposition"] = "attachment; filename=\"#{@custom_table.slug}-export.csv\""
+
+      self.response_body = exporter.generate
+    end
+  end
+
+  def template
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    exporter = CsvExporter.new(@custom_table)
+
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    response.headers["Content-Disposition"] = "attachment; filename=\"#{@custom_table.slug}-template.csv\""
+
+    self.response_body = exporter.generate_template
+  end
+
+  def data
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    @columns = @custom_table.custom_columns.order(:position)
+    @relationships = @custom_table.all_relationships.includes(:source_table, :target_table)
+  end
+
   private
 
   def require_organisation

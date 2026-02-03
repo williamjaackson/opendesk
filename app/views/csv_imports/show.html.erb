@@ -1,0 +1,83 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Import", nil]] %>
+
+  <% if @csv_import.processing? %>
+    <%= render "shared/page_heading", title: "Importing..." %>
+    <div class="bg-white rounded-lg border border-gray-200 p-6" data-controller="refresh" data-refresh-interval-value="2000">
+      <div class="mb-4">
+        <div class="flex items-center justify-between text-sm text-gray-600 mb-2">
+          <span>Processing rows...</span>
+          <span><%= @csv_import.processed_rows %> / <%= @csv_import.total_rows %></span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-2">
+          <div class="bg-gray-900 h-2 rounded-full transition-all" style="width: <%= @csv_import.progress_percentage %>%"></div>
+        </div>
+      </div>
+      <p class="text-sm text-gray-500">This page will update automatically. You can leave and check back later.</p>
+    </div>
+
+  <% elsif @csv_import.completed? %>
+    <%= render "shared/page_heading", title: "Import complete" %>
+    <div class="bg-white rounded-lg border border-gray-200 p-6 mb-6">
+      <div class="grid grid-cols-3 gap-4 text-center">
+        <div>
+          <div class="text-2xl font-bold text-gray-900"><%= @csv_import.total_rows %></div>
+          <div class="text-sm text-gray-500">Total rows</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold text-green-600"><%= @csv_import.success_count %></div>
+          <div class="text-sm text-gray-500">Imported</div>
+        </div>
+        <div>
+          <div class="text-2xl font-bold <%= @csv_import.error_count > 0 ? 'text-red-600' : 'text-gray-400' %>"><%= @csv_import.error_count %></div>
+          <div class="text-sm text-gray-500">Errors</div>
+        </div>
+      </div>
+    </div>
+
+    <% if @csv_import.errors_log&.any? %>
+      <div class="bg-white rounded-lg border border-gray-200 mb-6">
+        <div class="px-4 py-3 border-b border-gray-200 bg-red-50">
+          <h2 class="text-sm font-medium text-red-700">Errors (<%= @csv_import.error_count %>)</h2>
+        </div>
+        <div class="divide-y divide-gray-200 max-h-64 overflow-y-auto">
+          <% @csv_import.errors_log.each do |error| %>
+            <div class="px-4 py-2 text-sm">
+              <span class="font-medium text-gray-700">Row <%= error["row"] || error[:row] %>:</span>
+              <span class="text-red-600"><%= error["message"] || error[:message] %></span>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", label: "View table", href: table_path(@custom_table) %>
+      <%= render "shared/button", style: "ghost", label: "Import more", href: new_table_csv_import_path(@custom_table) %>
+    </div>
+
+  <% elsif @csv_import.failed? %>
+    <%= render "shared/page_heading", title: "Import failed" %>
+    <div class="bg-red-50 rounded-lg border border-red-200 p-6 mb-6">
+      <div class="flex items-start gap-3">
+        <%= lucide_icon("alert-circle", class: "h-5 w-5 text-red-600 shrink-0 mt-0.5") %>
+        <div>
+          <h2 class="text-sm font-medium text-red-800">An error occurred during import</h2>
+          <% if @csv_import.errors_log&.any? %>
+            <p class="mt-1 text-sm text-red-700"><%= @csv_import.errors_log.first["message"] || @csv_import.errors_log.first[:message] %></p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", label: "Try again", href: new_table_csv_import_path(@custom_table) %>
+      <%= render "shared/button", style: "ghost", label: "Back to table", href: table_path(@custom_table) %>
+    </div>
+
+  <% else %>
+    <%= render "shared/page_heading", title: "Import" %>
+    <p class="text-gray-600">Import status: <%= @csv_import.status %></p>
+    <%= render "shared/button", label: "Back to table", href: table_path(@custom_table) %>
+  <% end %>
+</div>

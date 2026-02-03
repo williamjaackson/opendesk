@@ -94,4 +94,36 @@ class CustomTablesControllerTest < ActionDispatch::IntegrationTest
     get edit_table_path(custom_tables(:contacts))
     assert_redirected_to organisations_path
   end
+
+  test "should show export page" do
+    get export_table_path(custom_tables(:contacts))
+    assert_response :success
+  end
+
+  test "should export table as CSV with selected columns" do
+    column = custom_columns(:name)
+    get export_table_path(custom_tables(:contacts)), params: { columns: [ column.id ] }
+    assert_response :success
+    assert_equal "text/csv; charset=utf-8", response.headers["Content-Type"]
+    assert_match /attachment.*contacts-export\.csv/, response.headers["Content-Disposition"]
+  end
+
+  test "should download template CSV" do
+    get template_table_path(custom_tables(:contacts))
+    assert_response :success
+    assert_equal "text/csv; charset=utf-8", response.headers["Content-Type"]
+    assert_match /attachment.*contacts-template\.csv/, response.headers["Content-Disposition"]
+  end
+
+  test "should require builder mode for export" do
+    disable_builder_mode
+    get export_table_path(custom_tables(:contacts))
+    assert_redirected_to root_path
+  end
+
+  test "should require builder mode for template" do
+    disable_builder_mode
+    get template_table_path(custom_tables(:contacts))
+    assert_redirected_to root_path
+  end
 end

@@ -1,0 +1,158 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Import", nil]] %>
+  <%= render "shared/page_heading", title: "Map columns" %>
+
+  <div class="space-y-8">
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-1">Your data</h2>
+      <p class="text-sm text-gray-500 mb-4">
+        <% if @preview_rows.any? %>
+          Showing rows 1–<%= @preview_rows.size %> of <%= number_with_delimiter(@total_rows) %>.
+        <% else %>
+          Your file contains headers but no data rows.
+        <% end %>
+      </p>
+
+      <div class="overflow-x-auto border border-gray-200 rounded-md">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <% @headers.each do |header| %>
+                <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= header %></th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% if @preview_rows.any? %>
+              <% @preview_rows.each do |row| %>
+                <tr>
+                  <% @headers.each do |header| %>
+                    <td class="px-3 py-2 text-gray-700 whitespace-nowrap max-w-xs truncate"><%= row[header] %></td>
+                  <% end %>
+                </tr>
+              <% end %>
+            <% else %>
+              <tr>
+                <td colspan="<%= @headers.size %>" class="px-3 py-4 text-center text-gray-400 italic">No data</td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <%= form_with url: table_csv_import_path(@custom_table, @csv_import), method: :patch, html: { novalidate: true }, data: { controller: "import-mapping" } do |form| %>
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-1">Column mapping</h2>
+        <p class="text-sm text-gray-500 mb-4">Choose how to handle each column from your CSV file.</p>
+
+        <div class="space-y-3">
+          <% @headers.each do |header| %>
+            <% matching_column = @columns.find { |c| c.name.downcase == header.downcase } %>
+            <% default_action = matching_column ? "existing" : "skip" %>
+            <div class="p-4 bg-white border border-gray-200 rounded-lg" data-import-mapping-target="row">
+              <div class="flex items-start gap-6">
+                <div class="w-48 shrink-0">
+                  <span class="text-sm font-medium text-gray-900"><%= header %></span>
+                  <% sample_values = @preview_rows.map { |r| r[header] }.compact.first(2) %>
+                  <% if sample_values.any? %>
+                    <p class="text-xs text-gray-400 mt-1 truncate" title="<%= sample_values.join(', ') %>">
+                      <%= sample_values.join(', ') %>
+                    </p>
+                  <% end %>
+                </div>
+
+                <div class="flex-1 space-y-3">
+                  <input type="hidden" name="mapping[<%= header %>][action]" value="<%= default_action %>" data-import-mapping-target="input">
+                  <div class="flex items-center gap-6">
+                    <%# Skip option %>
+                    <div tabindex="0" role="radio" aria-checked="<%= default_action == 'skip' %>" aria-label="Skip"
+                      data-import-mapping-target="option" data-value="skip"
+                      data-action="click->import-mapping#select keydown->import-mapping#keydown"
+                      class="inline-flex items-center gap-2 cursor-pointer select-none group">
+                      <span data-ring class="flex shrink-0 items-center justify-center h-4 w-4 rounded-full border bg-white transition-colors <%= default_action == 'skip' ? 'border-gray-900' : 'border-gray-300' %> group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
+                        <span data-dot class="h-2 w-2 rounded-full bg-gray-900 <%= 'invisible' unless default_action == 'skip' %>"></span>
+                      </span>
+                      <span class="text-sm text-gray-600">Skip</span>
+                    </div>
+
+                    <% if @columns.any? %>
+                      <%# Map to existing option %>
+                      <div tabindex="0" role="radio" aria-checked="<%= default_action == 'existing' %>" aria-label="Map to existing"
+                        data-import-mapping-target="option" data-value="existing"
+                        data-action="click->import-mapping#select keydown->import-mapping#keydown"
+                        class="inline-flex items-center gap-2 cursor-pointer select-none group">
+                        <span data-ring class="flex shrink-0 items-center justify-center h-4 w-4 rounded-full border bg-white transition-colors <%= default_action == 'existing' ? 'border-gray-900' : 'border-gray-300' %> group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
+                          <span data-dot class="h-2 w-2 rounded-full bg-gray-900 <%= 'invisible' unless default_action == 'existing' %>"></span>
+                        </span>
+                        <span class="text-sm text-gray-600">Map to column</span>
+                      </div>
+                    <% end %>
+
+                    <%# Create new column option %>
+                    <div tabindex="0" role="radio" aria-checked="false" aria-label="Create new column"
+                      data-import-mapping-target="option" data-value="create"
+                      data-action="click->import-mapping#select keydown->import-mapping#keydown"
+                      class="inline-flex items-center gap-2 cursor-pointer select-none group">
+                      <span data-ring class="flex shrink-0 items-center justify-center h-4 w-4 rounded-full border bg-white transition-colors border-gray-300 group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
+                        <span data-dot class="h-2 w-2 rounded-full bg-gray-900 invisible"></span>
+                      </span>
+                      <span class="text-sm text-gray-600">Create column</span>
+                    </div>
+                  </div>
+
+                  <% if @columns.any? %>
+                    <div data-import-mapping-target="existingOptions" class="<%= default_action == 'existing' ? '' : 'hidden' %> max-w-xs">
+                      <% column_options = @columns.map { |c| ["#{c.name} (#{c.column_type})", c.id] } %>
+                      <%= render "shared/dropdown",
+                        name: "mapping[#{header}][column_id]",
+                        options: column_options,
+                        selected: matching_column&.id,
+                        placeholder: "Select column...",
+                        inline: true %>
+                    </div>
+                  <% end %>
+
+                  <div data-import-mapping-target="createOptions" class="hidden">
+                    <div class="flex items-center gap-3 max-w-lg">
+                      <div class="flex-1">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <input type="text" name="mapping[<%= header %>][name]" value="<%= header %>"
+                          class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:border-gray-500 focus:ring-gray-500">
+                      </div>
+                      <div class="w-40">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                        <% type_options = [
+                          ["Text", "text"],
+                          ["Number", "number"],
+                          ["Decimal", "decimal"],
+                          ["Email", "email"],
+                          ["Boolean", "boolean"],
+                          ["Date", "date"],
+                          ["Time", "time"],
+                          ["Date & Time", "datetime"],
+                          ["Currency", "currency"],
+                          ["Colour", "colour"]
+                        ] %>
+                        <%= render "shared/dropdown",
+                          name: "mapping[#{header}][type]",
+                          options: type_options,
+                          selected: "text",
+                          placeholder: "Select type...",
+                          inline: true %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </section>
+
+      <div class="mt-6">
+        <%= render "shared/button", label: "Start import", icon: "play", form: form %>
+      </div>
+    <% end %>
+  </div>
+</div>

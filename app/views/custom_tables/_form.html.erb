@@ -80,6 +80,15 @@
 
     <% if builder_mode? %>
       <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-1">Data</h2>
+        <p class="text-sm text-gray-500 mb-4">Export or import records and relationship links.</p>
+        <%= link_to data_table_path(@custom_table), class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none" do %>
+          <%= lucide_icon("database", class: "h-4 w-4") %>
+          Import & Export
+        <% end %>
+      </section>
+
+      <section>
         <h2 class="text-lg font-semibold text-gray-900 mb-1">Protection</h2>
         <p class="text-sm text-gray-500 mb-4">Protected tables are read-only. Records cannot be added, edited, or deleted unless builder mode is enabled.</p>
 

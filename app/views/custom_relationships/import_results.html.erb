@@ -1,0 +1,49 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Data", data_table_path(@custom_table)], ["Import results", nil]] %>
+
+  <%= render "shared/page_heading", title: "Import results" %>
+
+  <div class="space-y-8">
+    <section>
+      <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="grid grid-cols-3 gap-4 text-center">
+          <div>
+            <div class="text-2xl font-bold text-green-600"><%= @result[:created] %></div>
+            <div class="text-sm text-gray-500">Links created</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold text-gray-400"><%= @result[:skipped] %></div>
+            <div class="text-sm text-gray-500">Already existed</div>
+          </div>
+          <div>
+            <div class="text-2xl font-bold <%= @result[:errors].any? ? 'text-red-600' : 'text-gray-400' %>"><%= @result[:errors].size %></div>
+            <div class="text-sm text-gray-500">Errors</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <% if @result[:errors].any? %>
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-1">Errors</h2>
+        <p class="text-sm text-gray-500 mb-4">The following rows could not be imported.</p>
+
+        <div class="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div class="divide-y divide-gray-200 max-h-96 overflow-y-auto">
+            <% @result[:errors].each do |error| %>
+              <div class="px-4 py-2 text-sm">
+                <span class="font-medium text-gray-700">Row <%= error[:row] %>:</span>
+                <span class="text-red-600"><%= error[:message] %></span>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </section>
+    <% end %>
+
+    <div class="flex items-center gap-3">
+      <%= render "shared/button", label: "Done", href: data_table_path(@custom_table) %>
+      <%= render "shared/button", style: "ghost", label: "Import more", href: import_table_relationship_path(@custom_table, @custom_relationship) %>
+    </div>
+  </div>
+</div>
