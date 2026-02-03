@@ -136,7 +136,7 @@
     </div>
 
     <div class="flex items-center gap-3">
-      <%= render "shared/button", label: "Start import", form: form %>
+      <%= render "shared/button", label: "Start import", icon: "upload", form: form %>
       <%= link_to "Cancel", edit_table_path(@custom_table), class: "inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-500 rounded-md hover:text-gray-700 hover:bg-gray-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 transition-colors cursor-pointer select-none", data: { turbo_method: :delete, turbo_confirm: "Cancel this import?" } %>
     </div>
   <% end %>

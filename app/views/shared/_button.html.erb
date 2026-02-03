@@ -14,7 +14,14 @@
     <%= label %>
   <% end %>
 <% elsif local_assigns[:form] %>
-  <%= form.submit label, class: button_classes %>
+  <% if local_assigns[:icon] %>
+    <button type="submit" class="<%= button_classes %>">
+      <%= lucide_icon(icon, class: "h-4 w-4") %>
+      <%= label %>
+    </button>
+  <% else %>
+    <%= form.submit label, class: button_classes %>
+  <% end %>
 <% else %>
   <button class="<%= button_classes %>">
     <% if local_assigns[:icon] %>

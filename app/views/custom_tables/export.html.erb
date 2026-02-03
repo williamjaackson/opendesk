@@ -13,7 +13,7 @@
             <% @columns.each do |column| %>
               <div tabindex="0" role="checkbox" aria-checked="true" aria-label="<%= column.name %>"
                 data-action="click->export-preview#toggle keydown->export-preview#keydown"
-                class="inline-flex items-center gap-2 cursor-pointer select-none group">
+                class="flex items-center gap-2 cursor-pointer select-none group">
                 <input type="hidden" name="columns[]" value="<%= column.id %>" data-export-preview-target="checkbox">
                 <span data-export-preview-target="box"
                   class="flex shrink-0 items-center justify-center h-5 w-5 rounded border transition-colors bg-gray-900 border-gray-900 group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
@@ -64,7 +64,10 @@
         </div>
 
         <div class="flex items-center gap-3">
-          <%= form.submit "Download CSV", class: "inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 transition-colors cursor-pointer select-none" %>
+          <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 transition-colors cursor-pointer select-none">
+            <%= lucide_icon("download", class: "h-4 w-4") %>
+            Download CSV
+          </button>
         </div>
       <% end %>
     </section>
@@ -86,9 +89,9 @@
                 </div>
                 <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
                   data: { turbo: false },
-                  class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-600 rounded-md hover:text-gray-900 hover:bg-gray-100 transition-colors" do %>
+                  class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 transition-colors cursor-pointer select-none" do %>
                   <%= lucide_icon("download", class: "h-4 w-4") %>
-                  Export
+                  Download CSV
                 <% end %>
               </div>
 
@@ -123,7 +126,7 @@
     <% end %>
 
     <div class="flex items-center gap-3">
-      <%= render "shared/button", style: "ghost", label: "Back to table settings", href: edit_table_path(@custom_table) %>
+      <%= render "shared/button", style: "ghost", label: "Cancel", href: edit_table_path(@custom_table) %>
     </div>
   </div>
 </div>
