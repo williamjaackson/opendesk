@@ -17,14 +17,14 @@
           action: "dragover->table-drop#dragover dragleave->table-drop#dragleave drop->table-drop#drop"
         },
         class: "px-3 py-2 rounded-md font-medium transition-colors select-none #{active ? 'text-gray-900 bg-gray-100' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50'}" do %>
-        <span data-edit-only class="inline-flex items-center gap-1">
+        <span data-builder-only class="inline-flex items-center gap-1">
           <%= lucide_icon("grip-vertical", class: "h-3 w-3 text-gray-400 flex-shrink-0") %>
         </span>
         <%= group.name %>
       <% end %>
     <% end %>
   </div>
-  <%= link_to groups_path, data: { edit_only: true }, class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors select-none" do %>
+  <%= link_to groups_path, data: { builder_only: true }, class: "p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors select-none" do %>
     <%= lucide_icon("settings", class: "h-4 w-4") %>
   <% end %>
 </div>
