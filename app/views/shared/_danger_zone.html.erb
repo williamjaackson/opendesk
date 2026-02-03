@@ -1,9 +1,11 @@
-<section>
+<section data-controller="confirm" data-confirm-message-value="<%= confirm %>" data-confirm-button-text-value="<%= button_label %>">
   <h2 class="text-lg font-semibold text-gray-900 mb-1">Danger zone</h2>
   <p class="text-sm text-gray-500 mb-4"><%= description %></p>
 
-  <%= button_to button_label, path,
-    method: :delete,
-    class: "inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer select-none",
-    data: { turbo_confirm: confirm } %>
+  <%= form_with url: path, method: :delete, class: "inline-block" do %>
+    <button type="button" data-action="confirm#show"
+      class="inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer select-none">
+      <%= button_label %>
+    </button>
+  <% end %>
 </section>

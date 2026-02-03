@@ -114,10 +114,15 @@
                           <% if disabled %>
                             <span class="px-3 py-1 text-xs font-medium rounded-md border border-gray-200 text-gray-400 bg-gray-50 cursor-not-allowed"><%= destroy_label %></span>
                           <% else %>
-                            <% destroy_form_data = { turbo_confirm: destroy_confirm } %>
+                            <% destroy_form_data = {} %>
                             <% destroy_form_data[:turbo_frame] = destroy_frame if destroy_frame %>
-                            <span <%= "data-builder-only" if destroy_builder_only %>>
-                              <%= button_to destroy_label, destroy_path ? destroy_path.call(row) : polymorphic_path(row), method: :delete, class: "px-3 py-1 text-xs font-medium rounded-md border border-red-300 text-red-600 bg-white hover:bg-red-50 transition-colors cursor-pointer select-none", form: { data: destroy_form_data } %>
+                            <span <%= "data-builder-only" if destroy_builder_only %> data-controller="confirm" data-confirm-message-value="<%= destroy_confirm %>" data-confirm-button-text-value="<%= destroy_label %>">
+                              <%= form_with url: (destroy_path ? destroy_path.call(row) : polymorphic_path(row)), method: :delete, data: destroy_form_data, class: "inline" do %>
+                                <button type="button" data-action="confirm#show"
+                                  class="px-3 py-1 text-xs font-medium rounded-md border border-red-300 text-red-600 bg-white hover:bg-red-50 transition-colors cursor-pointer select-none">
+                                  <%= destroy_label %>
+                                </button>
+                              <% end %>
                             </span>
                           <% end %>
                         <% end %>
