@@ -2,32 +2,30 @@
   <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Export", nil]] %>
   <%= render "shared/page_heading", title: "Export data" %>
 
-  <div class="space-y-6">
-    <section class="bg-white rounded-lg border border-gray-200 p-6">
-      <h2 class="text-sm font-medium text-gray-900 mb-4">Export records</h2>
+  <div class="space-y-8">
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-1">Export records</h2>
+      <p class="text-sm text-gray-500 mb-4">Download your table data as a CSV file. Select which columns to include.</p>
 
       <%= form_with url: export_table_path(@custom_table), method: :get, data: { turbo: false, controller: "export-preview" } do |form| %>
-        <div class="mb-4">
-          <p class="text-sm text-gray-600 mb-3">Select columns to include in the export:</p>
-          <div class="space-y-2">
-            <% @columns.each do |column| %>
-              <div tabindex="0" role="checkbox" aria-checked="true" aria-label="<%= column.name %>"
-                data-action="click->export-preview#toggle keydown->export-preview#keydown"
-                class="flex items-center gap-2 cursor-pointer select-none group">
-                <input type="hidden" name="columns[]" value="<%= column.id %>" data-export-preview-target="checkbox">
-                <span data-export-preview-target="box"
-                  class="flex shrink-0 items-center justify-center h-5 w-5 rounded border transition-colors bg-gray-900 border-gray-900 group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
-                  <svg data-checkmark viewBox="0 0 12 10" fill="none" class="h-3 w-3 text-white">
-                    <path d="M1 5.5L4 8.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                </span>
-                <span class="text-sm font-medium text-gray-700"><%= column.name %></span>
-                <% if column.computed? %>
-                  <span class="text-xs text-gray-400">(computed)</span>
-                <% end %>
-              </div>
-            <% end %>
-          </div>
+        <div class="space-y-2 mb-6">
+          <% @columns.each do |column| %>
+            <div tabindex="0" role="checkbox" aria-checked="true" aria-label="<%= column.name %>"
+              data-action="click->export-preview#toggle keydown->export-preview#keydown"
+              class="flex items-center gap-2 cursor-pointer select-none group">
+              <input type="hidden" name="columns[]" value="<%= column.id %>" data-export-preview-target="checkbox">
+              <span data-export-preview-target="box"
+                class="flex shrink-0 items-center justify-center h-4 w-4 rounded border transition-colors bg-gray-900 border-gray-900 group-focus:ring-2 group-focus:ring-gray-500 group-focus:ring-offset-1">
+                <svg data-checkmark viewBox="0 0 12 10" fill="none" class="h-2.5 w-2.5 text-white">
+                  <path d="M1 5.5L4 8.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <span class="text-sm text-gray-700"><%= column.name %></span>
+              <% if column.computed? %>
+                <span class="text-xs text-gray-400">(computed)</span>
+              <% end %>
+            </div>
+          <% end %>
         </div>
 
         <div class="mb-6">
@@ -73,63 +71,38 @@
     </section>
 
     <% if @relationships.any? %>
-      <section class="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 class="text-sm font-medium text-gray-900 mb-2">Export relationships</h2>
-        <p class="text-sm text-gray-600 mb-4">Relationship data is exported separately. Each export contains the names of linked records.</p>
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-1">Export relationships</h2>
+        <p class="text-sm text-gray-500 mb-4">Relationship data is exported separately. Each CSV contains the linked record names.</p>
 
-        <div class="space-y-6">
-          <% @relationships.each do |relationship| %>
+        <div class="border border-gray-200 rounded-md divide-y divide-gray-200">
+          <% @relationships.each_with_index do |relationship, index| %>
             <% is_source = relationship.source_table_id == @custom_table.id %>
             <% rel_name = is_source ? relationship.name : relationship.inverse_name %>
             <% other_table = is_source ? relationship.target_table : relationship.source_table %>
-            <div class="border-t border-gray-100 pt-4 first:border-0 first:pt-0">
-              <div class="flex items-start justify-between gap-4 mb-3">
-                <div class="space-y-1">
-                  <div class="flex items-center gap-2">
+            <div class="p-4 <%= index.even? ? 'bg-white' : 'bg-gray-50/50' %>">
+              <div class="flex items-start justify-between gap-4">
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 mb-1">
                     <span class="text-sm font-medium text-gray-900"><%= rel_name %></span>
-                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">
                       <%= relationship_kind_label(relationship.kind) %>
                     </span>
                   </div>
-                  <div class="text-xs text-gray-500">
-                    <%= @custom_table.name %> → <span class="font-medium"><%= rel_name %></span> → <%= other_table.name %>
+                  <p class="text-xs text-gray-500">
+                    <%= @custom_table.name %> → <%= other_table.name %>
                     <% if relationship.name != relationship.inverse_name %>
                       <span class="mx-1">·</span>
-                      <%= other_table.name %> → <span class="font-medium"><%= relationship.inverse_name %></span> → <%= @custom_table.name %>
+                      Inverse: <span class="font-medium"><%= is_source ? relationship.inverse_name : relationship.name %></span>
                     <% end %>
-                  </div>
+                  </p>
                 </div>
                 <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
                   data: { turbo: false },
-                  class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 transition-colors cursor-pointer select-none shrink-0" do %>
+                  class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none shrink-0" do %>
                   <%= lucide_icon("download", class: "h-4 w-4") %>
-                  Download CSV
+                  Download
                 <% end %>
-              </div>
-
-              <div class="overflow-x-auto border border-gray-200 rounded-md">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                  <thead class="bg-gray-50">
-                    <tr>
-                      <th class="px-3 py-2 text-left text-xs font-medium text-gray-500"><%= @custom_table.name.singularize %></th>
-                      <th class="px-3 py-2 text-left text-xs font-medium text-gray-500"><%= other_table.name.singularize %></th>
-                    </tr>
-                  </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    <tr>
-                      <td class="px-3 py-2 text-gray-400 italic">Alice Smith</td>
-                      <td class="px-3 py-2 text-gray-400 italic">Project Alpha</td>
-                    </tr>
-                    <tr>
-                      <td class="px-3 py-2 text-gray-400 italic">Alice Smith</td>
-                      <td class="px-3 py-2 text-gray-400 italic">Project Beta</td>
-                    </tr>
-                    <tr>
-                      <td class="px-3 py-2 text-gray-400 italic">Bob Jones</td>
-                      <td class="px-3 py-2 text-gray-400 italic">Project Alpha</td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
             </div>
           <% end %>
