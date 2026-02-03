@@ -100,6 +100,14 @@
     <% if authenticated? && managing_organisation? && controller_name != "pages" && (controller_name != "table_groups" || action_name == "show") %>
       <%= render "shared/tables_navbar" %>
     <% end %>
+    <% if @custom_table&.protected? && !edit_mode? %>
+      <div class="bg-amber-50 border-b border-amber-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-2 h-9 text-sm text-amber-700">
+          <%= lucide_icon("lock", class: "h-4 w-4") %>
+          <span>This table is protected and read-only</span>
+        </div>
+      </div>
+    <% end %>
     <% flash.each do |type, message| %>
       <%= render "shared/toast", type: type, message: message %>
     <% end %>
