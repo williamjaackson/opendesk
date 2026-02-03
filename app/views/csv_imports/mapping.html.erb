@@ -92,11 +92,12 @@
 
                 <% if @columns.any? %>
                   <div data-import-mapping-target="existingOptions" class="<%= default_action == 'existing' ? '' : 'hidden' %>">
-                    <select name="mapping[<%= header %>][column_id]" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:border-gray-500 focus:ring-gray-500">
-                      <% @columns.each do |column| %>
-                        <option value="<%= column.id %>" <%= column == matching_column ? 'selected' : '' %>><%= column.name %> (<%= column.column_type %>)</option>
-                      <% end %>
-                    </select>
+                    <% column_options = @columns.map { |c| ["#{c.name} (#{c.column_type})", c.id] } %>
+                    <%= render "shared/inline_dropdown",
+                      name: "mapping[#{header}][column_id]",
+                      options: column_options,
+                      selected: matching_column&.id,
+                      placeholder: "Select column..." %>
                   </div>
                 <% end %>
 
@@ -108,18 +109,23 @@
                   </div>
                   <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1">Column type</label>
-                    <select name="mapping[<%= header %>][type]" class="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:border-gray-500 focus:ring-gray-500">
-                      <option value="text">Text</option>
-                      <option value="number">Number</option>
-                      <option value="decimal">Decimal</option>
-                      <option value="email">Email</option>
-                      <option value="boolean">Boolean</option>
-                      <option value="date">Date</option>
-                      <option value="time">Time</option>
-                      <option value="datetime">Date & Time</option>
-                      <option value="currency">Currency</option>
-                      <option value="colour">Colour</option>
-                    </select>
+                    <% type_options = [
+                      ["Text", "text"],
+                      ["Number", "number"],
+                      ["Decimal", "decimal"],
+                      ["Email", "email"],
+                      ["Boolean", "boolean"],
+                      ["Date", "date"],
+                      ["Time", "time"],
+                      ["Date & Time", "datetime"],
+                      ["Currency", "currency"],
+                      ["Colour", "colour"]
+                    ] %>
+                    <%= render "shared/inline_dropdown",
+                      name: "mapping[#{header}][type]",
+                      options: type_options,
+                      selected: "text",
+                      placeholder: "Select type..." %>
                   </div>
                 </div>
               </div>
