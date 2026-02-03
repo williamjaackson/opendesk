@@ -27,6 +27,7 @@ class CustomRecordsController < ApplicationController
     success = false
     ActiveRecord::Base.transaction do
       if update_values(values)
+        @custom_record.custom_values.reload
         evaluate_computed_columns(@custom_record)
         success = true
       else
@@ -66,6 +67,7 @@ class CustomRecordsController < ApplicationController
     success = false
     ActiveRecord::Base.transaction do
       if @custom_record.save && save_values(values)
+        @custom_record.custom_values.reload
         evaluate_computed_columns(@custom_record)
         success = true
       else

@@ -279,11 +279,16 @@ class FormulaEvaluator
     new(formula, values).evaluate
   end
 
-  def self.evaluate_record(record, computed_columns)
+  def self.evaluate_record(record, computed_columns, all_columns: nil)
     return if computed_columns.empty?
 
-    all_columns = record.custom_table.custom_columns.order(:position)
-    existing_values = record.custom_values.includes(:custom_column).index_by { |v| v.custom_column_id }
+    all_columns ||= record.custom_table.custom_columns.order(:position)
+    # Use preloaded values if available, otherwise load them
+    existing_values = if record.custom_values.loaded?
+      record.custom_values.index_by(&:custom_column_id)
+    else
+      record.custom_values.includes(:custom_column).index_by { |v| v.custom_column_id }
+    end
 
     # Build values hash keyed by column name, with positional index for duplicates
     values = {}

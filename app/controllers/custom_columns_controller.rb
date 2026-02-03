@@ -211,8 +211,9 @@ class CustomColumnsController < ApplicationController
   end
 
   def evaluate_all_records(computed_columns)
+    all_columns = @custom_table.custom_columns.order(:position)
     @custom_table.custom_records.includes(custom_values: :custom_column).find_each do |record|
-      FormulaEvaluator.evaluate_record(record, computed_columns)
+      FormulaEvaluator.evaluate_record(record, computed_columns, all_columns: all_columns)
     end
   end
 
