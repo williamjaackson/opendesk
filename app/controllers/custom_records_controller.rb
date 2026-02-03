@@ -113,7 +113,7 @@ class CustomRecordsController < ApplicationController
   end
 
   def set_custom_record
-    @custom_record = @custom_table.custom_records.find(params[:id])
+    @custom_record = @custom_table.custom_records.includes(:custom_values).find(params[:id])
   end
 
   def save_values(values)
