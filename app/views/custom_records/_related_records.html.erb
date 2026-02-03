@@ -41,7 +41,9 @@
         <% end %>
       </div>
       <div>
-        <% if section.accepts_more && !(@custom_table.protected? && !edit_mode?) %>
+        <% if section.accepts_more %>
+          <% link_button_wrapper = @custom_table.protected? ? "data-edit-only" : nil %>
+          <span <%= link_button_wrapper %>>
           <%= form_with model: CustomRecordLink.new, url: record_links_path, data: { turbo_frame: reload_frame_id } do |form| %>
             <%= form.hidden_field :custom_relationship_id, value: section.relationship.id %>
             <% if section.is_source %>
@@ -82,21 +84,22 @@
               </div>
             </div>
           <% end %>
+          </span>
         <% end %>
       </div>
     </div>
 
     <%= turbo_frame_tag table_frame_id do %>
-      <% table_protected = @custom_table.protected? && !edit_mode? %>
       <%= render "shared/table",
         columns: columns,
         rows: section.record_links,
-        actions: table_protected ? [ :view ] : [ :view, :destroy ],
+        actions: [ :view, :destroy ],
         view_path: ->(link) { table_record_path(section.target_table, linked_record_for.call(link)) },
         destroy_path: ->(link) { record_link_path(link) },
         destroy_label: "Unlink",
         destroy_confirm: "Unlink this record?",
         destroy_frame: reload_frame_id,
+        destroy_edit_only: @custom_table.protected?,
         frame_id: nil,
         pagination_frame: table_frame_id,
         pagy: section.pagy,

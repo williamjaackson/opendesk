@@ -17,8 +17,9 @@
       actions: [ :view ],
       view_path: ->(record) { table_record_path(@custom_table, record) },
       search_url: table_path(@custom_table),
-      create_url: (@custom_table.protected? && !edit_mode?) ? nil : new_table_record_path(@custom_table),
+      create_url: new_table_record_path(@custom_table),
       create_label: "Add record",
+      create_edit_only: @custom_table.protected?,
       pagy: @pagy %>
   <% else %>
     <div class="rounded-lg border border-gray-200 bg-white px-6 py-12 text-center">

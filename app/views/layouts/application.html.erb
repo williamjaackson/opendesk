@@ -103,8 +103,14 @@
     <% if @custom_table&.protected? %>
       <div class="bg-amber-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-2 h-9 text-sm text-amber-700">
-          <%= lucide_icon(edit_mode? ? "lock-open" : "lock", class: "h-4 w-4") %>
-          <span><%= edit_mode? ? "This table is protected — edit mode is bypassing protection" : "This table is protected and read-only" %></span>
+          <span data-edit-only>
+            <%= lucide_icon("lock-open", class: "h-4 w-4") %>
+          </span>
+          <span data-hide-on-edit-mode>
+            <%= lucide_icon("lock", class: "h-4 w-4") %>
+          </span>
+          <span data-edit-only>This table is protected — edit mode is bypassing protection</span>
+          <span data-hide-on-edit-mode>This table is protected and read-only</span>
         </div>
       </div>
     <% end %>
