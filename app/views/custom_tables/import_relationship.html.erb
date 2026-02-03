@@ -12,7 +12,7 @@
         Records are matched by their display name (first column value).
       </p>
 
-      <%= form_with url: import_relationship_table_path(@custom_table, relationship_id: @relationship.id), method: :post, multipart: true, data: { controller: "file-input" } do |form| %>
+      <%= form_with url: import_relationship_table_path(@custom_table, relationship_id: @relationship.id), method: :post, multipart: true, data: { controller: "file-input", turbo: false } do |form| %>
         <%= form.file_field :file, accept: ".csv,text/csv", required: true,
           data: { file_input_target: "input", action: "change->file-input#changed" },
           class: "sr-only" %>
