@@ -16,7 +16,7 @@
     search_url: groups_path,
     create_url: new_group_path,
     create_label: "Add group",
-    sortable_url: edit_mode? ? reorder_groups_path : nil,
+    sortable_url: builder_mode? ? reorder_groups_path : nil,
     sortable_reload: true,
     pagy: @pagy %>
 </div>

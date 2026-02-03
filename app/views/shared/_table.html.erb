@@ -18,9 +18,9 @@
 <% sortable_reload = local_assigns.fetch(:sortable_reload, false) %>
 <% destroy_frame = local_assigns[:destroy_frame] %>
 <% destroy_disabled = local_assigns[:destroy_disabled] %>
-<% destroy_edit_only = local_assigns[:destroy_edit_only] %>
+<% destroy_builder_only = local_assigns[:destroy_builder_only] %>
 <% highlight_create = local_assigns[:highlight_create] %>
-<% create_edit_only = local_assigns[:create_edit_only] %>
+<% create_builder_only = local_assigns[:create_builder_only] %>
 
 <% create_href = create_url || (actions.include?(:create) && model_class ? new_polymorphic_path(model_class) : nil) %>
 
@@ -43,8 +43,8 @@
         <%= render "shared/arrow_hint", label: "start here", direction: "right" %>
       <% end %>
       <% if create_href %>
-        <% if create_edit_only %>
-          <span data-edit-only>
+        <% if create_builder_only %>
+          <span data-builder-only>
             <%= render "shared/button", label: create_label, href: create_href, icon: "plus" %>
           </span>
         <% else %>
@@ -116,7 +116,7 @@
                           <% else %>
                             <% destroy_form_data = { turbo_confirm: destroy_confirm } %>
                             <% destroy_form_data[:turbo_frame] = destroy_frame if destroy_frame %>
-                            <span <%= "data-edit-only" if destroy_edit_only %>>
+                            <span <%= "data-builder-only" if destroy_builder_only %>>
                               <%= button_to destroy_label, destroy_path ? destroy_path.call(row) : polymorphic_path(row), method: :delete, class: "px-3 py-1 text-xs font-medium rounded-md border border-red-300 text-red-600 bg-white hover:bg-red-50 transition-colors cursor-pointer select-none", form: { data: destroy_form_data } %>
                             </span>
                           <% end %>

@@ -7,16 +7,16 @@ class ApplicationController < ActionController::Base
   # Changes to the importmap will invalidate the etag for HTML responses
   stale_when_importmap_changes
 
-  helper_method :edit_mode?
+  helper_method :builder_mode?
 
   private
 
-  def edit_mode?
-    session[:edit_mode] == true
+  def builder_mode?
+    session[:builder_mode] == true
   end
 
-  def require_edit_mode
-    @requires_edit_mode = true
-    redirect_to root_path unless edit_mode?
+  def require_builder_mode
+    @requires_builder_mode = true
+    redirect_to root_path unless builder_mode?
   end
 end

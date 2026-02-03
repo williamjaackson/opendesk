@@ -9,11 +9,11 @@
  * Consider organizing styles into separate files for maintainability.
  */
 
-body:not([data-edit-mode]) [data-edit-only] {
+body:not([data-builder-mode]) [data-builder-only] {
   display: none !important;
 }
 
-body[data-edit-mode] [data-hide-on-edit-mode] {
+body[data-builder-mode] [data-hide-in-builder-mode] {
   display: none !important;
 }
 

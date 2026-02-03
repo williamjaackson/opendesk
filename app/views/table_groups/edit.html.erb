@@ -5,7 +5,7 @@
   <div class="space-y-8">
     <%= render "form", cancel_path: groups_path %>
 
-    <% if edit_mode? %>
+    <% if builder_mode? %>
       <%= render "shared/danger_zone",
         description: "You can only delete a group that has no tables. Move all tables out of this group first.",
         path: group_path(@table_group),

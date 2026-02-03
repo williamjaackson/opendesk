@@ -2,7 +2,7 @@ class CustomRecordsController < ApplicationController
   before_action :require_organisation
   before_action :set_custom_table
   before_action :set_custom_record, only: [ :show, :edit, :update, :destroy ]
-  before_action :require_unprotected_or_edit_mode, only: [ :new, :create, :edit, :update, :destroy ]
+  before_action :require_unprotected_or_builder_mode, only: [ :new, :create, :edit, :update, :destroy ]
 
   def show
     @columns = @custom_table.custom_columns.order(:position)
@@ -86,9 +86,9 @@ class CustomRecordsController < ApplicationController
     redirect_to organisations_path unless Current.organisation
   end
 
-  def require_unprotected_or_edit_mode
+  def require_unprotected_or_builder_mode
     return unless @custom_table.protected?
-    redirect_to table_path(@custom_table), alert: "This table is protected. Enable edit mode to add or edit records." unless edit_mode?
+    redirect_to table_path(@custom_table), alert: "This table is protected. Enable builder mode to add or edit records." unless builder_mode?
   end
 
   def set_custom_table

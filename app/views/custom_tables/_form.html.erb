@@ -30,14 +30,14 @@
           { header: "Preview", accessor: ->(c) { c.show_on_preview? ? "Yes" : "No" } }
         ],
         rows: @columns,
-        actions: edit_mode? ? [ :edit, :destroy ] : [],
+        actions: builder_mode? ? [ :edit, :destroy ] : [],
         edit_path: ->(c) { edit_table_column_path(@custom_table, c) },
         destroy_path: ->(c) { table_column_path(@custom_table, c) },
         destroy_confirm: "This will delete all values for this column and any records left empty. Continue?",
         search_url: edit_table_path(@custom_table),
-        create_url: edit_mode? ? new_table_column_path(@custom_table) : nil,
+        create_url: builder_mode? ? new_table_column_path(@custom_table) : nil,
         create_label: "Add column",
-        sortable_url: edit_mode? ? reorder_table_columns_path(@custom_table) : nil,
+        sortable_url: builder_mode? ? reorder_table_columns_path(@custom_table) : nil,
         highlight_create: @columns.empty?,
         pagy: @pagy_columns,
         page_param: :columns_page %>
@@ -64,24 +64,24 @@
           } }
         ],
         rows: @relationships,
-        actions: edit_mode? ? [ :edit, :destroy ] : [],
+        actions: builder_mode? ? [ :edit, :destroy ] : [],
         edit_path: ->(r) { edit_table_relationship_path(@custom_table, r) },
         destroy_path: ->(r) { table_relationship_path(@custom_table, r) },
         destroy_confirm: "This will remove the relationship and all record links. Continue?",
         search_url: edit_table_path(@custom_table),
         search_param: :relationship_query,
         frame_id: "relationships_table_frame",
-        create_url: edit_mode? ? new_table_relationship_path(@custom_table) : nil,
+        create_url: builder_mode? ? new_table_relationship_path(@custom_table) : nil,
         create_label: "Add relationship",
-        sortable_url: edit_mode? ? reorder_table_relationships_path(@custom_table) : nil,
+        sortable_url: builder_mode? ? reorder_table_relationships_path(@custom_table) : nil,
         pagy: @pagy_relationships,
         page_param: :relationships_page %>
     </section>
 
-    <% if edit_mode? %>
+    <% if builder_mode? %>
       <section>
         <h2 class="text-lg font-semibold text-gray-900 mb-1">Protection</h2>
-        <p class="text-sm text-gray-500 mb-4">Protected tables are read-only. Records cannot be added, edited, or deleted unless edit mode is enabled.</p>
+        <p class="text-sm text-gray-500 mb-4">Protected tables are read-only. Records cannot be added, edited, or deleted unless builder mode is enabled.</p>
 
         <%= button_to toggle_protection_table_path(@custom_table), method: :patch, form: { data: { turbo_frame: "_top" } }, class: "inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-md border transition-colors cursor-pointer select-none #{@custom_table.protected? ? 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50' : 'border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100'}" do %>
           <%= lucide_icon(@custom_table.protected? ? "lock-open" : "lock", class: "h-4 w-4") %>

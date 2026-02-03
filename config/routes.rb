@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   resource :session
   resource :organisation_session, only: [ :create, :destroy ]
-  resource :edit_mode, only: [ :update ]
+  resource :builder_mode, only: [ :update ]
   resources :passwords, param: :token
   resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ]
   resources :custom_record_links, path: "record-links", as: :record_links, only: [ :create, :destroy ]
