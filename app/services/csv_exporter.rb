@@ -13,7 +13,7 @@ class CsvExporter
       yielder << UTF8_BOM
       yielder << CSV.generate_line(headers)
 
-      @custom_table.custom_records.find_each do |record|
+      @custom_table.custom_records.includes(:custom_values).find_each do |record|
         yielder << CSV.generate_line(row_for(record))
       end
     end

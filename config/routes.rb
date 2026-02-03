@@ -49,7 +49,11 @@ Rails.application.routes.draw do
 
       # Records at table root, numeric IDs only
       resources :custom_records, path: "/", as: :records, only: [ :new, :create, :show, :edit, :update, :destroy ],
-        constraints: { id: /\d+/ }
+        constraints: { id: /\d+/ } do
+        collection do
+          get :search
+        end
+      end
     end
   end
 

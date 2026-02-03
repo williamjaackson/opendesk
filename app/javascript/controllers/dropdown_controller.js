@@ -4,7 +4,8 @@ export default class extends Controller {
   static targets = ["button", "menu", "input", "search"]
   static values = {
     open: { type: Boolean, default: false },
-    autosubmit: { type: Boolean, default: false }
+    autosubmit: { type: Boolean, default: false },
+    searchUrl: { type: String, default: "" }
   }
 
   connect() {
@@ -114,12 +115,52 @@ export default class extends Controller {
   }
 
   filter() {
+    // Always do client-side filtering first for instant feedback
+    this.clientFilter()
+
+    // Then fetch from server if URL is configured (for large datasets)
+    if (this.searchUrlValue) {
+      this.serverFilter()
+    }
+  }
+
+  clientFilter() {
     const query = this.searchTarget.value.toLowerCase()
     this.menuTarget.querySelectorAll("[data-value]").forEach((option) => {
       const label = option.dataset.label.toLowerCase()
       option.classList.toggle("hidden", !label.includes(query))
     })
     this.resetFocus()
+  }
+
+  serverFilter() {
+    clearTimeout(this.searchTimeout)
+    const query = this.searchTarget.value
+    if (!query) {
+      // Reset to original options when search is cleared
+      this.clientFilter()
+      return
+    }
+
+    this.searchTimeout = setTimeout(() => {
+      const url = new URL(this.searchUrlValue, window.location.origin)
+      url.searchParams.set("q", query)
+
+      fetch(url, {
+        headers: { "Accept": "text/html" }
+      })
+        .then(response => response.text())
+        .then(html => {
+          // Only update if the query hasn't changed
+          if (this.searchTarget.value === query) {
+            const optionsContainer = this.menuTarget.querySelector("[data-dropdown-options]")
+            if (optionsContainer) {
+              optionsContainer.innerHTML = html
+            }
+            this.resetFocus()
+          }
+        })
+    }, 300)
   }
 
   openValueChanged() {
