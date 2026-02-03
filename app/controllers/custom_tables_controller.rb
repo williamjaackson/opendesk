@@ -1,6 +1,6 @@
 class CustomTablesController < ApplicationController
   before_action :require_organisation
-  before_action :require_builder_mode, except: [ :show ]
+  before_action :require_builder_mode, except: [ :show, :export, :template ]
 
   def show
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
@@ -88,6 +88,26 @@ class CustomTablesController < ApplicationController
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
     @custom_table.update!(protected: !@custom_table.protected?)
     redirect_to edit_table_path(@custom_table)
+  end
+
+  def export
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    exporter = CsvExporter.new(@custom_table)
+
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    response.headers["Content-Disposition"] = "attachment; filename=\"#{@custom_table.slug}-export.csv\""
+
+    self.response_body = exporter.generate
+  end
+
+  def template
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    exporter = CsvExporter.new(@custom_table)
+
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    response.headers["Content-Disposition"] = "attachment; filename=\"#{@custom_table.slug}-template.csv\""
+
+    self.response_body = exporter.generate_template
   end
 
   private

@@ -25,6 +25,8 @@ Rails.application.routes.draw do
     resources :custom_tables, path: "/", param: :slug, as: :table, only: [ :show, :edit, :update, :destroy ] do
       member do
         patch :toggle_protection
+        get :export
+        get :template
       end
       resources :custom_columns, path: "columns", as: :columns, only: [ :new, :create, :edit, :update, :destroy ] do
         collection do
@@ -37,6 +39,7 @@ Rails.application.routes.draw do
           patch :reorder
         end
       end
+      resources :csv_imports, path: "imports", as: :csv_imports, only: [ :new, :create, :show, :update, :destroy ]
 
       # Records at table root, numeric IDs only
       resources :custom_records, path: "/", as: :records, only: [ :new, :create, :show, :edit, :update, :destroy ],
