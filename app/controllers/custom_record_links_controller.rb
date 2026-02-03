@@ -28,13 +28,17 @@ class CustomRecordLinksController < ApplicationController
   end
 
   def require_unprotected_or_edit_mode
-    relationship = CustomRelationship.find_by(id: params.dig(:custom_record_link, :custom_relationship_id)) ||
-                   CustomRecordLink.find_by(id: params[:id])&.custom_relationship
+    relationship = CustomRelationship.joins(:source_table)
+                     .where(custom_tables: { organisation_id: Current.organisation.id })
+                     .find_by(id: params.dig(:custom_record_link, :custom_relationship_id)) ||
+                   CustomRecordLink.joins(custom_relationship: :source_table)
+                     .where(custom_tables: { organisation_id: Current.organisation.id })
+                     .find_by(id: params[:id])&.custom_relationship
     return unless relationship
 
     table = relationship.source_table
     return unless table.protected?
-    redirect_back fallback_location: root_path, alert: "This table is protected" unless edit_mode?
+    redirect_back fallback_location: root_path, alert: "This table is protected. Enable edit mode to link or unlink records." unless edit_mode?
   end
 
   def custom_record_link_params

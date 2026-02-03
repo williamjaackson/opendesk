@@ -88,7 +88,7 @@ class CustomRecordsController < ApplicationController
 
   def require_unprotected_or_edit_mode
     return unless @custom_table.protected?
-    redirect_to table_path(@custom_table), alert: "This table is protected" unless edit_mode?
+    redirect_to table_path(@custom_table), alert: "This table is protected. Enable edit mode to add or edit records." unless edit_mode?
   end
 
   def set_custom_table
