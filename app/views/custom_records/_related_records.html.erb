@@ -53,7 +53,8 @@
             <% end %>
             <% link_field = section.is_source ? :target_record_id : :source_record_id %>
 
-            <div data-controller="dropdown" data-dropdown-autosubmit-value="true" class="relative">
+            <% exclude_ids = section.available_records_exclude_ids.join(",") %>
+            <div data-controller="dropdown" data-dropdown-autosubmit-value="true" data-dropdown-search-url-value="<%= search_table_records_path(section.target_table, exclude: exclude_ids) %>" class="relative">
               <%= form.hidden_field link_field, data: { dropdown_target: "input" } %>
 
               <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
@@ -63,24 +64,21 @@
               </button>
 
               <div data-dropdown-target="menu" class="hidden absolute right-0 z-10 mt-1 w-64 rounded-md border border-gray-200 bg-white shadow-lg max-h-60 overflow-y-auto">
-                <% if section.available_records.any? %>
-                  <div class="sticky top-0 bg-white border-b border-gray-200 p-1.5">
-                    <input type="text" data-dropdown-target="search" data-action="input->dropdown#filter"
-                      placeholder="Search..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" />
-                  </div>
-                  <div class="py-1">
-                    <% section.available_records.each do |r| %>
-                      <button type="button" data-action="dropdown#select" data-value="<%= r.id %>" data-label="<%= r.display_name %>"
-                        class="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none">
-                        <span><%= r.display_name %></span>
-                      </button>
-                    <% end %>
-                  </div>
-                <% else %>
-                  <div class="px-3 py-4 text-sm text-gray-500 text-center">
-                    No records available to link.
-                  </div>
-                <% end %>
+                <div class="sticky top-0 bg-white border-b border-gray-200 p-1.5">
+                  <input type="text" data-dropdown-target="search" data-action="input->dropdown#filter"
+                    placeholder="Search..." class="w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500" />
+                </div>
+                <div class="py-1" data-dropdown-options>
+                  <% section.available_records.each do |r| %>
+                    <button type="button" data-action="dropdown#select" data-value="<%= r.id %>" data-label="<%= r.display_name %>"
+                      class="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none">
+                      <span><%= r.display_name %></span>
+                    </button>
+                  <% end %>
+                  <% if section.available_records.empty? %>
+                    <div class="px-3 py-2 text-sm text-gray-500 text-center">No records available</div>
+                  <% end %>
+                </div>
               </div>
             </div>
           <% end %>

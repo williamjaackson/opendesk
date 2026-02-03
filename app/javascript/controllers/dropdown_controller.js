@@ -4,7 +4,8 @@ export default class extends Controller {
   static targets = ["button", "menu", "input", "search"]
   static values = {
     open: { type: Boolean, default: false },
-    autosubmit: { type: Boolean, default: false }
+    autosubmit: { type: Boolean, default: false },
+    searchUrl: { type: String, default: "" }
   }
 
   connect() {
@@ -114,12 +115,41 @@ export default class extends Controller {
   }
 
   filter() {
+    if (this.searchUrlValue) {
+      this.serverFilter()
+    } else {
+      this.clientFilter()
+    }
+  }
+
+  clientFilter() {
     const query = this.searchTarget.value.toLowerCase()
     this.menuTarget.querySelectorAll("[data-value]").forEach((option) => {
       const label = option.dataset.label.toLowerCase()
       option.classList.toggle("hidden", !label.includes(query))
     })
     this.resetFocus()
+  }
+
+  serverFilter() {
+    clearTimeout(this.searchTimeout)
+    this.searchTimeout = setTimeout(() => {
+      const query = this.searchTarget.value
+      const url = new URL(this.searchUrlValue, window.location.origin)
+      url.searchParams.set("q", query)
+
+      fetch(url, {
+        headers: { "Accept": "text/html" }
+      })
+        .then(response => response.text())
+        .then(html => {
+          const optionsContainer = this.menuTarget.querySelector("[data-dropdown-options]")
+          if (optionsContainer) {
+            optionsContainer.innerHTML = html
+          }
+          this.resetFocus()
+        })
+    }, 200)
   }
 
   openValueChanged() {

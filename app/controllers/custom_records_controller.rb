@@ -80,6 +80,23 @@ class CustomRecordsController < ApplicationController
     end
   end
 
+  def search
+    query = params[:q].to_s.strip
+    exclude_ids = params[:exclude].to_s.split(",").map(&:to_i).reject(&:zero?)
+
+    records = @custom_table.custom_records.includes(custom_values: :custom_column)
+    records = records.where.not(id: exclude_ids) if exclude_ids.any?
+
+    if query.present?
+      records = records.joins(custom_values: :custom_column)
+                       .where("custom_values.value LIKE ?", "%#{query}%")
+                       .distinct
+    end
+
+    @records = records.limit(100)
+    render partial: "custom_records/search_results", locals: { records: @records }
+  end
+
   private
 
   def require_organisation
@@ -141,7 +158,7 @@ class CustomRecordsController < ApplicationController
     FormulaEvaluator.evaluate_record(record, computed)
   end
 
-  RelationshipSection = Struct.new(:relationship, :label, :is_source, :suffix, :self_referential, :symmetric, :target_table, :record_links, :display_columns, :available_records, :accepts_more, :pagy, keyword_init: true)
+  RelationshipSection = Struct.new(:relationship, :label, :is_source, :suffix, :self_referential, :symmetric, :target_table, :record_links, :display_columns, :available_records, :available_records_exclude_ids, :accepts_more, :pagy, keyword_init: true)
 
   def build_relationship_sections
     @custom_table.all_relationships.includes(:source_table, :target_table).flat_map do |rel|
@@ -226,6 +243,7 @@ class CustomRecordsController < ApplicationController
       record_links: paginated_links,
       display_columns: display_columns,
       available_records: available_records,
+      available_records_exclude_ids: exclude_ids,
       accepts_more: accepts_more,
       pagy: pagy_obj
     )
@@ -287,6 +305,7 @@ class CustomRecordsController < ApplicationController
       record_links: paginated_links,
       display_columns: display_columns,
       available_records: available_records,
+      available_records_exclude_ids: exclude_ids,
       accepts_more: accepts_more,
       pagy: pagy_obj
     )
