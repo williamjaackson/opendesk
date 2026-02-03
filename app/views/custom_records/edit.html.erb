@@ -4,7 +4,7 @@
 
   <div class="space-y-8">
     <%= form_with url: table_record_path(@custom_table, @custom_record), method: :patch, html: { novalidate: true } do |form| %>
-      <% @columns.reject(&:computed?).each do |column| %>
+      <% @columns.reject(&:computed?).each_with_index do |column, index| %>
         <% existing_value = @custom_record.custom_values.detect { |v| v.custom_column_id == column.id }&.value %>
         <div class="mb-4">
           <% unless column.column_type == "boolean" %>
@@ -12,7 +12,7 @@
               <%= column.name %><% if column.required? %><span class="text-red-500 ml-0.5">*</span><% end %>
             <% end %>
           <% end %>
-          <%= column_value_tag(column, params.dig(:values, column.id.to_s) || existing_value, required: column.required?, errors: @custom_record.errors[:"column_#{column.id}"].any?) %>
+          <%= column_value_tag(column, params.dig(:values, column.id.to_s) || existing_value, required: column.required?, errors: @custom_record.errors[:"column_#{column.id}"].any?, autofocus: index == 0) %>
           <% @custom_record.errors[:"column_#{column.id}"].each do |message| %>
             <p class="mt-1 text-sm text-red-600"><%= message %></p>
           <% end %>

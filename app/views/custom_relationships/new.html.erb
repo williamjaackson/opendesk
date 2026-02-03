@@ -11,7 +11,7 @@
       relationship_form_source_table_id_value: @custom_table.id
     } do |form| %>
 
-    <%= render "shared/dropdown", form: form, field: :target_table_id, label: "Related table", required: true, searchable: true,
+    <%= render "shared/dropdown", form: form, field: :target_table_id, label: "Related table", required: true, searchable: true, autofocus: true,
       selected: @custom_relationship.target_table_id,
       options: @available_tables.map { |t| [t.name, t.id, { "data-singular" => t.name.singularize }] },
       input_data: { relationship_form_target: "targetTableId", action: "change->relationship-form#updateDefaults" } %>
