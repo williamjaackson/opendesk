@@ -106,7 +106,7 @@ class RelationshipImporter
              AND cv.value != ''
            ORDER BY cc.position
            LIMIT 1),
-          CONCAT('Record #', cr.id)
+          'Record #' || cr.id
         ) as display_name
       FROM custom_records cr
       WHERE cr.custom_table_id = ?

@@ -10,12 +10,13 @@ export default class extends Controller {
 
     input.value = value
 
-    // Update radio button visuals
+    // Update radio button visuals and aria state
     row.querySelectorAll("[data-import-mapping-target='option']").forEach(option => {
       const isSelected = option.dataset.value === value
       const dot = option.querySelector("[data-dot]")
       const ring = option.querySelector("[data-ring]")
 
+      option.setAttribute("aria-checked", isSelected)
       ring.classList.toggle("border-gray-900", isSelected)
       ring.classList.toggle("border-gray-300", !isSelected)
       dot.classList.toggle("invisible", !isSelected)

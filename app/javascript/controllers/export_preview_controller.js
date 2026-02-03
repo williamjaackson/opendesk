@@ -15,6 +15,9 @@ export default class extends Controller {
     checkbox.value = newChecked ? columnId : ""
     checkbox.disabled = !newChecked
 
+    // Update aria state
+    wrapper.setAttribute("aria-checked", newChecked)
+
     // Update visual state
     box.classList.toggle("bg-gray-900", newChecked)
     box.classList.toggle("bg-white", !newChecked)

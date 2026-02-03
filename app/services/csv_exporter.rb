@@ -93,23 +93,27 @@ class CsvExporter
     return {} if record_ids.empty?
 
     sql = <<~SQL
-      SELECT DISTINCT ON (cv.custom_record_id)
-        cv.custom_record_id,
-        COALESCE(NULLIF(cv.value, ''), CONCAT('Record #', cv.custom_record_id)) as display_name
-      FROM custom_values cv
-      JOIN custom_columns cc ON cc.id = cv.custom_column_id
-      WHERE cv.custom_record_id IN (?)
-        AND cv.value IS NOT NULL
-        AND cv.value != ''
-      ORDER BY cv.custom_record_id, cc.position
+      SELECT
+        cr.id as record_id,
+        COALESCE(
+          (SELECT cv.value
+           FROM custom_values cv
+           JOIN custom_columns cc ON cc.id = cv.custom_column_id
+           WHERE cv.custom_record_id = cr.id
+             AND cv.value IS NOT NULL
+             AND cv.value != ''
+           ORDER BY cc.position
+           LIMIT 1),
+          'Record #' || cr.id
+        ) as display_name
+      FROM custom_records cr
+      WHERE cr.id IN (?)
     SQL
 
     results = ActiveRecord::Base.connection.exec_query(
       ActiveRecord::Base.sanitize_sql([ sql, record_ids ])
     )
 
-    names = results.rows.to_h { |row| [ row[0], row[1] ] }
-    record_ids.each { |id| names[id] ||= "Record ##{id}" }
-    names
+    results.rows.to_h { |row| [ row[0], row[1] ] }
   end
 end

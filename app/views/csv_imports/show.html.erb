@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <% if @csv_import.errors_log.present? && @csv_import.errors_log.any? %>
+    <% if @csv_import.errors_log&.any? %>
       <div class="bg-white rounded-lg border border-gray-200 mb-6">
         <div class="px-4 py-3 border-b border-gray-200 bg-red-50">
           <h2 class="text-sm font-medium text-red-700">Errors (<%= @csv_import.error_count %>)</h2>
@@ -63,7 +63,7 @@
         <%= lucide_icon("alert-circle", class: "h-5 w-5 text-red-600 shrink-0 mt-0.5") %>
         <div>
           <h2 class="text-sm font-medium text-red-800">An error occurred during import</h2>
-          <% if @csv_import.errors_log.present? && @csv_import.errors_log.any? %>
+          <% if @csv_import.errors_log&.any? %>
             <p class="mt-1 text-sm text-red-700"><%= @csv_import.errors_log.first["message"] || @csv_import.errors_log.first[:message] %></p>
           <% end %>
         </div>

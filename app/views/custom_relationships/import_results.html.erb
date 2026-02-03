@@ -1,7 +1,6 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
   <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Data", data_table_path(@custom_table)], ["Import results", nil]] %>
 
-  <% rel_name = @custom_relationship.source_table_id == @custom_table.id ? @custom_relationship.name : @custom_relationship.inverse_name %>
   <%= render "shared/page_heading", title: "Import results" %>
 
   <div class="space-y-8">

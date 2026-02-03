@@ -81,11 +81,16 @@ class CsvImportsController < ApplicationController
     mapping = {}
     return mapping unless params[:mapping]
 
+    valid_column_ids = @custom_table.custom_columns.pluck(:id).map(&:to_s)
+
     params[:mapping].each do |csv_header, config|
       action = config[:action]
+      column_id = config[:column_id]
+      column_id = nil if column_id.present? && !valid_column_ids.include?(column_id.to_s)
+
       mapping[csv_header] = {
         "action" => action,
-        "column_id" => action == "existing" ? config[:column_id] : nil,
+        "column_id" => action == "existing" ? column_id : nil,
         "type" => action == "create" ? config[:type] : nil,
         "name" => action == "create" ? config[:name] : nil
       }
