@@ -101,7 +101,7 @@ class CsvImporter
 
     @column_mapping.each do |csv_header, target|
       next if target == "__id__" || target.blank?
-      next if target.start_with?("rel:")
+      next if target.to_s.start_with?("rel:")
 
       column_id = target.to_i
       column = columns_by_id[column_id]
@@ -111,9 +111,13 @@ class CsvImporter
       csv_value = row[csv_header]
       value = parse_value(column, csv_value)
 
-      existing = record.custom_values.find { |v| v.custom_column_id == column_id }
-      if existing
-        existing.value = value
+      if record.persisted?
+        existing = record.custom_values.find_by(custom_column_id: column_id)
+        if existing
+          existing.update!(value: value)
+        else
+          record.custom_values.create!(custom_column: column, value: value)
+        end
       else
         record.custom_values.build(custom_column: column, value: value)
       end
