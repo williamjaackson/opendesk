@@ -114,14 +114,14 @@ class CustomColumnsController < ApplicationController
       end
 
       if @custom_column.computed?
-        evaluate_all_records([ @custom_column ])
+        evaluate_computed_columns_async([ @custom_column ])
       end
 
       saved = true
     end
 
     if saved
-      redirect_to edit_table_path(@custom_table)
+      redirect_to edit_table_path(@custom_table), notice: computing_notice
     else
       load_tables_json
       load_backfill_data
@@ -140,9 +140,9 @@ class CustomColumnsController < ApplicationController
         @custom_column.custom_values.where.not(value: [ nil, "" ]).where.not(value: valid_options).destroy_all
       end
       if @custom_column.computed?
-        evaluate_all_records([ @custom_column ])
+        evaluate_computed_columns_async([ @custom_column ])
       end
-      redirect_to edit_table_path(@custom_table)
+      redirect_to edit_table_path(@custom_table), notice: computing_notice
     else
       load_tables_json
       render :edit, status: :unprocessable_entity
@@ -210,11 +210,25 @@ class CustomColumnsController < ApplicationController
     end
   end
 
+  def evaluate_computed_columns_async(computed_columns)
+    record_count = @custom_table.custom_records.count
+    if record_count > 100
+      @computing_in_background = true
+      EvaluateComputedColumnJob.perform_later(@custom_table.id, computed_columns.map(&:id))
+    else
+      evaluate_all_records(computed_columns)
+    end
+  end
+
   def evaluate_all_records(computed_columns)
     all_columns = @custom_table.custom_columns.order(:position)
     @custom_table.custom_records.includes(custom_values: :custom_column).find_each do |record|
       FormulaEvaluator.evaluate_record(record, computed_columns, all_columns: all_columns)
     end
+  end
+
+  def computing_notice
+    @computing_in_background ? "Column saved. Values are being computed in the background." : nil
   end
 
   def custom_column_params
