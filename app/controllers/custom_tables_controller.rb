@@ -130,6 +130,32 @@ class CustomTablesController < ApplicationController
     self.response_body = exporter.generate_template
   end
 
+  def import_relationship
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    @relationship = CustomRelationship.find(params[:relationship_id])
+    @other_table = @relationship.source_table_id == @custom_table.id ? @relationship.target_table : @relationship.source_table
+  end
+
+  def process_relationship_import
+    @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
+    @relationship = CustomRelationship.find(params[:relationship_id])
+    @other_table = @relationship.source_table_id == @custom_table.id ? @relationship.target_table : @relationship.source_table
+
+    unless params[:file].present?
+      flash.now[:alert] = "Please select a file to upload"
+      return render :import_relationship, status: :unprocessable_entity
+    end
+
+    importer = RelationshipImporter.new(@custom_table, @relationship, params[:file])
+    @result = importer.import
+
+    if @result[:errors].empty?
+      redirect_to export_table_path(@custom_table), notice: "Successfully imported #{@result[:created]} links"
+    else
+      render :import_relationship_results
+    end
+  end
+
   private
 
   def require_organisation

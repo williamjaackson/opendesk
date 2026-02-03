@@ -1,0 +1,69 @@
+<div class="max-w-4xl mx-auto py-8 px-4">
+  <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Export", export_table_path(@custom_table)], ["Import relationship", nil]] %>
+
+  <% rel_name = @relationship.source_table_id == @custom_table.id ? @relationship.name : @relationship.inverse_name %>
+  <%= render "shared/page_heading", title: "Import #{rel_name}" %>
+
+  <div class="space-y-8">
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-1">Upload file</h2>
+      <p class="text-sm text-gray-500 mb-4">
+        Upload a CSV file with two columns: <strong><%= @custom_table.name.singularize %></strong> and <strong><%= @other_table.name.singularize %></strong>.
+        Records are matched by their display name (first column value).
+      </p>
+
+      <%= form_with url: import_relationship_table_path(@custom_table, relationship_id: @relationship.id), method: :post, multipart: true, data: { controller: "file-input" } do |form| %>
+        <%= form.file_field :file, accept: ".csv,text/csv", required: true,
+          data: { file_input_target: "input", action: "change->file-input#changed" },
+          class: "sr-only" %>
+
+        <div class="flex items-center gap-3 mb-6">
+          <button type="button" data-action="click->file-input#select"
+            class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 transition-colors cursor-pointer select-none">
+            <%= lucide_icon("file-up", class: "h-4 w-4") %>
+            Choose file
+          </button>
+          <span data-file-input-target="filename" class="text-sm text-gray-500">No file selected</span>
+        </div>
+
+        <button type="submit" disabled data-file-input-target="submit"
+          class="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 transition-colors select-none opacity-50 cursor-not-allowed">
+          Import
+          <%= lucide_icon("arrow-right", class: "h-4 w-4") %>
+        </button>
+      <% end %>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-semibold text-gray-900 mb-1">Expected format</h2>
+      <p class="text-sm text-gray-500 mb-4">Your CSV should match the format below. You can download existing links to use as a template.</p>
+
+      <div class="overflow-x-auto border border-gray-200 rounded-md mb-4">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= @custom_table.name.singularize %></th>
+              <th class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"><%= @other_table.name.singularize %></th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <tr>
+              <td class="px-3 py-2 text-gray-400 italic">Alice Smith</td>
+              <td class="px-3 py-2 text-gray-400 italic">Project Alpha</td>
+            </tr>
+            <tr>
+              <td class="px-3 py-2 text-gray-400 italic">Bob Jones</td>
+              <td class="px-3 py-2 text-gray-400 italic">Project Beta</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="flex items-center gap-2 text-sm text-gray-500">
+        <%= lucide_icon("download", class: "h-4 w-4") %>
+        <span>Need a starting point?</span>
+        <%= link_to "Download existing links", export_relationship_table_path(@custom_table, relationship_id: @relationship.id), class: "text-gray-900 underline hover:text-gray-700", data: { turbo: false } %>
+      </div>
+    </section>
+  </div>
+</div>
