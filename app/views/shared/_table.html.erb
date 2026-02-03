@@ -18,6 +18,7 @@
 <% sortable_reload = local_assigns.fetch(:sortable_reload, false) %>
 <% destroy_frame = local_assigns[:destroy_frame] %>
 <% destroy_disabled = local_assigns[:destroy_disabled] %>
+<% highlight_create = local_assigns[:highlight_create] %>
 
 <% create_href = create_url || (actions.include?(:create) && model_class ? new_polymorphic_path(model_class) : nil) %>
 
@@ -35,7 +36,10 @@
         <% end %>
       <% end %>
     </div>
-    <div>
+    <div class="<%= 'flex items-center gap-3' if highlight_create %>">
+      <% if highlight_create %>
+        <%= render "shared/arrow_hint", label: "start here", direction: "right" %>
+      <% end %>
       <% if create_href %>
         <%= render "shared/button", label: create_label, href: create_href, icon: "plus" %>
       <% end %>
