@@ -1,7 +1,7 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
   <%= render "shared/breadcrumbs", crumbs: [[@custom_table.name, table_path(@custom_table)], ["Edit", edit_table_path(@custom_table)], ["Data", data_table_path(@custom_table)], ["Import results", nil]] %>
 
-  <% rel_name = @relationship.source_table_id == @custom_table.id ? @relationship.name : @relationship.inverse_name %>
+  <% rel_name = @custom_relationship.source_table_id == @custom_table.id ? @custom_relationship.name : @custom_relationship.inverse_name %>
   <%= render "shared/page_heading", title: "Import results" %>
 
   <div class="space-y-8">
@@ -44,7 +44,7 @@
 
     <div class="flex items-center gap-3">
       <%= render "shared/button", label: "Done", href: data_table_path(@custom_table) %>
-      <%= render "shared/button", style: "ghost", label: "Import more", href: import_relationship_table_path(@custom_table, relationship_id: @relationship.id) %>
+      <%= render "shared/button", style: "ghost", label: "Import more", href: import_table_relationship_path(@custom_table, @custom_relationship) %>
     </div>
   </div>
 </div>

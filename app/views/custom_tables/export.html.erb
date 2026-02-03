@@ -100,7 +100,7 @@
                   <% end %>
                 </p>
               </div>
-              <%= link_to export_relationship_table_path(@custom_table, relationship_id: relationship.id),
+              <%= link_to export_table_relationship_path(@custom_table, relationship),
                 data: { turbo: false },
                 class: "inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 transition-colors cursor-pointer select-none shrink-0" do %>
                 <%= lucide_icon("download", class: "h-4 w-4") %>
