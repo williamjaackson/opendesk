@@ -7,6 +7,7 @@ class CsvImporter
     @csv_import = csv_import
     @custom_table = csv_import.custom_table
     @column_mapping = csv_import.column_mapping || {}
+    @columns_by_id = @custom_table.custom_columns.index_by(&:id)
   end
 
   def parse_headers
@@ -81,7 +82,7 @@ class CsvImporter
       column_id = mapping["column_id"]&.to_i
       next unless column_id
 
-      column = @custom_table.custom_columns.find_by(id: column_id)
+      column = @columns_by_id[column_id]
       next unless column
       next if column.computed?
 
