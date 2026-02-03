@@ -115,10 +115,12 @@ export default class extends Controller {
   }
 
   filter() {
+    // Always do client-side filtering first for instant feedback
+    this.clientFilter()
+
+    // Then fetch from server if URL is configured (for large datasets)
     if (this.searchUrlValue) {
       this.serverFilter()
-    } else {
-      this.clientFilter()
     }
   }
 
@@ -133,8 +135,14 @@ export default class extends Controller {
 
   serverFilter() {
     clearTimeout(this.searchTimeout)
+    const query = this.searchTarget.value
+    if (!query) {
+      // Reset to original options when search is cleared
+      this.clientFilter()
+      return
+    }
+
     this.searchTimeout = setTimeout(() => {
-      const query = this.searchTarget.value
       const url = new URL(this.searchUrlValue, window.location.origin)
       url.searchParams.set("q", query)
 
@@ -143,13 +151,16 @@ export default class extends Controller {
       })
         .then(response => response.text())
         .then(html => {
-          const optionsContainer = this.menuTarget.querySelector("[data-dropdown-options]")
-          if (optionsContainer) {
-            optionsContainer.innerHTML = html
+          // Only update if the query hasn't changed
+          if (this.searchTarget.value === query) {
+            const optionsContainer = this.menuTarget.querySelector("[data-dropdown-options]")
+            if (optionsContainer) {
+              optionsContainer.innerHTML = html
+            }
+            this.resetFocus()
           }
-          this.resetFocus()
         })
-    }, 200)
+    }, 300)
   }
 
   openValueChanged() {
