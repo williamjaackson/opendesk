@@ -46,18 +46,45 @@ class BackfillColumnJob < ApplicationJob
     end
   end
 
+  DATETIME_PATTERN = /\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])T([01]\d|2[0-3]):[0-5]\d\z/
+  DATE_PATTERN = /\A\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])\z/
+  TIME_PATTERN = /\A([01]\d|2[0-3]):[0-5]\d\z/
+
   def coerce_value(value, from_type, to_type)
     return value if from_type == to_type
 
-    case to_type
-    when "number"
-      value.to_s.gsub(/[^\d-]/, "").presence
-    when "decimal", "currency"
-      value.to_s.gsub(/[^\d.-]/, "").presence
-    when "boolean"
-      %w[1 true yes].include?(value.to_s.downcase) ? "1" : "0"
+    effective_source = from_type
+
+    if from_type == "text"
+      if value.match?(DATETIME_PATTERN)
+        effective_source = "datetime"
+      elsif value.match?(DATE_PATTERN)
+        effective_source = "date"
+      elsif value.match?(TIME_PATTERN)
+        effective_source = "time"
+      end
+    end
+
+    case [ effective_source, to_type ]
+    when [ "datetime", "date" ]
+      value.split("T").first
+    when [ "datetime", "time" ]
+      value.split("T").last
+    when [ "date", "datetime" ]
+      "#{value}T00:00"
+    when [ "time", "datetime" ]
+      "1970-01-01T#{value}"
     else
-      value.to_s
+      case to_type
+      when "number"
+        value.to_s.gsub(/[^\d-]/, "").presence
+      when "decimal", "currency"
+        value.to_s.gsub(/[^\d.-]/, "").presence
+      when "boolean"
+        %w[1 true yes].include?(value.to_s.downcase) ? "1" : "0"
+      else
+        value.to_s
+      end
     end
   end
 end

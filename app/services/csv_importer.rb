@@ -47,6 +47,7 @@ class CsvImporter
       end
     end
     @csv_import.update!(column_mapping: @column_mapping)
+    @columns_by_id = @custom_table.custom_columns.reload.index_by(&:id)
   end
 
   def import_all
