@@ -80,8 +80,15 @@ class CustomTablesController < ApplicationController
 
   def destroy
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
-    @custom_table.destroy
-    redirect_to root_path
+
+    record_count = @custom_table.custom_records.count
+    if record_count > 100
+      DestroyTableJob.perform_later(@custom_table.id)
+      redirect_to root_path, notice: "Table is being deleted in the background."
+    else
+      @custom_table.destroy
+      redirect_to root_path
+    end
   end
 
   def toggle_protection
