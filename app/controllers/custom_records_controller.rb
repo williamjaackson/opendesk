@@ -27,6 +27,7 @@ class CustomRecordsController < ApplicationController
     success = false
     ActiveRecord::Base.transaction do
       if update_values(values)
+        @custom_record.custom_values.reload.includes(:custom_column).load
         evaluate_computed_columns(@custom_record)
         success = true
       else
@@ -66,6 +67,7 @@ class CustomRecordsController < ApplicationController
     success = false
     ActiveRecord::Base.transaction do
       if @custom_record.save && save_values(values)
+        @custom_record.custom_values.reload.includes(:custom_column).load
         evaluate_computed_columns(@custom_record)
         success = true
       else
@@ -113,7 +115,7 @@ class CustomRecordsController < ApplicationController
   end
 
   def set_custom_record
-    @custom_record = @custom_table.custom_records.find(params[:id])
+    @custom_record = @custom_table.custom_records.includes(custom_values: :custom_column).find(params[:id])
   end
 
   def save_values(values)

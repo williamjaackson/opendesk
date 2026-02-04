@@ -18,7 +18,8 @@ class CustomRecord < ApplicationRecord
   end
 
   def display_name
-    if custom_values.loaded?
+    # Use in-memory sort only if both custom_values AND their custom_columns are preloaded
+    if custom_values.loaded? && custom_values.first&.association(:custom_column)&.loaded?
       first_non_blank = custom_values.select { |v| v.value.present? }.min_by { |v| v.custom_column.position }
       first_non_blank&.value || "Record ##{id}"
     else

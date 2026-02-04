@@ -63,9 +63,7 @@ class CustomColumnsController < ApplicationController
           raise ActiveRecord::Rollback
         end
 
-        @custom_table.custom_records.find_each do |record|
-          record.custom_values.create!(custom_column: @custom_column, value: backfill_value)
-        end
+        run_backfill_async("fixed", backfill_value: backfill_value)
       elsif backfill_mode == "column"
         if backfill_column_id.blank?
           @custom_column.errors.add(:backfill_column_id, "must be selected")
@@ -89,39 +87,21 @@ class CustomColumnsController < ApplicationController
           end
         end
 
-        @custom_table.custom_records.includes(:custom_values).find_each do |record|
-          source_value = record.custom_values.find { |v| v.custom_column_id == source_column.id }
-          value_to_use = source_value&.value.presence
-
-          if value_to_use
-            value_to_use = coerce_backfill_value(value_to_use, source_column.column_type, @custom_column.column_type)
-            new_value = record.custom_values.build(custom_column: @custom_column, value: value_to_use)
-            unless new_value.valid?
-              if backfill_fallback.present?
-                new_value.value = backfill_fallback
-              else
-                next
-              end
-            end
-            new_value.save!
-          elsif backfill_fallback.present?
-            record.custom_values.create!(custom_column: @custom_column, value: backfill_fallback)
-          end
-        end
+        run_backfill_async("column", source_column_id: source_column.id, backfill_fallback: backfill_fallback)
       elsif backfill_mode.present?
         @custom_column.errors.add(:backfill_mode, "is invalid")
         raise ActiveRecord::Rollback
       end
 
       if @custom_column.computed?
-        evaluate_all_records([ @custom_column ])
+        evaluate_computed_columns_async([ @custom_column ])
       end
 
       saved = true
     end
 
     if saved
-      redirect_to edit_table_path(@custom_table)
+      redirect_to edit_table_path(@custom_table), notice: computing_notice
     else
       load_tables_json
       load_backfill_data
@@ -140,9 +120,9 @@ class CustomColumnsController < ApplicationController
         @custom_column.custom_values.where.not(value: [ nil, "" ]).where.not(value: valid_options).destroy_all
       end
       if @custom_column.computed?
-        evaluate_all_records([ @custom_column ])
+        evaluate_computed_columns_async([ @custom_column ])
       end
-      redirect_to edit_table_path(@custom_table)
+      redirect_to edit_table_path(@custom_table), notice: computing_notice
     else
       load_tables_json
       render :edit, status: :unprocessable_entity
@@ -210,9 +190,74 @@ class CustomColumnsController < ApplicationController
     end
   end
 
+  def evaluate_computed_columns_async(computed_columns)
+    record_count = @custom_table.custom_records.count
+    if record_count > 100
+      @computing_in_background = true
+      EvaluateComputedColumnJob.perform_later(@custom_table.id, computed_columns.map(&:id))
+    else
+      evaluate_all_records(computed_columns)
+    end
+  end
+
   def evaluate_all_records(computed_columns)
+    all_columns = @custom_table.custom_columns.order(:position)
     @custom_table.custom_records.includes(custom_values: :custom_column).find_each do |record|
-      FormulaEvaluator.evaluate_record(record, computed_columns)
+      FormulaEvaluator.evaluate_record(record, computed_columns, all_columns: all_columns)
+    end
+  end
+
+  def run_backfill_async(mode, backfill_value: nil, source_column_id: nil, backfill_fallback: nil)
+    record_count = @custom_table.custom_records.count
+    if record_count > 100
+      @backfilling_in_background = true
+      BackfillColumnJob.perform_later(
+        @custom_table.id,
+        @custom_column.id,
+        mode,
+        backfill_value: backfill_value,
+        source_column_id: source_column_id,
+        backfill_fallback: backfill_fallback
+      )
+    else
+      run_backfill_sync(mode, backfill_value: backfill_value, source_column_id: source_column_id, backfill_fallback: backfill_fallback)
+    end
+  end
+
+  def run_backfill_sync(mode, backfill_value: nil, source_column_id: nil, backfill_fallback: nil)
+    if mode == "fixed"
+      @custom_table.custom_records.find_each do |record|
+        record.custom_values.create!(custom_column: @custom_column, value: backfill_value)
+      end
+    elsif mode == "column"
+      source_column = @custom_table.custom_columns.find(source_column_id)
+      @custom_table.custom_records.includes(:custom_values).find_each do |record|
+        source_value = record.custom_values.find { |v| v.custom_column_id == source_column.id }
+        value_to_use = source_value&.value.presence
+
+        if value_to_use
+          value_to_use = coerce_backfill_value(value_to_use, source_column.column_type, @custom_column.column_type)
+          new_value = record.custom_values.build(custom_column: @custom_column, value: value_to_use)
+          unless new_value.valid?
+            if backfill_fallback.present?
+              new_value.value = backfill_fallback
+            else
+              next
+            end
+          end
+          new_value.save!
+        elsif backfill_fallback.present?
+          record.custom_values.create!(custom_column: @custom_column, value: backfill_fallback)
+        end
+      end
+    end
+  end
+
+  def computing_notice
+    if @backfilling_in_background
+      "Column saved. Values are being backfilled in the background."
+    elsif @computing_in_background
+      "Column saved. Values are being computed in the background."
     end
   end
 
