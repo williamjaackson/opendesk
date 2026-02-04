@@ -2,7 +2,8 @@ class DestroyTableJob < ApplicationJob
   queue_as :default
 
   def perform(custom_table_id)
-    custom_table = CustomTable.find(custom_table_id)
+    # Use unscoped to find soft-deleted tables
+    custom_table = CustomTable.unscoped.find(custom_table_id)
 
     # Delete in order to avoid foreign key issues
     # 1. Delete all record links (from relationships where this table is involved)
