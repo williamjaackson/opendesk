@@ -130,8 +130,14 @@ class CustomColumnsController < ApplicationController
   end
 
   def destroy
-    @custom_column.destroy
-    redirect_to edit_table_path(@custom_table)
+    record_count = @custom_table.custom_records.count
+    if record_count > 100
+      DestroyColumnJob.perform_later(@custom_column.id)
+      redirect_to edit_table_path(@custom_table), notice: "Column is being deleted in the background."
+    else
+      @custom_column.destroy
+      redirect_to edit_table_path(@custom_table)
+    end
   end
 
   private

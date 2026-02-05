@@ -48,8 +48,14 @@ class CustomRelationshipsController < ApplicationController
   end
 
   def destroy
-    @custom_relationship.destroy
-    redirect_to edit_table_path(@custom_table)
+    link_count = @custom_relationship.custom_record_links.count
+    if link_count > 100
+      DestroyRelationshipJob.perform_later(@custom_relationship.id)
+      redirect_to edit_table_path(@custom_table), notice: "Relationship is being deleted in the background."
+    else
+      @custom_relationship.destroy
+      redirect_to edit_table_path(@custom_table)
+    end
   end
 
   def export
