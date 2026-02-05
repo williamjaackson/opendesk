@@ -17,7 +17,9 @@ class CustomTable < ApplicationRecord
   before_validation :generate_slug
 
   def soft_delete!
-    update_columns(deleted_at: Time.current)
+    # Mangle slug to allow name reuse
+    deleted_slug = "#{slug}-deleted-#{id}"
+    update_columns(deleted_at: Time.current, slug: deleted_slug, name: "#{name} (deleted)")
   end
 
   def deleted?

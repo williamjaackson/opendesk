@@ -16,9 +16,10 @@ class DestroyTableJob < ApplicationJob
     # 2. Delete all relationships
     CustomRelationship.where(id: relationship_ids).delete_all
 
-    # 3. Delete all custom values
-    record_ids = custom_table.custom_records.pluck(:id)
-    CustomValue.where(custom_record_id: record_ids).in_batches(of: 1000).delete_all
+    # 3. Delete all custom values (in batches to avoid memory issues)
+    custom_table.custom_records.in_batches(of: 1000) do |batch|
+      CustomValue.where(custom_record_id: batch.pluck(:id)).delete_all
+    end
 
     # 4. Delete all records
     custom_table.custom_records.in_batches(of: 1000).delete_all

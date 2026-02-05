@@ -3,7 +3,8 @@ class DestroyColumnJob < ApplicationJob
 
   def perform(custom_column_id)
     custom_column = CustomColumn.find(custom_column_id)
-    custom_table = custom_column.custom_table
+    # Use unscoped in case table was soft-deleted during job execution
+    custom_table = CustomTable.unscoped.find(custom_column.custom_table_id)
 
     # 1. Nullify any columns that link to this one
     CustomColumn.where(linked_column_id: custom_column_id).update_all(linked_column_id: nil)
@@ -24,19 +25,21 @@ class DestroyColumnJob < ApplicationJob
   private
 
   def cleanup_empty_records(custom_table)
-    empty_record_ids = custom_table.custom_records
+    empty_records_scope = custom_table.custom_records
       .left_joins(:custom_values)
       .where(custom_values: { id: nil })
-      .pluck(:id)
 
-    return if empty_record_ids.empty?
+    empty_records_scope.in_batches(of: 1000) do |batch|
+      batch_ids = batch.pluck(:id)
+      next if batch_ids.empty?
 
-    # Delete record links for empty records
-    CustomRecordLink.where(source_record_id: empty_record_ids)
-      .or(CustomRecordLink.where(target_record_id: empty_record_ids))
-      .in_batches(of: 1000).delete_all
+      # Delete record links for empty records in this batch
+      CustomRecordLink.where(source_record_id: batch_ids)
+        .or(CustomRecordLink.where(target_record_id: batch_ids))
+        .delete_all
 
-    # Delete the empty records
-    CustomRecord.where(id: empty_record_ids).in_batches(of: 1000).delete_all
+      # Delete the empty records in this batch
+      CustomRecord.where(id: batch_ids).delete_all
+    end
   end
 end
