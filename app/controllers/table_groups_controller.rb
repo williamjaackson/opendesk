@@ -1,6 +1,6 @@
 class TableGroupsController < ApplicationController
   before_action :require_organisation
-  before_action :require_builder_mode, except: [ :index, :show ]
+  before_action :require_builder_mode, except: [ :show ]
 
   def index
     @table_groups = Current.organisation.table_groups.order(:position)
