@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_03_074701) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_04_024729) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -112,6 +112,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_074701) do
 
   create_table "custom_tables", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.datetime "deleted_at"
     t.string "name", null: false
     t.integer "organisation_id", null: false
     t.integer "position", default: 0, null: false
@@ -119,6 +120,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_03_074701) do
     t.string "slug", null: false
     t.integer "table_group_id"
     t.datetime "updated_at", null: false
+    t.index ["deleted_at"], name: "index_custom_tables_on_deleted_at"
     t.index ["organisation_id", "position"], name: "index_custom_tables_on_organisation_id_and_position"
     t.index ["organisation_id", "slug"], name: "index_custom_tables_on_organisation_id_and_slug", unique: true
     t.index ["organisation_id"], name: "index_custom_tables_on_organisation_id"

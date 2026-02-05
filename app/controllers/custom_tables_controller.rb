@@ -80,7 +80,13 @@ class CustomTablesController < ApplicationController
 
   def destroy
     @custom_table = Current.organisation.custom_tables.find_by!(slug: params[:slug])
-    @custom_table.destroy
+
+    # Soft delete immediately (hides from UI via default scope)
+    @custom_table.soft_delete!
+
+    # Clean up data in background
+    DestroyTableJob.perform_later(@custom_table.id)
+
     redirect_to root_path
   end
 
