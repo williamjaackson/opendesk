@@ -24,6 +24,12 @@ class CustomRecordsController < ApplicationController
       return
     end
 
+    if values.values.all?(&:blank?)
+      @custom_record.errors.add(:base, "At least one field must have a value")
+      render :edit, status: :unprocessable_entity
+      return
+    end
+
     success = false
     ActiveRecord::Base.transaction do
       if update_values(values)
@@ -60,6 +66,12 @@ class CustomRecordsController < ApplicationController
     missing = @columns.where(required: true).reject { |c| values[c.id.to_s].present? }
     if missing.any?
       missing.each { |c| @custom_record.errors.add(:"column_#{c.id}", "can't be blank") }
+      render :new, status: :unprocessable_entity
+      return
+    end
+
+    if values.values.all?(&:blank?)
+      @custom_record.errors.add(:base, "At least one field must have a value")
       render :new, status: :unprocessable_entity
       return
     end
