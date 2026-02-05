@@ -25,7 +25,7 @@ class CustomRecordsController < ApplicationController
     end
 
     if values.values.all?(&:blank?)
-      @custom_record.errors.add(:base, "At least one field must have a value")
+      flash.now[:alert] = "At least one field must have a value"
       render :edit, status: :unprocessable_entity
       return
     end
@@ -71,7 +71,7 @@ class CustomRecordsController < ApplicationController
     end
 
     if values.values.all?(&:blank?)
-      @custom_record.errors.add(:base, "At least one field must have a value")
+      flash.now[:alert] = "At least one field must have a value"
       render :new, status: :unprocessable_entity
       return
     end

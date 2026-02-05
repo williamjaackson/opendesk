@@ -4,12 +4,6 @@
 
   <div class="space-y-8">
     <%= form_with url: table_record_path(@custom_table, @custom_record), method: :patch, html: { novalidate: true } do |form| %>
-      <% if @custom_record.errors[:base].any? %>
-        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p class="text-sm text-red-600"><%= @custom_record.errors[:base].first %></p>
-        </div>
-      <% end %>
-
       <% @columns.reject(&:computed?).each_with_index do |column, index| %>
         <% existing_value = @custom_record.custom_values.detect { |v| v.custom_column_id == column.id }&.value %>
         <div class="mb-4">
