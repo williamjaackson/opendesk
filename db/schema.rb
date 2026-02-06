@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_06_020631) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_022708) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -139,6 +139,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_020631) do
     t.index ["custom_record_id"], name: "index_custom_values_on_custom_record_id"
   end
 
+  create_table "organisation_invites", force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.datetime "created_at", null: false
+    t.string "email", null: false
+    t.integer "organisation_id", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.index ["organisation_id", "email"], name: "index_organisation_invites_on_organisation_id_and_email", unique: true
+    t.index ["organisation_id"], name: "index_organisation_invites_on_organisation_id"
+    t.index ["token"], name: "index_organisation_invites_on_token", unique: true
+  end
+
   create_table "organisation_users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "organisation_id", null: false
@@ -200,6 +212,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_020631) do
   add_foreign_key "custom_tables", "table_groups"
   add_foreign_key "custom_values", "custom_columns"
   add_foreign_key "custom_values", "custom_records"
+  add_foreign_key "organisation_invites", "organisations"
   add_foreign_key "organisation_users", "organisations"
   add_foreign_key "organisation_users", "users"
   add_foreign_key "sessions", "users"

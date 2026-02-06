@@ -14,6 +14,8 @@ class OrganisationsController < ApplicationController
   def members
     @organisation = Current.user.organisations.find(params[:id])
     @members = @organisation.organisation_users.includes(:user).order(:created_at)
+    @pending_invites = @organisation.organisation_invites.pending.order(:created_at)
+    @invite = @organisation.organisation_invites.new
   end
 
   def new
