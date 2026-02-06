@@ -83,6 +83,10 @@
                       </label>
                       <div class="border-t border-gray-200"></div>
                     <% end %>
+                    <%= link_to account_path, class: "flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 select-none" do %>
+                      <%= lucide_icon("user", class: "h-4 w-4") %>
+                      Account
+                    <% end %>
                     <%= button_to session_path, method: :delete, class: "flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none" do %>
                       <%= lucide_icon("log-out", class: "h-4 w-4") %>
                       Sign out
