@@ -18,6 +18,12 @@
         Sign out and try again
       <% end %>
     </div>
+  <% elsif authenticated? %>
+    <div class="space-y-3">
+      <%= button_to accept_organisation_invite_path(@invite.token), method: :post, class: "w-full inline-flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" do %>
+        Accept invitation
+      <% end %>
+    </div>
   <% else %>
     <p class="text-center text-sm text-gray-600 mb-6">
       This invitation is for <strong><%= @invite.email %></strong>

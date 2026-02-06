@@ -1,6 +1,6 @@
 class OrganisationInvitesController < ApplicationController
   allow_unauthenticated_access only: [ :show ]
-  before_action :set_invite, only: [ :show, :destroy ]
+  before_action :set_invite, only: [ :show, :accept, :destroy ]
 
   def create
     @organisation = Current.user.organisations.find(params[:organisation_id])
@@ -32,22 +32,25 @@ class OrganisationInvitesController < ApplicationController
       return
     end
 
-    # Always store token so it persists through sign out/sign in flow
+    # Store token so it persists through sign out/sign in flow
     session[:pending_invite_token] = @invite.token
 
-    if authenticated?
-      if Current.user.email_address == @invite.email
-        # Auto-accept if logged in with matching email
-        session.delete(:pending_invite_token)
-        if @invite.accept!(Current.user)
-          redirect_to organisation_path(@invite.organisation), notice: "You've joined #{@invite.organisation.name}!"
-        else
-          redirect_to root_path, alert: "Unable to accept invitation."
-        end
-      else
-        # Logged in but different email - must sign out first
-        @email_mismatch = true
-      end
+    if authenticated? && Current.user.email_address != @invite.email
+      @email_mismatch = true
+    end
+  end
+
+  def accept
+    if Current.user.email_address != @invite.email
+      redirect_to organisation_invite_path(@invite.token), alert: "You must be signed in as #{@invite.email} to accept this invitation."
+      return
+    end
+
+    session.delete(:pending_invite_token)
+    if @invite.accept!(Current.user)
+      redirect_to organisation_path(@invite.organisation), notice: "You've joined #{@invite.organisation.name}!"
+    else
+      redirect_to root_path, alert: "Unable to accept invitation."
     end
   end
 
