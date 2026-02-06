@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_06_024724) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_06_034557) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -146,7 +146,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_024724) do
     t.integer "organisation_id", null: false
     t.string "token", null: false
     t.datetime "updated_at", null: false
-    t.index ["organisation_id", "email"], name: "index_organisation_invites_on_organisation_id_and_email", unique: true
+    t.index ["organisation_id", "email"], name: "index_pending_invites_on_org_and_email", unique: true, where: "accepted_at IS NULL"
     t.index ["organisation_id"], name: "index_organisation_invites_on_organisation_id"
     t.index ["token"], name: "index_organisation_invites_on_token", unique: true
   end
