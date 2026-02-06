@@ -8,7 +8,11 @@
     <%= render "shared/button", label: "Sign in", form: form %>
   <% end %>
 
-  <p class="mt-4 text-sm">
-    <%= link_to "Forgot password?", new_password_path %>
+  <p class="mt-4 text-sm text-gray-600">
+    <%= link_to "Forgot password?", new_password_path, class: "hover:underline" %>
+  </p>
+
+  <p class="mt-4 text-sm text-gray-600">
+    Don't have an account? <%= link_to "Sign up", new_registration_path, class: "text-gray-900 font-medium hover:underline" %>
   </p>
 </div>

@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resource :session
+  resource :registration, only: [ :new, :create ]
   resource :organisation_session, only: [ :create, :destroy ]
   resource :builder_mode, only: [ :update ]
   resource :account, only: [ :show, :update ]
