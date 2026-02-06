@@ -30,9 +30,13 @@
                   <div class="text-xs text-gray-500">Invited <%= time_ago_in_words(invite.created_at) %> ago</div>
                 </div>
               </div>
-              <%= button_to organisation_invite_path(invite.token), method: :delete, class: "text-sm text-gray-500 hover:text-red-600 cursor-pointer select-none", data: { turbo_confirm: "Cancel this invitation?" } do %>
-                Cancel
-              <% end %>
+              <span data-controller="confirm" data-confirm-message-value="Cancel the invitation to <%= invite.email %>?" data-confirm-button-text-value="Cancel invite">
+                <%= form_with url: organisation_invite_path(invite.token), method: :delete, class: "inline" do %>
+                  <button type="button" data-action="confirm#show" class="text-sm text-gray-500 hover:text-red-600 cursor-pointer select-none">
+                    Cancel
+                  </button>
+                <% end %>
+              </span>
             </li>
           <% end %>
         </ul>
