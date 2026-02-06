@@ -7,14 +7,20 @@
     <% end %>
   </div>
 
-  <div class="flex items-center gap-2 mb-4">
-    <span class="inline-block h-4 w-4 rounded border border-gray-300" style="background-color: <%= @organisation.theme_colour || '#111827' %>"></span>
-    <span class="text-sm text-gray-500"><%= @organisation.theme_colour || "#111827" %></span>
+  <div class="flex items-center gap-4 mb-6">
+    <div class="flex items-center gap-2">
+      <span class="inline-block h-4 w-4 rounded border border-gray-300" style="background-color: <%= @organisation.theme_colour || '#111827' %>"></span>
+      <span class="text-sm text-gray-500"><%= @organisation.theme_colour || "#111827" %></span>
+    </div>
+    <span class="text-gray-300">•</span>
+    <%= link_to members_organisation_path(@organisation), class: "inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700" do %>
+      <%= lucide_icon("users", class: "h-4 w-4") %>
+      <%= pluralize(@organisation.users.count, "member") %>
+    <% end %>
   </div>
 
   <%= button_to organisation_session_path(organisation_id: @organisation.id), method: :post, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" do %>
     <%= lucide_icon("log-in", class: "h-4 w-4") %>
     Start Managing
   <% end %>
-
 </div>

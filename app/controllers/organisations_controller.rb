@@ -11,6 +11,11 @@ class OrganisationsController < ApplicationController
     @organisation = Current.user.organisations.find(params[:id])
   end
 
+  def members
+    @organisation = Current.user.organisations.find(params[:id])
+    @members = @organisation.organisation_users.includes(:user).order(:created_at)
+  end
+
   def new
     @organisation = Organisation.new
   end
