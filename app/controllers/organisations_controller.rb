@@ -13,6 +13,7 @@ class OrganisationsController < ApplicationController
 
   def members
     @organisation = Current.user.organisations.find(params[:id])
+    @current_membership = @organisation.organisation_users.find_by(user: Current.user)
     @members = @organisation.organisation_users.includes(:user).order(:created_at)
     @pending_invites = @organisation.organisation_invites.pending.order(:created_at)
     @invite = @organisation.organisation_invites.new
@@ -26,7 +27,7 @@ class OrganisationsController < ApplicationController
     @organisation = Organisation.new(organisation_params)
 
     if @organisation.save
-      @organisation.users << Current.user
+      @organisation.organisation_users.create!(user: Current.user, role: "admin")
       redirect_to organisations_path
     else
       render :new, status: :unprocessable_entity
