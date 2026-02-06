@@ -4,6 +4,13 @@ class OrganisationInvitesController < ApplicationController
 
   def create
     @organisation = Current.user.organisations.find(params[:organisation_id])
+    @membership = @organisation.organisation_users.find_by(user: Current.user)
+
+    unless @membership&.admin?
+      redirect_to members_organisation_path(@organisation), alert: "You must be an admin to invite members."
+      return
+    end
+
     @invite = @organisation.organisation_invites.new(invite_params)
 
     if @organisation.users.exists?(email_address: @invite.email)
@@ -57,6 +64,13 @@ class OrganisationInvitesController < ApplicationController
 
   def destroy
     @organisation = Current.user.organisations.find(@invite.organisation_id)
+    @membership = @organisation.organisation_users.find_by(user: Current.user)
+
+    unless @membership&.admin?
+      redirect_to members_organisation_path(@organisation), alert: "You must be an admin to cancel invitations."
+      return
+    end
+
     @invite.destroy
     redirect_to members_organisation_path(@organisation), notice: "Invitation cancelled."
   end

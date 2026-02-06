@@ -3,17 +3,19 @@
   <%= render "shared/page_heading", title: "Members" %>
 
   <div class="space-y-6">
-    <div class="bg-white border border-gray-200 rounded-lg p-6">
-      <h2 class="text-base font-medium text-gray-900 mb-4">Invite someone</h2>
-      <%= form_with model: @invite, url: organisation_invites_path(@organisation), html: { class: "flex gap-3" } do |form| %>
-        <div class="flex-1">
-          <%= form.email_field :email, placeholder: "Email address", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:border-gray-500 focus:ring-gray-500" %>
-        </div>
-        <%= form.submit "Send invite", class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" %>
-      <% end %>
-    </div>
+    <% if @current_membership.admin? %>
+      <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 class="text-base font-medium text-gray-900 mb-4">Invite someone</h2>
+        <%= form_with model: @invite, url: organisation_invites_path(@organisation), html: { class: "flex gap-3" } do |form| %>
+          <div class="flex-1">
+            <%= form.email_field :email, placeholder: "Email address", class: "block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:border-gray-500 focus:ring-gray-500" %>
+          </div>
+          <%= form.submit "Send invite", class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" %>
+        <% end %>
+      </div>
+    <% end %>
 
-    <% if @pending_invites.any? %>
+    <% if @pending_invites.any? && @current_membership.admin? %>
       <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <div class="px-6 py-3 bg-gray-50 border-b border-gray-200">
           <h2 class="text-sm font-medium text-gray-700">Pending invitations</h2>
@@ -57,10 +59,13 @@
                 </span>
               </div>
               <div>
-                <div class="text-sm font-medium text-gray-900">
+                <div class="text-sm font-medium text-gray-900 flex items-center gap-2">
                   <%= membership.user.name.presence || "No name" %>
                   <% if membership.user == Current.user %>
                     <span class="text-xs text-gray-500">(you)</span>
+                  <% end %>
+                  <% if membership.admin? %>
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-900 text-white">Admin</span>
                   <% end %>
                 </div>
                 <div class="text-sm text-gray-500"><%= membership.user.email_address %></div>
@@ -70,7 +75,24 @@
               <span class="text-sm text-gray-500">
                 Joined <%= membership.created_at.strftime("%b %d, %Y") %>
               </span>
-              <% unless membership.user == Current.user %>
+              <% if @current_membership.admin? && membership.user != Current.user %>
+                <% if membership.admin? %>
+                  <span data-controller="confirm" data-confirm-message-value="Remove admin role from <%= membership.user.name.presence || membership.user.email_address %>?" data-confirm-button-text-value="Remove admin">
+                    <%= form_with url: organisation_member_path(@organisation, membership), method: :patch, class: "inline" do |f| %>
+                      <%= f.hidden_field :role, value: "member" %>
+                      <button type="button" data-action="confirm#show" class="text-sm text-gray-500 hover:text-gray-700 cursor-pointer select-none">
+                        Remove admin
+                      </button>
+                    <% end %>
+                  </span>
+                <% else %>
+                  <%= form_with url: organisation_member_path(@organisation, membership), method: :patch, class: "inline" do |f| %>
+                    <%= f.hidden_field :role, value: "admin" %>
+                    <button type="submit" class="text-sm text-gray-500 hover:text-gray-700 cursor-pointer select-none">
+                      Make admin
+                    </button>
+                  <% end %>
+                <% end %>
                 <span data-controller="confirm" data-confirm-message-value="Remove <%= membership.user.name.presence || membership.user.email_address %> from <%= @organisation.name %>?" data-confirm-button-text-value="Remove member">
                   <%= form_with url: organisation_member_path(@organisation, membership), method: :delete, class: "inline" do %>
                     <button type="button" data-action="confirm#show" class="text-sm text-gray-500 hover:text-red-600 cursor-pointer select-none">
