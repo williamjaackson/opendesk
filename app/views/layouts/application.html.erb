@@ -97,7 +97,7 @@
         </div>
       </div>
     </nav>
-    <% if authenticated? && managing_organisation? && controller_name != "pages" && (controller_name != "table_groups" || action_name == "show") %>
+    <% if authenticated? && managing_organisation? && (@custom_table.present? || @table_group.present?) %>
       <%= render "shared/tables_navbar" %>
     <% end %>
     <% if @custom_table&.protected? %>
