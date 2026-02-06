@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       get :members
     end
     resources :organisation_invites, path: "invites", as: :invites, only: [ :create ]
+    resources :organisation_users, path: "members", as: :members, only: [ :destroy ]
   end
   resources :organisation_invites, path: "invites", param: :token, only: [ :show, :destroy ] do
     member do
