@@ -1,5 +1,5 @@
 class OrganisationInvitesController < ApplicationController
-  allow_unauthenticated_access only: [ :show, :accept ]
+  allow_unauthenticated_access only: [ :show ]
   before_action :set_invite, only: [ :show, :accept, :destroy ]
 
   def create
@@ -32,30 +32,22 @@ class OrganisationInvitesController < ApplicationController
       return
     end
 
-    if authenticated? && Current.user.email_address == @invite.email
-      # Auto-accept if logged in with matching email
-      if @invite.accept!(Current.user)
-        redirect_to organisation_path(@invite.organisation), notice: "You've joined #{@invite.organisation.name}!"
-      else
-        redirect_to root_path, alert: "Unable to accept invitation."
-      end
-    elsif authenticated?
-      # Logged in but different email
+    # Store token so it persists through sign out/sign in flow
+    session[:pending_invite_token] = @invite.token
+
+    if authenticated? && Current.user.email_address != @invite.email
       @email_mismatch = true
     end
-    # Otherwise show the invite page
   end
 
   def accept
-    unless authenticated?
-      # Store invite token and redirect to sign in/up
-      session[:pending_invite_token] = @invite.token
-      redirect_to new_session_path, notice: "Please sign in or create an account to accept this invitation."
+    if Current.user.email_address != @invite.email
+      redirect_to organisation_invite_path(@invite.token), alert: "You must be signed in as #{@invite.email} to accept this invitation."
       return
     end
 
+    session.delete(:pending_invite_token)
     if @invite.accept!(Current.user)
-      session.delete(:pending_invite_token)
       redirect_to organisation_path(@invite.organisation), notice: "You've joined #{@invite.organisation.name}!"
     else
       redirect_to root_path, alert: "Unable to accept invitation."

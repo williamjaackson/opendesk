@@ -4,6 +4,10 @@ class RegistrationsController < ApplicationController
 
   def new
     @user = User.new
+    if (token = session[:pending_invite_token])
+      invite = OrganisationInvite.find_by(token: token)
+      @user.email_address = invite.email if invite && !invite.accepted?
+    end
   end
 
   def create

@@ -49,6 +49,15 @@ module Authentication
     end
 
     def after_authentication_url
+      # Redirect to pending invite if exists
+      if (token = session[:pending_invite_token])
+        invite = OrganisationInvite.find_by(token: token)
+        if invite && !invite.accepted?
+          return organisation_invite_url(invite.token)
+        end
+        session.delete(:pending_invite_token)
+      end
+
       session.delete(:return_to_after_authenticating) || root_url
     end
 
@@ -62,6 +71,9 @@ module Authentication
     def terminate_session
       Current.session.destroy
       cookies.delete(:session_id)
+      # Preserve invite token across sign-out
+      invite_token = session[:pending_invite_token]
       session.delete(:organisation_id)
+      session[:pending_invite_token] = invite_token if invite_token
     end
 end
