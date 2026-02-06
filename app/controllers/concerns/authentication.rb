@@ -75,6 +75,9 @@ module Authentication
     def terminate_session
       Current.session.destroy
       cookies.delete(:session_id)
+      # Preserve invite token across sign-out
+      invite_token = session[:pending_invite_token]
       session.delete(:organisation_id)
+      session[:pending_invite_token] = invite_token if invite_token
     end
 end

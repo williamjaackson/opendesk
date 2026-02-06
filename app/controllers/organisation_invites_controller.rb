@@ -32,9 +32,13 @@ class OrganisationInvitesController < ApplicationController
       return
     end
 
+    # Always store token so it persists through sign out/sign in flow
+    session[:pending_invite_token] = @invite.token
+
     if authenticated?
       if Current.user.email_address == @invite.email
         # Auto-accept if logged in with matching email
+        session.delete(:pending_invite_token)
         if @invite.accept!(Current.user)
           redirect_to organisation_path(@invite.organisation), notice: "You've joined #{@invite.organisation.name}!"
         else
@@ -44,9 +48,6 @@ class OrganisationInvitesController < ApplicationController
         # Logged in but different email - must sign out first
         @email_mismatch = true
       end
-    else
-      # Not logged in - store token and show sign in/up options
-      session[:pending_invite_token] = @invite.token
     end
   end
 
