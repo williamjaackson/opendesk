@@ -9,6 +9,12 @@ Rails.application.routes.draw do
     member do
       get :members
     end
+    resources :organisation_invites, path: "invites", as: :invites, only: [ :create ]
+  end
+  resources :organisation_invites, path: "invites", param: :token, only: [ :show, :destroy ] do
+    member do
+      post :accept
+    end
   end
   resources :custom_record_links, path: "record-links", as: :record_links, only: [ :create, :destroy ]
 

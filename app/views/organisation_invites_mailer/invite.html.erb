@@ -1,0 +1,5 @@
+<p>You've been invited to join <strong><%= @organisation.name %></strong> on OpenDesk.</p>
+
+<p><%= link_to "Accept invitation", organisation_invite_url(@invite.token) %></p>
+
+<p>If you don't have an account yet, you'll be able to create one after clicking the link above.</p>
