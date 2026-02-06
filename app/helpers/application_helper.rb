@@ -1,4 +1,10 @@
 module ApplicationHelper
+  def current_user_admin?
+    return false unless Current.organisation && Current.user
+
+    Current.organisation.organisation_users.find_by(user: Current.user)&.admin?
+  end
+
   def relationship_kind_label(kind)
     case kind
     when "one_to_one" then "One to One"

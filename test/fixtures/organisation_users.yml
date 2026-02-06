@@ -1,7 +1,9 @@
 one:
   organisation: one
   user: one
+  role: admin
 
 two:
   organisation: two
   user: one
+  role: admin
