@@ -1,0 +1,16 @@
+<div class="max-w-md mx-auto py-8 px-4">
+  <%= render "shared/page_heading", title: "Sign up" %>
+
+  <%= form_with model: @user, url: registration_path, html: { novalidate: true } do |form| %>
+    <%= render "shared/form_input", form: form, field: :name, type: :text_field, options: { autofocus: true, autocomplete: "name", placeholder: "Enter your name" } %>
+    <%= render "shared/form_input", form: form, field: :email_address, type: :email_field, options: { required: true, autocomplete: "email", placeholder: "Enter your email address" } %>
+    <%= render "shared/form_input", form: form, field: :password, type: :password_field, options: { required: true, autocomplete: "new-password", placeholder: "Create a password", maxlength: 72 } %>
+    <%= render "shared/form_input", form: form, field: :password_confirmation, type: :password_field, label: "Confirm password", options: { required: true, autocomplete: "new-password", placeholder: "Confirm your password", maxlength: 72 } %>
+
+    <%= render "shared/button", label: "Sign up", form: form %>
+  <% end %>
+
+  <p class="mt-4 text-sm text-gray-600">
+    Already have an account? <%= link_to "Sign in", new_session_path, class: "text-gray-900 font-medium hover:underline" %>
+  </p>
+</div>
