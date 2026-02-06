@@ -49,6 +49,19 @@ module Authentication
     end
 
     def after_authentication_url
+      # Check for pending invite
+      if (token = session[:pending_invite_token])
+        invite = OrganisationInvite.find_by(token: token)
+        if invite && !invite.accepted? && Current.user.email_address == invite.email
+          session.delete(:pending_invite_token)
+          if invite.accept!(Current.user)
+            flash[:notice] = "You've joined #{invite.organisation.name}!"
+            return organisation_url(invite.organisation)
+          end
+        end
+        session.delete(:pending_invite_token)
+      end
+
       session.delete(:return_to_after_authenticating) || root_url
     end
 
