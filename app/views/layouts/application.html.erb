@@ -71,7 +71,7 @@
 
                 <div data-dropdown-target="menu" class="hidden absolute right-0 z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white shadow-lg">
                   <div class="py-1">
-                    <% if managing_organisation? %>
+                    <% if managing_organisation? && current_user_admin? %>
                       <label data-controller="builder-mode" data-builder-mode-url-value="<%= builder_mode_path %>"
                         class="flex items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 cursor-pointer select-none">
                         <span>Builder mode</span>
