@@ -59,5 +59,16 @@
         </div>
       <% end %>
     </section>
+
+    <hr class="border-gray-200">
+
+    <section>
+      <h2 class="text-lg font-medium text-gray-900 mb-4">Sign out</h2>
+      <p class="text-sm text-gray-600 mb-4">Sign out of your account on this device.</p>
+      <%= button_to session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" do %>
+        <%= lucide_icon("log-out", class: "h-4 w-4") %>
+        Sign out
+      <% end %>
+    </section>
   </div>
 </div>
