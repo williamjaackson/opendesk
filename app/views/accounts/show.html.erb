@@ -1,0 +1,84 @@
+<div class="max-w-xl mx-auto py-8 px-4">
+  <%= render "shared/page_heading", title: "Account" %>
+
+  <div class="space-y-6">
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <%= lucide_icon("user", class: "h-5 w-5 text-gray-400") %>
+        <h2 class="text-base font-medium text-gray-900">Profile</h2>
+      </div>
+      <%= form_with model: Current.user, url: account_path, method: :patch, html: { novalidate: true } do |form| %>
+        <%= render "shared/form_input", form: form, field: :name, options: { autofocus: true, placeholder: "Your name" } %>
+        <%= render "shared/form_input", form: form, field: :email_address, label: "Email", type: :email_field, options: { required: true } %>
+        <div class="flex justify-end">
+          <%= render "shared/button", label: "Save changes", form: form %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-4">
+        <%= lucide_icon("lock", class: "h-5 w-5 text-gray-400") %>
+        <h2 class="text-base font-medium text-gray-900">Change password</h2>
+      </div>
+      <%= form_with url: account_path, method: :patch, html: { novalidate: true } do |form| %>
+        <div class="mb-4">
+          <%= form.label :current_password, class: "block text-sm font-medium text-gray-700 mb-1" do %>
+            Current password<span class="text-red-500 ml-0.5">*</span>
+          <% end %>
+          <% input_classes = "block w-full rounded-md border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
+          <% input_classes += Current.user.errors[:current_password].any? ? " border-red-300 focus:border-red-500 focus:ring-red-500" : " border-gray-300 focus:border-gray-500 focus:ring-gray-500" %>
+          <%= form.password_field :current_password, class: input_classes, required: true %>
+          <% Current.user.errors[:current_password].each do |error| %>
+            <p class="mt-1 text-sm text-red-600"><%= error %></p>
+          <% end %>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-4">
+          <div>
+            <%= form.label :password, "New password", class: "block text-sm font-medium text-gray-700 mb-1" do %>
+              New password<span class="text-red-500 ml-0.5">*</span>
+            <% end %>
+            <% input_classes = "block w-full rounded-md border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
+            <% input_classes += Current.user.errors[:password].any? ? " border-red-300 focus:border-red-500 focus:ring-red-500" : " border-gray-300 focus:border-gray-500 focus:ring-gray-500" %>
+            <%= form.password_field :password, class: input_classes, required: true %>
+            <% Current.user.errors[:password].each do |error| %>
+              <p class="mt-1 text-sm text-red-600"><%= error %></p>
+            <% end %>
+          </div>
+
+          <div>
+            <%= form.label :password_confirmation, "Confirm password", class: "block text-sm font-medium text-gray-700 mb-1" do %>
+              Confirm password<span class="text-red-500 ml-0.5">*</span>
+            <% end %>
+            <% input_classes = "block w-full rounded-md border bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1" %>
+            <% input_classes += Current.user.errors[:password_confirmation].any? ? " border-red-300 focus:border-red-500 focus:ring-red-500" : " border-gray-300 focus:border-gray-500 focus:ring-gray-500" %>
+            <%= form.password_field :password_confirmation, class: input_classes, required: true %>
+            <% Current.user.errors[:password_confirmation].each do |error| %>
+              <p class="mt-1 text-sm text-red-600"><%= error %></p>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="flex justify-end">
+          <%= render "shared/button", label: "Update password", form: form %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <%= lucide_icon("log-out", class: "h-5 w-5 text-gray-400") %>
+          <div>
+            <h2 class="text-base font-medium text-gray-900">Sign out</h2>
+            <p class="text-sm text-gray-500">Sign out of your account on this device</p>
+          </div>
+        </div>
+        <%= button_to session_path, method: :delete, class: "inline-flex items-center gap-1.5 px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors cursor-pointer select-none" do %>
+          Sign out
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
