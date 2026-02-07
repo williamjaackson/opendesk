@@ -8,8 +8,7 @@ module ApplicationHelper
   def inbox_count
     return 0 unless Current.user
 
-    # For now just invites, but can add other notification types later
-    OrganisationInvite.pending.where(email: Current.user.email_address).count
+    Current.user.notifications.unread.count
   end
 
   def relationship_kind_label(kind)
