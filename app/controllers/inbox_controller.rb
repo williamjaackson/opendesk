@@ -1,6 +1,10 @@
 class InboxController < ApplicationController
   def index
     @notifications = Current.user.notifications.recent.includes(:notifiable)
+
+    # Preload organisations for invite notifications to avoid N+1
+    invites = @notifications.filter_map { |n| n.notifiable if n.notifiable_type == "OrganisationInvite" }
+    ActiveRecord::Associations::Preloader.new(records: invites, associations: :organisation).call if invites.any?
   end
 
   def accept
