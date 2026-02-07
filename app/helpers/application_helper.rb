@@ -5,6 +5,12 @@ module ApplicationHelper
     Current.organisation.organisation_users.find_by(user: Current.user)&.admin?
   end
 
+  def pending_invite_count
+    return 0 unless Current.user
+
+    OrganisationInvite.pending.where(email: Current.user.email_address).count
+  end
+
   def relationship_kind_label(kind)
     case kind
     when "one_to_one" then "One to One"

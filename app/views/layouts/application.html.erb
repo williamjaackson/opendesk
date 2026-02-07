@@ -83,6 +83,17 @@
                       </label>
                       <div class="border-t border-gray-200"></div>
                     <% end %>
+                    <%= link_to inbox_path, class: "flex items-center justify-between w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 select-none" do %>
+                      <span class="flex items-center gap-2">
+                        <%= lucide_icon("inbox", class: "h-4 w-4") %>
+                        Inbox
+                      </span>
+                      <% if pending_invite_count > 0 %>
+                        <span class="inline-flex items-center justify-center h-5 min-w-5 px-1.5 text-xs font-medium bg-gray-900 text-white rounded-full">
+                          <%= pending_invite_count %>
+                        </span>
+                      <% end %>
+                    <% end %>
                     <%= link_to account_path, class: "flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 select-none" do %>
                       <%= lucide_icon("user", class: "h-4 w-4") %>
                       Account
