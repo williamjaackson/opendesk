@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
     member do
       get :members
+      delete :leave
     end
     resources :organisation_invites, path: "invites", as: :invites, only: [ :create ]
     resources :organisation_users, path: "members", as: :members, only: [ :update, :destroy ]

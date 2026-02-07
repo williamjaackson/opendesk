@@ -48,6 +48,25 @@ class OrganisationsController < ApplicationController
     end
   end
 
+  def leave
+    @organisation = Current.user.organisations.find(params[:id])
+    membership = @organisation.organisation_users.find_by!(user: Current.user)
+
+    if @organisation.organisation_users.count == 1
+      redirect_to organisation_path(@organisation), alert: "You can't leave as the last member."
+      return
+    end
+
+    if membership.admin? && @organisation.organisation_users.where(role: "admin").count == 1
+      redirect_to organisation_path(@organisation), alert: "You can't leave as the only admin. Make someone else an admin first."
+      return
+    end
+
+    session.delete(:organisation_id) if session[:organisation_id] == @organisation.id
+    membership.destroy
+    redirect_to organisations_path, notice: "You've left #{@organisation.name}."
+  end
+
   def destroy
     @organisation = Current.user.organisations.find(params[:id])
     @organisation.destroy
