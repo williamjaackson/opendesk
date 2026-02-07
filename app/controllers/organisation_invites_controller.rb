@@ -32,6 +32,11 @@ class OrganisationInvitesController < ApplicationController
       return
     end
 
+    if @invite.declined?
+      redirect_to root_path, alert: "This invitation has been declined."
+      return
+    end
+
     # Store token so it persists through sign out/sign in flow
     session[:pending_invite_token] = @invite.token
 
@@ -48,6 +53,7 @@ class OrganisationInvitesController < ApplicationController
 
     session.delete(:pending_invite_token)
     if @invite.accept!(Current.user)
+      @invite.notification&.mark_as_read!
       redirect_to organisation_path(@invite.organisation), notice: "You've joined #{@invite.organisation.name}!"
     else
       redirect_to root_path, alert: "Unable to accept invitation."
