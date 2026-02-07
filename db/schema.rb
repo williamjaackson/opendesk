@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_06_034557) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_07_082501) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -142,6 +142,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_034557) do
   create_table "organisation_invites", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
+    t.datetime "declined_at"
     t.string "email", null: false
     t.integer "organisation_id", null: false
     t.string "token", null: false

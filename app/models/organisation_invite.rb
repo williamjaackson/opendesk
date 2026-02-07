@@ -9,14 +9,18 @@ class OrganisationInvite < ApplicationRecord
 
   normalizes :email, with: ->(e) { e.strip.downcase }
 
-  scope :pending, -> { where(accepted_at: nil) }
+  scope :pending, -> { where(accepted_at: nil, declined_at: nil) }
 
   def pending?
-    accepted_at.nil?
+    accepted_at.nil? && declined_at.nil?
   end
 
   def accepted?
     accepted_at.present?
+  end
+
+  def declined?
+    declined_at.present?
   end
 
   def accept!(user)

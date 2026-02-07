@@ -2,11 +2,10 @@
   <%= render "shared/page_heading", title: "Inbox" %>
 
   <% if @invites.any? %>
-    <h2 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Invitations</h2>
     <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
       <ul class="divide-y divide-gray-200">
         <% @invites.each do |invite| %>
-          <li class="p-4">
+          <li class="p-4 <%= 'opacity-60' unless invite.pending? %>">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-3">
                 <div class="flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center" style="background-color: <%= invite.organisation.theme_colour || '#111827' %>">
@@ -19,21 +18,32 @@
                     Invitation to join <strong><%= invite.organisation.name %></strong>
                   </p>
                   <p class="text-xs text-gray-500">
-                    Received <%= time_ago_in_words(invite.created_at) %> ago
+                    <%= time_ago_in_words(invite.created_at) %> ago
                   </p>
                 </div>
               </div>
               <div class="flex items-center gap-2">
-                <%= button_to accept_inbox_path(invite), method: :post, class: "inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" do %>
-                  Accept
-                <% end %>
-                <span data-controller="confirm" data-confirm-message-value="Decline invitation to <%= invite.organisation.name %>?" data-confirm-button-text-value="Decline">
-                  <%= form_with url: decline_inbox_path(invite), method: :delete, class: "inline" do %>
-                    <button type="button" data-action="confirm#show" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer select-none">
-                      Decline
-                    </button>
+                <% if invite.pending? %>
+                  <%= button_to accept_inbox_path(invite), method: :post, class: "inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" do %>
+                    Accept
                   <% end %>
-                </span>
+                  <span data-controller="confirm" data-confirm-message-value="Decline invitation to <%= invite.organisation.name %>?" data-confirm-button-text-value="Decline">
+                    <%= form_with url: decline_inbox_path(invite), method: :delete, class: "inline" do %>
+                      <button type="button" data-action="confirm#show" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer select-none">
+                        Decline
+                      </button>
+                    <% end %>
+                  </span>
+                <% elsif invite.accepted? %>
+                  <span class="inline-flex items-center gap-1 text-sm text-gray-500">
+                    <%= lucide_icon("check", class: "h-4 w-4") %>
+                    Joined
+                  </span>
+                <% elsif invite.declined? %>
+                  <span class="text-sm text-gray-500">
+                    Declined
+                  </span>
+                <% end %>
               </div>
             </div>
           </li>
@@ -46,7 +56,7 @@
         <%= lucide_icon("inbox", class: "h-12 w-12") %>
       </div>
       <h3 class="text-sm font-medium text-gray-900 mb-1">All caught up</h3>
-      <p class="text-sm text-gray-500">You have no pending notifications.</p>
+      <p class="text-sm text-gray-500">You have no notifications.</p>
     </div>
   <% end %>
 </div>
