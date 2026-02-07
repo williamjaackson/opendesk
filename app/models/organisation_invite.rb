@@ -27,6 +27,7 @@ class OrganisationInvite < ApplicationRecord
 
   def accept!(user)
     return false if accepted?
+    return false if declined?
     return false if organisation.users.include?(user)
 
     transaction do
