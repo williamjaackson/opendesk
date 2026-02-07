@@ -1,0 +1,82 @@
+<div class="max-w-2xl mx-auto py-8 px-4">
+  <%= render "shared/page_heading", title: "Inbox" %>
+
+  <% if @notifications.any? %>
+    <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
+      <ul class="divide-y divide-gray-200">
+        <% @notifications.each do |notification| %>
+          <% unless notification.notifiable %>
+            <% notification.mark_as_read! unless notification.read? %>
+            <% next %>
+          <% end %>
+          <% case notification.notifiable_type %>
+          <% when "OrganisationInvite" %>
+            <% invite = notification.notifiable %>
+            <li class="p-4 <%= 'opacity-60' if notification.read? %>">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                  <div class="flex-shrink-0 h-10 w-10 rounded-lg flex items-center justify-center" style="background-color: <%= invite.organisation.theme_colour || '#111827' %>">
+                    <span class="text-sm font-bold text-white">
+                      <%= invite.organisation.name.first.upcase %>
+                    </span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">
+                      Invitation to join <strong><%= invite.organisation.name %></strong>
+                    </p>
+                    <p class="text-xs text-gray-500">
+                      <%= time_ago_in_words(notification.created_at) %> ago
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2">
+                  <% if invite.pending? %>
+                    <%= button_to accept_inbox_path(invite), method: :post, class: "inline-flex items-center gap-1.5 px-3 py-1.5 bg-gray-900 text-white text-sm font-medium rounded-md hover:bg-gray-800 transition-colors cursor-pointer select-none" do %>
+                      Accept
+                    <% end %>
+                    <span data-controller="confirm" data-confirm-message-value="Decline invitation to <%= invite.organisation.name %>?" data-confirm-button-text-value="Decline">
+                      <%= form_with url: decline_inbox_path(invite), method: :delete, class: "inline" do %>
+                        <button type="button" data-action="confirm#show" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors cursor-pointer select-none">
+                          Decline
+                        </button>
+                      <% end %>
+                    </span>
+                  <% elsif invite.accepted? %>
+                    <span class="inline-flex items-center gap-1 text-sm text-gray-500">
+                      <%= lucide_icon("check", class: "h-4 w-4") %>
+                      Joined
+                    </span>
+                  <% elsif invite.declined? %>
+                    <span class="text-sm text-gray-500">
+                      Declined
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+            </li>
+          <% else %>
+            <li class="p-4 <%= 'opacity-60' if notification.read? %>">
+              <div class="flex items-center gap-3">
+                <div class="flex-shrink-0 h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
+                  <%= lucide_icon("bell", class: "h-5 w-5 text-gray-500") %>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-900">You have a notification</p>
+                  <p class="text-xs text-gray-500"><%= time_ago_in_words(notification.created_at) %> ago</p>
+                </div>
+              </div>
+            </li>
+          <% end %>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <div class="text-center py-12">
+      <div class="mx-auto h-12 w-12 text-gray-400 mb-4">
+        <%= lucide_icon("inbox", class: "h-12 w-12") %>
+      </div>
+      <h3 class="text-sm font-medium text-gray-900 mb-1">All caught up</h3>
+      <p class="text-sm text-gray-500">You have no notifications.</p>
+    </div>
+  <% end %>
+</div>

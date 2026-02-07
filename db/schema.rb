@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_06_034557) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_07_084213) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -139,14 +139,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_034557) do
     t.index ["custom_record_id"], name: "index_custom_values_on_custom_record_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "notifiable_id", null: false
+    t.string "notifiable_type", null: false
+    t.datetime "read_at"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id", "notifiable_type", "notifiable_id"], name: "index_notifications_on_user_and_notifiable", unique: true
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "organisation_invites", force: :cascade do |t|
     t.datetime "accepted_at"
     t.datetime "created_at", null: false
+    t.datetime "declined_at"
     t.string "email", null: false
     t.integer "organisation_id", null: false
     t.string "token", null: false
     t.datetime "updated_at", null: false
-    t.index ["organisation_id", "email"], name: "index_pending_invites_on_org_and_email", unique: true, where: "accepted_at IS NULL"
+    t.index ["organisation_id", "email"], name: "index_pending_invites_on_org_and_email", unique: true, where: "accepted_at IS NULL AND declined_at IS NULL"
     t.index ["organisation_id"], name: "index_organisation_invites_on_organisation_id"
     t.index ["token"], name: "index_organisation_invites_on_token", unique: true
   end
@@ -213,6 +225,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_06_034557) do
   add_foreign_key "custom_tables", "table_groups"
   add_foreign_key "custom_values", "custom_columns"
   add_foreign_key "custom_values", "custom_records"
+  add_foreign_key "notifications", "users"
   add_foreign_key "organisation_invites", "organisations"
   add_foreign_key "organisation_users", "organisations"
   add_foreign_key "organisation_users", "users"

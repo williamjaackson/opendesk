@@ -5,6 +5,12 @@ module ApplicationHelper
     Current.organisation.organisation_users.find_by(user: Current.user)&.admin?
   end
 
+  def inbox_count
+    return 0 unless Current.user
+
+    @_inbox_count ||= Current.user.notifications.unread.count
+  end
+
   def relationship_kind_label(kind)
     case kind
     when "one_to_one" then "One to One"

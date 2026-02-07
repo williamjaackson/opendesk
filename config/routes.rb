@@ -4,6 +4,9 @@ Rails.application.routes.draw do
   resource :organisation_session, only: [ :create, :destroy ]
   resource :builder_mode, only: [ :update ]
   resource :account, only: [ :show, :update ]
+  get "inbox", to: "inbox#index", as: :inbox
+  post "inbox/:id/accept", to: "inbox#accept", as: :accept_inbox
+  delete "inbox/:id/decline", to: "inbox#decline", as: :decline_inbox
   resources :passwords, param: :token
   resources :organisations, only: [ :index, :new, :create, :show, :edit, :update, :destroy ] do
     member do
