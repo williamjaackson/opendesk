@@ -8,7 +8,7 @@ module ApplicationHelper
   def inbox_count
     return 0 unless Current.user
 
-    Current.user.notifications.unread.count
+    @_inbox_count ||= Current.user.notifications.unread.count
   end
 
   def relationship_kind_label(kind)
