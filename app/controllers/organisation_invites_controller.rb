@@ -33,6 +33,7 @@ class OrganisationInvitesController < ApplicationController
     end
 
     if @invite.declined?
+      session.delete(:pending_invite_token)
       redirect_to root_path, alert: "This invitation has been declined."
       return
     end
@@ -53,7 +54,7 @@ class OrganisationInvitesController < ApplicationController
 
     session.delete(:pending_invite_token)
     if @invite.accept!(Current.user)
-      @invite.notification&.mark_as_read!
+      Current.user.notifications.find_by(notifiable: @invite)&.mark_as_read!
       redirect_to organisation_path(@invite.organisation), notice: "You've joined #{@invite.organisation.name}!"
     else
       redirect_to root_path, alert: "Unable to accept invitation."

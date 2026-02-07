@@ -47,6 +47,8 @@ class OrganisationInvite < ApplicationRecord
     user = User.find_by(email_address: email)
     return unless user
 
-    Notification.create!(user: user, notifiable: self)
+    Notification.find_or_create_by(user: user, notifiable: self)
+  rescue ActiveRecord::RecordNotUnique
+    # concurrent creation — safe to ignore
   end
 end

@@ -15,7 +15,9 @@ class User < ApplicationRecord
 
   def create_notifications_for_pending_invites
     OrganisationInvite.pending.where(email: email_address).find_each do |invite|
-      invite.create_notification!(user: self) unless invite.notification
+      Notification.find_or_create_by(user: self, notifiable: invite)
+    rescue ActiveRecord::RecordNotUnique
+      # concurrent creation — safe to ignore
     end
   end
 end

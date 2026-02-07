@@ -5,7 +5,10 @@
     <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
       <ul class="divide-y divide-gray-200">
         <% @notifications.each do |notification| %>
-          <% next unless notification.notifiable %>
+          <% unless notification.notifiable %>
+            <% notification.mark_as_read! unless notification.read? %>
+            <% next %>
+          <% end %>
           <% case notification.notifiable_type %>
           <% when "OrganisationInvite" %>
             <% invite = notification.notifiable %>
