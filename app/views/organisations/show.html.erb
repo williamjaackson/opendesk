@@ -28,5 +28,13 @@
       <%= lucide_icon("users", class: "h-4 w-4") %>
       Manage members
     <% end %>
+    <span data-controller="confirm" data-confirm-message-value="Leave <%= @organisation.name %>? You'll need to be re-invited to rejoin." data-confirm-button-text-value="Leave">
+      <%= form_with url: leave_organisation_path(@organisation), method: :delete, class: "inline" do %>
+        <button type="button" data-action="confirm#show" class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-red-600 bg-white border border-gray-300 rounded-md hover:bg-red-50 hover:border-red-300 transition-colors cursor-pointer select-none">
+          <%= lucide_icon("log-out", class: "h-4 w-4") %>
+          Leave
+        </button>
+      <% end %>
+    </span>
   </div>
 </div>
