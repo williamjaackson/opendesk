@@ -5,6 +5,7 @@
     <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
       <ul class="divide-y divide-gray-200">
         <% @notifications.each do |notification| %>
+          <% next unless notification.notifiable %>
           <% case notification.notifiable_type %>
           <% when "OrganisationInvite" %>
             <% invite = notification.notifiable %>
@@ -47,6 +48,18 @@
                       Declined
                     </span>
                   <% end %>
+                </div>
+              </div>
+            </li>
+          <% else %>
+            <li class="p-4 <%= 'opacity-60' if notification.read? %>">
+              <div class="flex items-center gap-3">
+                <div class="flex-shrink-0 h-10 w-10 rounded-lg bg-gray-200 flex items-center justify-center">
+                  <%= lucide_icon("bell", class: "h-5 w-5 text-gray-500") %>
+                </div>
+                <div>
+                  <p class="text-sm text-gray-900">You have a notification</p>
+                  <p class="text-xs text-gray-500"><%= time_ago_in_words(notification.created_at) %> ago</p>
                 </div>
               </div>
             </li>
