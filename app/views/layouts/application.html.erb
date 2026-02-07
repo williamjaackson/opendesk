@@ -65,8 +65,11 @@
             <% if authenticated? %>
               <div data-controller="dropdown" data-action="keydown->dropdown#keydown" class="relative">
                 <button type="button" data-action="dropdown#toggle" data-dropdown-target="button"
-                  class="p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 select-none">
+                  class="relative p-2 rounded-full hover:bg-gray-100 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 select-none">
                   <%= lucide_icon("circle-user-round", class: "h-5 w-5 text-gray-600") %>
+                  <% if inbox_count > 0 %>
+                    <span class="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full"></span>
+                  <% end %>
                 </button>
 
                 <div data-dropdown-target="menu" class="hidden absolute right-0 z-10 mt-1 w-48 rounded-md border border-gray-200 bg-white shadow-lg">
@@ -88,9 +91,9 @@
                         <%= lucide_icon("inbox", class: "h-4 w-4") %>
                         Inbox
                       </span>
-                      <% if pending_invite_count > 0 %>
-                        <span class="inline-flex items-center justify-center h-5 min-w-5 px-1.5 text-xs font-medium bg-gray-900 text-white rounded-full">
-                          <%= pending_invite_count %>
+                      <% if inbox_count > 0 %>
+                        <span class="inline-flex items-center justify-center h-4 min-w-4 px-1 text-[10px] font-medium bg-red-500 text-white rounded-full">
+                          <%= inbox_count %>
                         </span>
                       <% end %>
                     <% end %>

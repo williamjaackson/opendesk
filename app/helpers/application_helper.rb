@@ -5,9 +5,10 @@ module ApplicationHelper
     Current.organisation.organisation_users.find_by(user: Current.user)&.admin?
   end
 
-  def pending_invite_count
+  def inbox_count
     return 0 unless Current.user
 
+    # For now just invites, but can add other notification types later
     OrganisationInvite.pending.where(email: Current.user.email_address).count
   end
 

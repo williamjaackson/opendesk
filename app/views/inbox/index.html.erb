@@ -2,6 +2,7 @@
   <%= render "shared/page_heading", title: "Inbox" %>
 
   <% if @invites.any? %>
+    <h2 class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Invitations</h2>
     <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
       <ul class="divide-y divide-gray-200">
         <% @invites.each do |invite| %>
@@ -44,8 +45,8 @@
       <div class="mx-auto h-12 w-12 text-gray-400 mb-4">
         <%= lucide_icon("inbox", class: "h-12 w-12") %>
       </div>
-      <h3 class="text-sm font-medium text-gray-900 mb-1">No pending invitations</h3>
-      <p class="text-sm text-gray-500">When someone invites you to an organisation, it will appear here.</p>
+      <h3 class="text-sm font-medium text-gray-900 mb-1">All caught up</h3>
+      <p class="text-sm text-gray-500">You have no pending notifications.</p>
     </div>
   <% end %>
 </div>
